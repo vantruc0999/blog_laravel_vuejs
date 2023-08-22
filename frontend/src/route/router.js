@@ -6,6 +6,7 @@ import HomeLayout from "../layout/HomeLayout.vue";
 import SignIn from "../pages/public/Authentication/SignIn.vue";
 import SignUp from "../pages/public/Authentication/SignUp.vue";
 import HomePage from "../pages/public/Home/HomePage.vue";
+import DetailPage from "../pages/public/Home/DetailPage.vue";
 
 const routes = [
   {
@@ -17,6 +18,11 @@ const routes = [
         path: "/",
         name: "homepage",
         component: HomePage,
+      },
+      {
+        path: "/detail",
+        name: "detail",
+        component: DetailPage,
       },
     ],
   },

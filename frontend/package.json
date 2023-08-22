@@ -9,10 +9,14 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "formik": "^2.4.3",
     "node-sass": "^9.0.0",
     "pinia": "^2.1.6",
+    "swiper": "^10.2.0",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.4"
+    "vue-awesome-swiper": "^5.0.1",
+    "vue-router": "^4.2.4",
+    "yup": "^1.2.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

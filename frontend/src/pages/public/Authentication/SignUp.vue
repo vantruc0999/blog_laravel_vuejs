@@ -48,7 +48,17 @@ import {
     ref
 } from "vue"
 
+// to import everything from yup
+// import * as yup from "yup";
+// const loginFormSchema = object().shape({
+//     email: string().required().email(),
+//     password: string().required(),
+// });
+
+
 const showPassword = ref(false)
+
+
 
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;

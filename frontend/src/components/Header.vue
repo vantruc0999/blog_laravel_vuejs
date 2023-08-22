@@ -4,9 +4,11 @@
             <div class="header__left">
                 <img src="../assets/images/logo-small.png" class="header__logo"/>
                 <ul class="header__menu">
-                    <li class="header__item">
-                        Home
-                    </li>
+                    <router-link to="/">
+                        <li class="header__item">
+                            Home
+                        </li>
+                    </router-link>
                     <li class="header__item">
                         Blog
                     </li>
@@ -21,8 +23,14 @@
                     <input type="text" class="search__input" placeholder="Search post..."/>
                     <span class="search__icon"><ion-icon name="search-outline"></ion-icon></span>
                 </div>
-                <button class="header__btn--signup">Đăng ký</button>
-                <button class="header__btn">Đăng nhập</button>
+                <router-link to="/auth/signup" class="header__btn--signup">
+                        <!-- <button >Đăng nhập</button> -->
+                        Đăng ký
+                    </router-link>
+                <router-link to="/auth/signin" class="header__btn">
+                    <!-- <button >Đăng nhập</button> -->
+                    Đăng nhập
+                </router-link>
             </div>
         <!-- </div> -->
         
@@ -33,7 +41,7 @@ export default {
     
 }
 </script>
-<style lang="scss">
+<style lang="scss" scoped>
 .header__container {
     padding: 35px 122px;
 }
@@ -52,6 +60,7 @@ export default {
     margin-left: 40px;
 }
 .header__item {
+    cursor: pointer;
     font-size: 18px;
     font-weight: 700;
 }
@@ -84,6 +93,9 @@ export default {
     cursor: pointer;
 }
 .header__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     max-width: 160px;
     height: 45px;
@@ -96,6 +108,9 @@ export default {
     margin-left: 10px;
 }
 .header__btn--signup {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 100%;
     max-width: 160px;
     height: 45px;
