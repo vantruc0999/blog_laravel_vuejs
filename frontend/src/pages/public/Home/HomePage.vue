@@ -5,6 +5,7 @@
             <h1 class="home__heading">Monkey Blogging</h1>
             <p class="home__desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi.</p>
             <button class="home__button">Tìm hiểu</button>
+            
         </div>
         <div class="home__image">
             <img src="../../../assets/images/banner.png" />
@@ -45,6 +46,9 @@
                 </div>
                 <div class="update__list">
                     <CardNew :isCard="true"/>
+                    <CardNew :isCard="true"/>
+                    <CardNew :isCard="true"/>
+                    <CardNew :isCard="true"/>
                 </div>
             </div>
             <div class="home__blog">
@@ -55,6 +59,10 @@
 
             </div>
         </div>
+
+        <div class="home__signature">
+            <RelatedPage/>
+        </div>
     </div>
 </div>
 </template>
@@ -62,9 +70,14 @@
 <script setup>
 import CardFeature from "../../../components/CardFeature.vue"
 import CardNew from "../../../components/CardNew.vue"
+import RelatedPage from "./RelatedPage/RelatedPage.vue";
 </script>
 
 <style lang="scss" scoped>
+.home__container {
+    max-width: 1528px;
+    margin: 0 auto;
+}
 .home__banner {
     padding: 40px 125px;
     min-height: 520px;
@@ -205,7 +218,10 @@ import CardNew from "../../../components/CardNew.vue"
     border: 1px solid var(--border-color);
     padding: 5px;
     position: relative;
-    padding: -16px;
+    top: -16px;
+    color: var(--text-text-4);
+    font-weight: 400;
+
 }
 .update__name {
     font-size: 15px;
@@ -213,6 +229,9 @@ import CardNew from "../../../components/CardNew.vue"
 .update__list {
     background-color: #f0f0f0;
     padding: 10px;
+    max-height: 563px;
+    height: 100%;
+    overflow-y: scroll;
 }
 .home__blog {
     margin-top: 90px;

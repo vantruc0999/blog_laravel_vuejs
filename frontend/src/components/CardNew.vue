@@ -4,7 +4,7 @@
         <img src="https://images.unsplash.com/photo-1692607038324-6957c392410c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80" />
     </div>
     <div class="card__body">
-        <div class="card__category">Khoa học</div>
+        <div class="card__category">Khoa học Khoa học Khoa học</div>
         <div class="card__title">
             Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
         </div>
@@ -88,7 +88,6 @@ const props = defineProps({
 .card {
     cursor: pointer;
     width: 100%;
-    max-width: 550px;
     display: flex;
     gap: 20px;
     border: 1px solid var(--border-color);
@@ -124,22 +123,21 @@ const props = defineProps({
 }
 
 .card__category {
-    width: 55%;
+    max-height: 25px;
+    max-width: 300px;
+    width: 100%;
     color: var(--text-color-4);
     padding: 5px 15px;
     border-radius: 10px;
     border: 1px solid var(--border-color);
     font-size: 14px;
-    display: flex;
-    justify-content: center;
+    margin-bottom: 10px;
     font-weight: 600;
-    display: flex;
-    justify-content: center;
     background-color: var(--white-color);
     display: -webkit-box;
     -webkit-line-clamp: 1;
     -webkit-box-orient: vertical;
-    overflow: hidden;
+    overflow: hidden !important;
 }
 
 .card__title {
@@ -159,7 +157,7 @@ const props = defineProps({
     font-size: 14px;
     color: var(--text-color-4);
     display: -webkit-box;
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: 4;
     -webkit-box-orient: vertical;
     overflow: hidden;
     line-height: 1.3;
@@ -282,4 +280,5 @@ const props = defineProps({
     position: relative;
     top: -16px;
 }
+
 </style>
