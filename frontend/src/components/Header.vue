@@ -118,7 +118,7 @@ const handleOpenOptions = () => {
 
 .header__logo {
     display: block;
-    max-width: 50px;
+    max-width: 70px;
     border-right: 1px solid var(--primary-color);
     padding-right: 20px;
 

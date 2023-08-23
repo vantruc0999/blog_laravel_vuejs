@@ -1,5 +1,5 @@
 <template>
-<div class="card" v-if="isCard">
+<router-link to="/detail" class="card" v-if="isCard">
     <div class="card__image">
         <img src="https://images.unsplash.com/photo-1692607038324-6957c392410c?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1332&q=80" />
     </div>
@@ -32,8 +32,11 @@
             </div>
         </div>
     </div>
-</div>
-<div class="blog" v-else>
+
+</router-link>
+
+<router-link to="/detail" class="blog" v-else>
+
     <div class="blog__header">
         <div class="blog__category">Khoa học</div>
         <span class="blog__comment--icon blog__favorites">
@@ -70,7 +73,7 @@
             </div>
         </div>
     </div>
-</div>
+</router-link>
 </template>
 
 <script setup>
@@ -201,11 +204,13 @@ const props = defineProps({
     position: relative;
     cursor: pointer;
 }
-.blog__header{
+
+.blog__header {
     display: flex;
     align-items: center;
     justify-content: space-between;
 }
+
 .blog__image {
     img {
         width: 100%;
@@ -274,11 +279,9 @@ const props = defineProps({
 
 .blog__amount {
     color: var(--text-color-4);
-    padding: 5px;
     border-radius: 50%;
-    border: 1px solid var(--border-color);
+    // border: 1px solid var(--border-color);
     position: relative;
     top: -16px;
 }
-
 </style>

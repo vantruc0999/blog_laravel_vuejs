@@ -31,6 +31,20 @@
                     <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                 </span>
             </div>
+            <div class="profile__interaction">
+                <div class="profile__followers">
+                    16
+                    <span class="profile__interaction--text">followers</span>
+                </div>
+                <div class="profile__followers">
+                    32
+                    <span class="profile__interaction--text">following</span>
+                </div>
+                <div class="profile__followers">
+                    1200
+                    <span class="profile__interaction--text">views</span>
+                </div>
+            </div>
             <p class="profile__about">Góc nhỏ chia sẻ cảm nhận về sách. Bạn có thể gặp mình nhiều hơn ở blog: vietcungtieuhy.com. Mong câu chữ của mình sẽ giúp bạn hiểu thêm về sách</p>
         </div>
         <div class="profile__action">
@@ -66,9 +80,11 @@
 
     </div>
 </div>
+<Footer/>
 </template>
 
 <script setup>
+import Footer from "../../../components/Footer.vue"
 import DropDown from "../../../components/DropDown.vue"
 import CardNew from "../../../components/CardNew.vue"
 
@@ -166,7 +182,6 @@ const filterData = [{
 .profile__content {
     padding: 0px 180px;
     background-color: #F5F7FA;
-    
     .profile__desc {
         display: flex;
     }
@@ -184,7 +199,7 @@ const filterData = [{
             margin-bottom: 20px;
 
         .user__name {
-            font-size: 36px;
+            font-size: 32px;
             font-weight: 600;
         }
 
@@ -218,7 +233,19 @@ const filterData = [{
         align-items: center;
         justify-content: space-between;
     }
-
+    .profile__interaction {
+        margin-top: 30px;
+        display: flex;
+        gap: 40px;
+        .profile__followers {
+            color: var(--black-color);
+            font-weight: 700;
+            .profile__interaction--text {
+                font-weight: 400;
+                font-size: 13px;
+            }
+        }
+    }
     .profile__btn {
         padding: 10px;
         border-radius: 10px;
@@ -231,9 +258,10 @@ const filterData = [{
 
     .profile__about {
         line-height: 1.3;
-        font-weight: 500;
+        font-weight: 400;
         font-size: 16px;
         margin-top: 30px;
+        
     }
 
     .profile__action {
