@@ -7,6 +7,7 @@ import SignIn from "../pages/public/Authentication/SignIn.vue";
 import SignUp from "../pages/public/Authentication/SignUp.vue";
 import HomePage from "../pages/public/Home/HomePage.vue";
 import DetailPage from "../pages/public/Home/DetailPage.vue";
+import ProfilePage from "../pages/public/Home/ProfilePage.vue";
 
 const routes = [
   {
@@ -42,6 +43,11 @@ const routes = [
         component: SignUp,
       },
     ],
+  },
+  {
+    path: "/profile",
+    name: "profile",
+    component: ProfilePage,
   },
   // {
   //   path: "/:pathMatch(.*)*",

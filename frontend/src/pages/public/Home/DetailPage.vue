@@ -69,6 +69,38 @@
             <ion-icon name="arrow-forward-outline"></ion-icon>
           </span>
     </div>
+
+    <!-- Special -->
+    <h1 class="detail__related__title">Bài viết nổi bật</h1>
+    
+    <div class="detail__related">
+        <span class="detail__controller">
+            <ion-icon name="arrow-back-outline"></ion-icon>
+          </span>
+        <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
+            <swiper-slide>
+                <CardNew />
+            </swiper-slide>
+            <swiper-slide>
+                <CardNew />
+            </swiper-slide>
+            <swiper-slide>
+                <CardNew />
+            </swiper-slide>
+            <swiper-slide>
+                <CardNew />
+            </swiper-slide>
+            <swiper-slide>
+                <CardNew />
+            </swiper-slide>
+            <swiper-slide>
+                <CardNew />
+            </swiper-slide>
+        </swiper>
+        <span class="detail__controller" >
+            <ion-icon name="arrow-forward-outline"></ion-icon>
+          </span>
+    </div>
 </div>
 </template>
 
@@ -88,7 +120,7 @@ import "swiper/css";
 
 <style lang="scss" scoped>
 .detail__container {
-    padding: 20px 130px;
+    padding: 120px 130px;
 }
 
 .detail__heading {

@@ -43,7 +43,14 @@ export default {
 </script>
 <style lang="scss" scoped>
 .header__container {
-    padding: 35px 122px;
+    padding: 15px 122px;
+    // border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    width: 100vw;
+    border-bottom: 1px solid #e8ebed;
+    box-shadow: 0 -2px 20px rgb(0 0 0 / 10%);
+    z-index: 900;
+    background-color: var(--white-color);
 }
 .header__top {
     display: flex;

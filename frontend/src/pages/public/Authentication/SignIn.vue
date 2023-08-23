@@ -100,7 +100,6 @@ const togglePasswordVisibility = () => {
     cursor: pointer;
 }
 
-// mb-4 text-xs font-normal text-center lg:text-sm lg:mb-8 text-text2
 .login__option {
     display: flex;
     justify-content: center;
