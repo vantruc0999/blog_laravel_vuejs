@@ -9,7 +9,12 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@ckeditor/ckeditor5-build-classic": "^39.0.1",
+    "@ckeditor/ckeditor5-vue": "^5.1.0",
+    "@vueup/vue-quill": "^1.2.0",
+    "ant-design-vue": "^4.0.1",
     "formik": "^2.4.3",
+    "iview": "^3.5.4",
     "node-sass": "^9.0.0",
     "pinia": "^2.1.6",
     "swiper": "^10.2.0",

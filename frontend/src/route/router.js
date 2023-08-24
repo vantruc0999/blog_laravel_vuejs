@@ -8,6 +8,10 @@ import SignUp from "../pages/public/Authentication/SignUp.vue";
 import HomePage from "../pages/public/Home/HomePage.vue";
 import DetailPage from "../pages/public/Home/DetailPage.vue";
 import ProfilePage from "../pages/public/ProfilePage/ProfilePage.vue";
+import PostBlog from "../pages/private/Blog/PostBlog.vue";
+import SettingPage from "../pages/private/SettingPage/SettingPage.vue";
+import Account from "../pages/private/SettingPage/Account.vue";
+import BanUser from "../pages/private/SettingPage/BanUser.vue";
 
 const routes = [
   {
@@ -24,6 +28,23 @@ const routes = [
         path: "/detail",
         name: "detail",
         component: DetailPage,
+      },
+      {
+        path: "/setting/account",
+        name: "setting",
+        component: SettingPage,
+        children : [
+          {
+            path: "/setting/account",
+            name: "setting",
+            component: Account,
+          },
+          {
+            path: "/setting/ban",
+            name: "ban",
+            component: BanUser,
+          },
+        ]
       },
     ],
   },
@@ -48,6 +69,11 @@ const routes = [
     path: "/profile",
     name: "profile",
     component: ProfilePage,
+  },
+  {
+    path: "/blog-post",
+    name: "postblog",
+    component: PostBlog,
   },
   // {
   //   path: "/:pathMatch(.*)*",
