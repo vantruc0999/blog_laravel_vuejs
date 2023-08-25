@@ -95,7 +95,7 @@ class PostController extends Controller
         ];
 
         $post = Post::create($data);
-        
+        //h
         return $post;
     }
 
