@@ -49,7 +49,17 @@ class PostController extends Controller
             unset($item->created_at, $item->updated_at, $item->id, $item->pivot);
         }
         return $tags;
+        // asd
     }
+
+    // private function getTagsInfor($tags)
+    // {
+    //     foreach ($tags as $item) {
+    //         unset($item->created_at, $item->updated_at, $item->id, $item->pivot);
+    //     }
+    //     return $tags;
+    // }
+
 
     public function getDetailPostBySlug($slug)
     {
