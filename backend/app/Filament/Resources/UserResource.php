@@ -53,6 +53,8 @@ class UserResource extends Resource
                         // Select::make('permissions')
                         //     ->multiple()
                         //     ->relationship('permissions', 'name')->preload()
+                        //ấdsdasd
+                        //ádasd
                     ])
             ]);
     }

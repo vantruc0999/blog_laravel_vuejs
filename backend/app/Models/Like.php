@@ -18,4 +18,9 @@ class Like extends Model
     public function blogger(){
         return $this->belongsTo(Blogger::class);
     }
+
+    // public function getLikeCountAttribute()
+    // {
+    //     return $this->likes->count();
+    // }
 }
