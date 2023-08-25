@@ -1,6 +1,6 @@
 <template >
     <div class="blog__container">
-        <BlogEditor/>
+        <BlogEditor />
     </div>
 </template>
 <script setup>
@@ -8,6 +8,6 @@ import BlogEditor from "../../private/Blog/BlogEditor.vue"
 </script>
 <style lang="scss" scoped>
 .blog__container {
-    padding: 40px 180px;
+    padding: 40px 140px;
 }
 </style>

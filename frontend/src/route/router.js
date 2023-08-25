@@ -12,6 +12,9 @@ import PostBlog from "../pages/private/Blog/PostBlog.vue";
 import SettingPage from "../pages/private/SettingPage/SettingPage.vue";
 import Account from "../pages/private/SettingPage/Account.vue";
 import BanUser from "../pages/private/SettingPage/BanUser.vue";
+import AuthorPage from "../pages/public/Author/AuthorPage.vue"
+import RelatedPost from "../pages/public/Home/RelatedPage/RelatedPost.vue"
+import ForYouPage from "../pages/public/Home/RelatedPage/PageContent/ForYouPage.vue"
 
 const routes = [
   {
@@ -28,6 +31,23 @@ const routes = [
         path: "/detail",
         name: "detail",
         component: DetailPage,
+      },
+      {
+        path: "/author",
+        name: "author",
+        component: AuthorPage,
+      },
+      {
+        path: "/",
+        name: "related",
+        component: RelatedPost,
+        children: [
+            {
+            path: "/",
+            name: "foryou",
+            component: ForYouPage,
+          },
+        ]
       },
       {
         path: "/setting/account",

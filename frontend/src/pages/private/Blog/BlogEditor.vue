@@ -1,6 +1,9 @@
 <template>
     <div class="editor__container">
-        <img src="../../../assets/images/logo-small.png" alt="">
+        <router-link to="/">
+            <img src="../../../assets/images/logo-small.png" alt="">
+
+        </router-link>
         <div class="editor__wrapper">
             <div class="editor__content">
                 <textarea v-model="title" ref="textarea" :style="{ height: `${height}px` }" class="editor__input"
@@ -8,26 +11,19 @@
                 <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
             </div>
             <div class="editor__tool">
-                <Space direction="horizontal" size="15" class="dropdown">
-                    <Select placeholder="Thể loại">
-                        <template #default>
-                            <Option v-for="item in filterCategory" :key="item.name" :value="item.name">
-                                {{ item.name }}
-                            </Option>
-                        </template>
-                    </Select>
-                </Space>
+                <a-select v-model="selectedCategory" placeholder="Thể loại">
+                    <a-select-option v-for="item in filterCategory" :key="item.name" :value="item.name">
+                        {{ item.name }}
+                    </a-select-option>
+                </a-select>
+                <span class="editor__title">Chọn ảnh cho tiêu đề</span>
                 <div class="image-select">
                     <img :src="temporaryImage" alt="" class="temporary-image">
                     <input type="file" @change="handleImageChange" accept="image/*" class="image-input">
                 </div>
                 <div class="editor__controller">
-                    <div class="editor__btn">
-                        Hủy
-                    </div>
-                    <div class="editor__btn editor__btn--submit">
-                        Đăng bài
-                    </div>
+                    <div class="editor__btn">Hủy</div>
+                    <div class="editor__btn editor__btn--submit">Đăng bài</div>
                 </div>
             </div>
         </div>
@@ -39,32 +35,20 @@ import { ref, computed } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import { toRefs } from 'vue';
-import { Select, Space } from "ant-design-vue";
+import { Select } from 'ant-design-vue';
 
-
-const temporaryImage = ref("")
+const temporaryImage = ref('');
 const { Option } = Select;
 
 const categoryData = [
-    {
-        name: "Văn học"
-    },
-    {
-        name: "IT"
-    },
-    {
-        name: "Công nghệ"
-    },
-    {
-        name: "Khoa học"
-    },
-    {
-        name: "Xã hội"
-    },
-    {
-        name: "Bàn luận"
-    }
+    { name: 'Văn học' },
+    { name: 'IT' },
+    { name: 'Công nghệ' },
+    { name: 'Khoa học' },
+    { name: 'Xã hội' },
+    { name: 'Bàn luận' }
 ];
+
 const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -74,13 +58,14 @@ const handleImageChange = (event) => {
         };
         reader.readAsDataURL(file);
     }
-}
+};
 
 const editor = ref(ClassicEditor);
 const editorData = ref('');
 const editorConfig = ref({
     placeholder: 'Nhập nội dung...',
 });
+
 let title = ref('');
 const textarea = ref('');
 const height = ref(35);
@@ -90,7 +75,7 @@ const handleResize = () => {
 };
 
 const filterCategory = computed(() => {
-    return categoryData.map(item => {
+    return categoryData.map((item) => {
         return item;
     });
 });
@@ -102,11 +87,16 @@ const filterCategory = computed(() => {
     width: 100%;
 
     .editor__wrapper {
-        width: 750px;
-        display: flex;
+        // max-width: 750px;
+        width: 100%;
+        padding: 0px 50px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 20px;
 
         .editor__input {
-            margin-top: 30px;
+            background-color: #f5f7fa;
+            margin: 30px 0px;
             width: 100%;
             resize: none;
             height: auto;
@@ -118,8 +108,21 @@ const filterCategory = computed(() => {
             border: none;
 
             &::placeholder {
-                font-size: 22px;
+                font-size: 30px;
                 color: #c4c4c4;
+            }
+        }
+
+        .editor__tool {
+            .ant-select {
+                width: 100%
+            }
+
+            .editor__title {
+                font-size: 22px;
+                font-weight: 700;
+                margin: 30px 0;
+                display: inline-block;
             }
         }
     }
@@ -127,9 +130,8 @@ const filterCategory = computed(() => {
 }
 
 .image-select {
-    margin-top: 20px;
     position: relative;
-    width: 540px;
+    width: 100%;
     height: 200px;
     border: 2px dashed #ccc;
     border-radius: 8px;
@@ -139,8 +141,6 @@ const filterCategory = computed(() => {
 .temporary-image {
     width: 100%;
 }
-
-
 
 .image-select .temporary-image {
     width: 100%;
@@ -201,5 +201,19 @@ const filterCategory = computed(() => {
             opacity: .9;
         }
     }
+}
+
+.ske-container {
+    width: 700px;
+}
+
+.ske-content {
+    height: auto;
+
+}
+
+
+.ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
+    border-color: red !important;
 }
 </style>

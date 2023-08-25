@@ -50,8 +50,7 @@
                         bài</button>
                 </router-link>
                 <div class="header__avatar" @click="handleOpenOptions">
-                    <img src="https://images.unsplash.com/photo-1692736230086-970c58a6af31?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=388&q=80"
-                        alt="">
+                    <img src="../assets/images/bin.jpg" alt="">
                 </div>
                 <OptionUser :isOpen="isOpen" />
             </div>
@@ -81,19 +80,16 @@ const handleOpenOptions = () => {
 
 <style lang="scss" scoped>
 .header__container {
-    max-width: 1528px;
-    padding: 15px 122px;
+    padding: 10px 122px;
     position: fixed;
-    width: 100vw;
     top: 0;
     right: 0;
     left: 0;
-    margin: 0 auto;
-    border-bottom: 1px solid #e8ebed;
+    background-color: var(--white-color);
     box-shadow: 0 -2px 20px rgb(0 0 0 / 10%);
     z-index: 900;
-    position: relative;
-    background-color: var(--white-color);
+    box-shadow: 0 -2px 20px rgb(0 0 0 / 10%);
+    border-bottom: 1px solid #e8ebed;
 }
 
 .header__top {

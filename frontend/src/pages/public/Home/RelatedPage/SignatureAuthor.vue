@@ -1,23 +1,34 @@
 <template >
     <div class="signature__wrapper">
-        <div class="signature__header">
-            <span class="signature__text">Cây bút nổi  bật</span>
-            <router-link to="/" class="signature__more">
-                Xem thêm
-            </router-link>
-        </div>
         <div class="signature__user">
-            <div class="signature__user__left">
-                <img class="signature__user__img" src="https://images.unsplash.com/photo-1682685797366-715d29e33f9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" alt="">
-                <div class="signature__user__infor">
-                    <span class="signature__user__author">Pham Van Dong</span>
-                    <span class="signature__user__nickname">Ein Verrückter</span>
+            <router-link to="/profile">
+                <div class="signature__user__left">
+                    <img class="signature__user__img"
+                        src="https://images.unsplash.com/photo-1682685797366-715d29e33f9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
+                        alt="">
+                    <div class="signature__user__infor">
+                        <span class="signature__user__author">Hải Haven</span>
+                        <span class="signature__user__nickname">Ein Verrückter</span>
+                    </div>
                 </div>
-            </div>
+            </router-link>
             <div class="signature__user__right">
                 <button class="signature__user__btn">Theo dõi</button>
             </div>
-            
+        </div>
+        <div class="signature__user">
+            <router-link to="/profile">
+                <div class="signature__user__left">
+                    <img class="signature__user__img" src="../../../../assets/images/bin2.jpg" alt="">
+                    <div class="signature__user__infor">
+                        <span class="signature__user__author">Jackies Bin Duong</span>
+                        <span class="signature__user__nickname">Daiza Vú</span>
+                    </div>
+                </div>
+            </router-link>
+            <div class="signature__user__right">
+                <button class="signature__user__btn">Theo dõi</button>
+            </div>
         </div>
     </div>
 </template>
@@ -28,37 +39,27 @@ export default {
 </script>
 <style lang="scss" scoped>
 .signature__wrapper {
-    padding: 30px 20px 20px 20px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    .signature__header {
-        display: flex;
-        justify-content: space-between;
-        .signature__text {
-            font-size: 16px;
-            font-weight: 700;
-            text-transform: uppercase;
-        }
-        .signature__more {
-            font-size: 12px;
+    width: 100%;
 
-        }
-    }
     .signature__user {
         margin-top: 20px;
         display: flex;
         justify-content: space-between;
+
         .signature__user__left {
             display: flex;
             gap: 10px;
+
             .signature__user__infor {
                 display: flex;
                 flex-direction: column;
                 font-size: 15px;
                 gap: 5px;
+
                 .signature__user__author {
                     font-weight: 700;
                 }
+
                 .signature__user__nickname {
                     font-size: 14px;
                     font-weight: 400;
@@ -66,13 +67,15 @@ export default {
                 }
             }
         }
+
         .signature__user__img {
             width: 40px;
             height: 40px;
             object-fit: cover;
             margin-right: 0;
             border-radius: 50%;
-        } 
+        }
+
         .signature__user__btn {
             padding: 12px;
             border-radius: 12px;
@@ -80,4 +83,4 @@ export default {
         }
     }
 }
- </style>
+</style>

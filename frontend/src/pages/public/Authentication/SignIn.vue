@@ -1,44 +1,44 @@
 <template>
-<div className="login__header">
-    <h1 className="login__title">
-        SignIn
-    </h1>
-    <p className="login__account">
-        Dont have an account?
-        <router-link to="/auth/signup" class="login__switch">
-            Sign up
-        </router-link>
-    </p>
-    <button className="login__btn">
-        <img src="../../../assets/images/google.png" alt="google" />
-        <span>Sign up with google</span>
-    </button>
-
-    <form class="login__form">
-        <div class="login__input">
-            <label for="email">Email *</label>
-            <input type="email" placeholder="Enter email..." class="login__text">
-        </div>
-        <div class="login__input">
-            <label for="password">Password *</label>
-            <input :type="showPassword ? 'text' : 'password'" placeholder="Enter password..." class="login__text">
-            <span class="login__icon" @click="togglePasswordVisibility">
-                <ion-icon :name="showPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
-            </span>
-        </div>
-        <div class="login__term">
-            <label class="login__label">
-                <input type="checkbox" />
-                <span class="login__checkmark"></span>
-            </label>
-            <p class="login__ligacy">I agree to the <span class="login__notifi">Tearms of Use</span> and have read and
-                understand the <span class="login__notifi">Privacy policy.</span> </p>
-        </div>
-        <button class="login__button">
-            Create my account
+    <div className="login__header">
+        <h1 className="login__title">
+            SignIn
+        </h1>
+        <p className="login__account">
+            Dont have an account?
+            <router-link to="/auth/signup" class="login__switch">
+                Sign up
+            </router-link>
+        </p>
+        <button className="login__btn">
+            <img src="../../../assets/images/google.png" alt="google" />
+            <span>Sign up with google</span>
         </button>
-    </form>
-</div>
+
+        <form class="login__form">
+            <div class="login__input">
+                <label for="email">Email *</label>
+                <input type="email" placeholder="Enter email..." class="login__text">
+            </div>
+            <div class="login__input">
+                <label for="password">Password *</label>
+                <input :type="showPassword ? 'text' : 'password'" placeholder="Enter password..." class="login__text">
+                <span class="login__icon" @click="togglePasswordVisibility">
+                    <ion-icon :name="showPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
+                </span>
+            </div>
+            <div class="login__term">
+                <label class="login__label">
+                    <input type="checkbox" />
+                    <span class="login__checkmark"></span>
+                </label>
+                <p class="login__ligacy">I agree to the <span class="login__notifi">Tearms of Use</span> and have read and
+                    understand the <span class="login__notifi">Privacy policy.</span> </p>
+            </div>
+            <button class="login__button">
+                Sign in
+            </button>
+        </form>
+    </div>
 </template>
 
 <script>
@@ -60,6 +60,8 @@ const togglePasswordVisibility = () => {
     background-color: var(--white-color);
     border-radius: 12px;
     padding: 32px 60px;
+    box-shadow: rgba(0, 0, 0, 0.07) 0px 1px 1px, rgba(0, 0, 0, 0.07) 0px 2px 2px, rgba(0, 0, 0, 0.07) 0px 4px 4px, rgba(0, 0, 0, 0.07) 0px 8px 8px, rgba(0, 0, 0, 0.07) 0px 16px 16px;
+
 }
 
 .login__title {
@@ -206,8 +208,10 @@ const togglePasswordVisibility = () => {
                 }
             }
         }
+
         .login__checkmark {
             background-color: transparent;
+
             &.checked {
                 background-color: var(--white-color);
             }

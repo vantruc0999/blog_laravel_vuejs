@@ -72,6 +72,8 @@ const togglePasswordVisibility = () => {
     background-color: var(--white-color);
     border-radius: 12px;
     padding: 32px 60px;
+    box-shadow: rgba(67, 71, 85, 0.27) 0px 0px 0.25em, rgba(90, 125, 188, 0.05) 0px 0.25em 1em;
+
 }
 
 .login__title {
@@ -164,7 +166,7 @@ const togglePasswordVisibility = () => {
         cursor: pointer;
     }
 
-    .login__forgot {   
+    .login__forgot {
         display: flex;
         justify-content: flex-end;
         margin-bottom: 10px;

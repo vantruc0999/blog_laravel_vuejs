@@ -10,6 +10,7 @@
 
 html {
   font-size: 62.5%;
+  
 }
 
 body {
@@ -21,6 +22,9 @@ body {
   text-rendering: optimizespeed;
   font-weight: 400;
   overflow-x: hidden;
+  cursor: default;
+  user-select: none;
+  background-color: var(--grey-color);
 }
 
 :root {
@@ -43,6 +47,7 @@ body {
   --black-color: #000;
   --white-color: #fff;
   --green-color: #1dc071;
+  --grey-color: #f5f7fa;
   --btn-color: #23bb86;
 
   // box shadown

@@ -20,10 +20,15 @@
             <hr />
             <ul class='option-list'>
                 <router-link class='option-item-link' to="/">
+                    <span class="option-icon"><ion-icon name="person-circle-outline"></ion-icon></span>
+                    <li class='option-item'>Trang cá nhân</li>
+                </router-link>
+            </ul>
+            <ul class='option-list'>
+                <router-link class='option-item-link' to="/">
                     <span class="option-icon"><ion-icon name="create-outline"></ion-icon></span>
                     <li class='option-item'>Bài viết của tôi</li>
                 </router-link>
-
             </ul>
             <ul class='option-list'>
                 <router-link class='option-item-link' to="/">
@@ -66,7 +71,7 @@ const props = defineProps({
     inset: 0 0 auto auto;
     min-width: 230px;
     margin: 0px;
-    transform: translate3d(-121px, 65.8px, 0px);
+    transform: translate3d(-121px, 80.8px, 0px);
     background: var(--white-color);
     border-radius: 10px;
     box-shadow: 0 -4px 32px rgb(0 0 0 / 20%);
@@ -97,6 +102,7 @@ const props = defineProps({
     .option-icon {
         color: var(--text-color-4);
         margin-top: 5px;
+        font-size: 22px;
     }
 
     .option-item {
