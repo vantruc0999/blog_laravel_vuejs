@@ -53,6 +53,7 @@ class PostController extends Controller
 
     public function getDetailPostBySlug($slug)
     {
+        
         $post = Post::where('slug', $slug)->firstOrFail();
         
         Post::where('id', $post->id)
@@ -66,9 +67,17 @@ class PostController extends Controller
         $post->comments = $this->getCommentInfors($post->comments);
         $post->tags = $this->getTagsInfor($post->tags);
 
-        // $tmp_date = new Carbon($post->created_at);
-        // $dt['datetime'] = $tmp_date->format('Y-m-d H:i:s');
+        $tmp_created_date = new Carbon($post->created_at);
+        $tmp_updated_date = new Carbon($post->created_at);
+        $dt['created'] = $tmp_created_date->format('Y-m-d H:i:s');
+        $dt['updated'] = $tmp_updated_date->format('Y-m-d H:i:s');
         // $post->created_at = $dt['datetime'];
+
+        $post = json_decode($post);
+        $post->created_at = $dt['created'];
+        $post->updated_at = $dt['updated'];
+        
+        // return $post;
 
         unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->likes);
 
