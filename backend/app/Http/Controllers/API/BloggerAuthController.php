@@ -8,6 +8,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class BloggerAuthController extends Controller
 {
@@ -33,17 +34,21 @@ class BloggerAuthController extends Controller
             ]);
         }
 
+        $slug = Str::slug(explode('@', $request->email)[0], '-');
+
         $blogger = Blogger::create([
             'email' => $request->email,
             'password' => bcrypt($request->password),
             'name' => $request->name,
+            'slug' => $slug
         ]);
+
 
         $token = $blogger->createToken('token_' . $blogger->name)->accessToken;
 
         return response([
             'status' => 200,
-            'message' => 'Created recruiter Successfully, Hello ' . $blogger->name,
+            'message' => 'success, Hello ' . $blogger->name,
             'token' => $token,
             'blogger' => $blogger
         ]);

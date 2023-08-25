@@ -16,9 +16,9 @@ return new class extends Migration
         Schema::create('posts', function (Blueprint $table) {
             $table->id();
             $table->string('title');
-            $table->string('slug');
-            $table->string('banner');
-            $table->longText('description');
+            $table->string('slug')->nullable();
+            $table->string('banner')->nullable();
+            $table->longText('description')->nullable();
             $table->unsignedBigInteger('category_id');
             $table->boolean('new_post')->nullable()->default(0);
             $table->boolean('highlight')->nullable();

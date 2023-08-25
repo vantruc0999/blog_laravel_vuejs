@@ -2,9 +2,15 @@
 
 namespace App\Http\Controllers\API;
 
+use App\Helpers\Helper;
 use App\Http\Controllers\Controller;
+use App\Http\Requests\AddPostRequest;
+use App\Http\Requests\PostRequest;
+use App\Http\Requests\UpdatePostRequest;
 use App\Models\Like;
 use App\Models\Post;
+use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 
 class PostController extends Controller
@@ -13,11 +19,12 @@ class PostController extends Controller
     public function getAllActivePost()
     {
         $posts = Post::where('status', 1)->get();
+        // $posts = Post::where('status', 1)->get();
 
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
             $post->blogger_name = $post->blogger->name;
-            unset($post->category_id, $post->category, $post->blogger_id, $post->blogger);
+            unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->description);
         }
 
         return response([
@@ -36,21 +43,58 @@ class PostController extends Controller
         return $comments;
     }
 
+    private function getTagsInfor($tags)
+    {
+        foreach ($tags as $item) {
+            unset($item->created_at, $item->updated_at, $item->id, $item->pivot);
+        }
+        return $tags;
+    }
+
     public function getDetailPostBySlug($slug)
     {
         $post = Post::where('slug', $slug)->firstOrFail();
+        
+        Post::where('id', $post->id)
+            ->update([
+                'view_count' => ++$post->view_count
+            ]);
 
         $post->category_name = $post->category->name;
         $post->blogger_name = $post->blogger->name;
-        // $post->tags = $post->tags;
-        
+        $post->likes_count = $post->likes->count();
         $post->comments = $this->getCommentInfors($post->comments);
+        $post->tags = $this->getTagsInfor($post->tags);
 
-        unset($post->category_id, $post->category, $post->blogger_id, $post->blogger);
+        // $tmp_date = new Carbon($post->created_at);
+        // $dt['datetime'] = $tmp_date->format('Y-m-d H:i:s');
+        // $post->created_at = $dt['datetime'];
+
+        unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->likes);
 
         return response([
             "message" => "success",
             "data" => $post
         ]);
+    }
+
+    public function store(AddPostRequest $request){
+        return $request;
+        $data = [
+            'title'=> $request->input('title'),
+            'description' => $request->input('description'),
+        ];
+
+        $post = Post::create($data);
+        
+        return $post;
+    }
+
+    public function update(UpdatePostRequest $request, $slug){
+
+    }
+
+    public function delete($slug){
+
     }
 }
