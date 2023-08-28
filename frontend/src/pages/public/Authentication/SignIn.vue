@@ -17,42 +17,80 @@
         <form class="login__form">
             <div class="login__input">
                 <label for="email">Email *</label>
-                <input type="email" placeholder="Enter email..." class="login__text">
+                <input v-model="emailValue" type="email" placeholder="Enter email..." class="login__text"
+                    @blur="validateEmail" />
+                <p class="error" v-if="emailError && !emailValue">This field must have a value</p>
             </div>
             <div class="login__input">
                 <label for="password">Password *</label>
-                <input :type="showPassword ? 'text' : 'password'" placeholder="Enter password..." class="login__text">
+                <input v-model="passwordValue" :type="showPassword ? 'text' : 'password'" placeholder="Enter password..."
+                    class="login__text" @blur="validatePassword" />
+                <p class="error" v-if="passwordError && !passwordValue">This field must have a value</p>
                 <span class="login__icon" @click="togglePasswordVisibility">
                     <ion-icon :name="showPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
                 </span>
             </div>
-            <div class="login__term">
-                <label class="login__label">
-                    <input type="checkbox" />
-                    <span class="login__checkmark"></span>
-                </label>
-                <p class="login__ligacy">I agree to the <span class="login__notifi">Tearms of Use</span> and have read and
-                    understand the <span class="login__notifi">Privacy policy.</span> </p>
-            </div>
-            <button class="login__button">
-                Sign in
-            </button>
+            <p class="login__forgot">Forgot Password?</p>
+            <button class="login__button" @click="handleSignIn">Sign in</button>
         </form>
     </div>
 </template>
 
-<script>
-import {
-    ref
-} from "vue"
+<script setup>
+import { ref } from "vue";
+import { useAuthStore } from "../../../stores/authStore";
 
-const showPassword = ref(false)
+const authStore = useAuthStore();
+const showPassword = ref(false);
+
+let dataRegister = ref({
+    email: "",
+    password: ""
+});
+
+let emailValue = ref(dataRegister.value.email);
+let passwordValue = ref(dataRegister.value.password);
+
+const emailError = ref(false);
+const passwordError = ref(false);
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+const validateEmail = () => {
+    if (!emailValue.value.trim()) {
+        emailError.value = true;
+    } else if (!emailRegex.test(emailValue.value)) {
+        emailError.value = true;
+    } else {
+        emailError.value = false;
+    }
+};
+
+const validatePassword = () => {
+    passwordError.value = !passwordValue.value.trim();
+};
+
+const handleSignIn = (e) => {
+    e.preventDefault();
+    emailError.value = !emailValue.value.trim();
+    passwordError.value = !passwordValue.value.trim();
+
+    if (emailError.value || passwordError.value || !emailRegex.test(emailValue.value)) {
+        return;
+    }
+
+    const email = emailValue.value;
+    const password = passwordValue.value;
+    const userData = {
+        email: email,
+        password: password
+    };
+    authStore.signin(userData);
+};
 
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
-}
+};
 </script>
-
 <style lang="scss" scoped>
 .login__header {
     margin: 0 auto;
@@ -128,7 +166,7 @@ const togglePasswordVisibility = () => {
         border-radius: 10px;
         font-weight: 500;
         background-color: #E7ECF3;
-        color: #B2B3BD;
+        color: var(--black-color);
         transition: all 0.2 linear;
         border: 1px solid transparent;
     }
@@ -179,6 +217,15 @@ const togglePasswordVisibility = () => {
         margin: 10px 0px;
     }
 
+    .login__forgot {
+        display: flex;
+        justify-content: flex-end;
+        margin: 20px 0px;
+        cursor: pointer;
+        color: var(--green-color);
+
+    }
+
     .login__button {
         display: flex;
         align-items: center;
@@ -217,5 +264,10 @@ const togglePasswordVisibility = () => {
             }
         }
     }
+}
+
+.error {
+    color: red;
+    font-size: 12px;
 }
 </style>

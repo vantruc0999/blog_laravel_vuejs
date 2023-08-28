@@ -1,68 +1,127 @@
 <template>
-    <div className="login__header">
-        <h1 className="login__title">
-            SignIn
-        </h1>
-        <p className="login__account">
+    <div class="login__header">
+        <h1 class="login__title">SignIn</h1>
+        <p class="login__account">
             Already have an account?
-            <router-link to="/auth/signin" class="login__switch">
-                Sign in
-            </router-link>
-            <!-- <route-l to="/sign-in" className="font-medium underline text-primary">
-            </route-l> -->
+            <router-link to="/auth/signin" class="login__switch">Sign in</router-link>
         </p>
-        <button className="login__btn">
+        <button class="login__btn">
             <img src="../../../assets/images/google.png" alt="google" />
             <span>Sign up with google</span>
         </button>
-        <p className="login__option">
-            Or sign up with email
-        </p>
+        <p class="login__option">Or sign up with email</p>
 
         <form class="login__form">
             <div class="login__input">
-                <label for="email">Full Name *</label>
-                <input type="email" placeholder="Enter email..." class="login__text">
+                <label for="name">Full Name *</label>
+                <input v-model="nameValue" type="text" placeholder="Enter Your Name..." class="login__text"
+                    @blur="validateName" />
+                <p class="error" v-if="nameError && !nameValue">This field must have a value</p>
             </div>
             <div class="login__input">
                 <label for="email">Email *</label>
-                <input type="email" placeholder="Enter email..." class="login__text">
+                <input v-model="emailValue" type="email" placeholder="Enter email..." class="login__text"
+                    @blur="validateEmail" />
+                <p class="error" v-if="emailError && !emailValue">Please enter a valid email address</p>
             </div>
             <div class="login__input">
                 <label for="password">Password *</label>
-                <input :type="showPassword ? 'text' : 'password'" placeholder="Enter password..." class="login__text">
+                <input v-model="passwordValue" :type="showPassword ? 'text' : 'password'" placeholder="Enter password..."
+                    class="login__text" @blur="validatePassword" />
+                <p class="error" v-if="passwordError && !passwordValue">This field must have a value</p>
                 <span class="login__icon" @click="togglePasswordVisibility">
                     <ion-icon :name="showPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
                 </span>
             </div>
-            <p class="login__forgot">Forgot Password?</p>
-            <button class="login__button">
-                Create my account
-            </button>
+            <div class="login__term">
+                <label class="login__label">
+                    <input type="checkbox" />
+                    <span class="login__checkmark"></span>
+                </label>
+                <p class="login__ligacy">
+                    I agree to the <span class="login__notifi">Terms of Use</span> and have read and understand the
+                    <span class="login__notifi">Privacy policy.</span>
+                </p>
+            </div>
+            <button class="login__button" @click="handleSignUp">Create my account</button>
         </form>
     </div>
 </template>
 
 <script setup>
-import {
-    ref
-} from "vue"
+import { ref } from "vue";
+import { useAuthStore } from "../../../stores/authStore";
 
-// to import everything from yup
-// import * as yup from "yup";
-// const loginFormSchema = object().shape({
-//     email: string().required().email(),
-//     password: string().required(),
-// });
+const authStore = useAuthStore();
+const showPassword = ref(false);
 
+let dataRegister = ref({
+    name: "",
+    email: "",
+    password: ""
+});
 
-const showPassword = ref(false)
+let nameValue = ref(dataRegister.value.name);
+let emailValue = ref(dataRegister.value.email);
+let passwordValue = ref(dataRegister.value.password);
 
+const nameError = ref(false);
+const emailError = ref(false);
+const passwordError = ref(false);
 
+const emailRegex = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|.(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+
+const validateName = () => {
+    if (!nameValue.value.trim()) {
+        nameError.value = true;
+    } else {
+        nameError.value = false;
+    }
+};
+
+const validateEmail = () => {
+    if (!emailValue.value.trim()) {
+        emailError.value = true;
+    } else if (!emailRegex.test(emailValue.value)) {
+        emailError.value = true;
+    } else {
+        emailError.value = false;
+    }
+};
+
+const validatePassword = () => {
+    if (!passwordValue.value.trim()) {
+        passwordError.value = true;
+    } else {
+        passwordError.value = false;
+    }
+};
+
+const handleSignUp = (e) => {
+    e.preventDefault();
+    nameError.value = !nameValue.value.trim();
+    emailError.value = !emailValue.value.trim() || !emailRegex.test(emailValue.value);
+    passwordError.value = !passwordValue.value.trim();
+
+    if (!nameError.value && !emailError.value && !passwordError.value) {
+        const name = nameValue.value;
+        const email = emailValue.value;
+        const password = passwordValue.value;
+        const userData = {
+            name: name,
+            email: email,
+            password: password
+        };
+        authStore.signup(userData);
+        nameValue.value = "";
+        emailValue.value = "";
+        passwordValue.value = "";
+    }
+};
 
 const togglePasswordVisibility = () => {
     showPassword.value = !showPassword.value;
-}
+};
 </script>
 
 <style lang="scss" scoped>
@@ -114,7 +173,6 @@ const togglePasswordVisibility = () => {
     cursor: pointer;
 }
 
-// mb-4 text-xs font-normal text-center lg:text-sm lg:mb-8 text-text2
 .login__option {
     display: flex;
     justify-content: center;
@@ -141,7 +199,7 @@ const togglePasswordVisibility = () => {
         border-radius: 10px;
         font-weight: 500;
         background-color: #E7ECF3;
-        color: #B2B3BD;
+        color: #373739;
         transition: all 0.2 linear;
         border: 1px solid transparent;
     }
@@ -152,11 +210,12 @@ const togglePasswordVisibility = () => {
     }
 
     .login__text::-webkit-input-placeholder {
-        color: #84878b;
+        color: #4a4b4d;
     }
 
     .login__text::-moz-input-placeholder {
-        color: #84878b;
+        color: #4a4b4d;
+
     }
 
     .login__icon {
@@ -164,6 +223,32 @@ const togglePasswordVisibility = () => {
         top: 50px;
         right: 25px;
         cursor: pointer;
+    }
+
+    .login__term {
+        display: flex;
+        column-gap: 20px;
+        align-items: center;
+
+        .login__check {
+            background-color: var(--green-color);
+        }
+
+        .login__ligacy {
+            flex: 1 1 0%;
+            color: #4B5264;
+            font-size: 14px;
+            margin-bottom: 10px;
+            line-height: 0;
+        }
+
+    }
+
+    .login__notifi {
+        display: inline-block;
+        color: #6F49FD;
+        text-decoration: underline;
+        margin: 10px 0px;
     }
 
     .login__forgot {
@@ -200,5 +285,10 @@ const togglePasswordVisibility = () => {
             opacity: .9;
         }
     }
+}
+
+.error {
+    color: red;
+    font-size: 12px;
 }
 </style>

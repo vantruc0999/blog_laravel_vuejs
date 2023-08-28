@@ -10,11 +10,17 @@
             <a-tab-pane key="3" tab="Đánh giá cao">
                 <ForYouPage />
             </a-tab-pane>
+
         </a-tabs>
+        <div class="pagination">
+            <PageChange />
+        </div>
     </div>
 </template>
 <script setup>
 import ForYouPage from "./PageContent/foryoupage.vue"
+import PageChange from "../../../../components/PageChange.vue"
+
 import { ref } from 'vue';
 const activeKey = ref('1');
 </script>

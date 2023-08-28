@@ -20,7 +20,7 @@
                 </ul>
             </div>
             <!-- <div class="header__right"> -->
-            <div class="header__right" v-if="isAuth">
+            <div class="header__right" v-if="!isAuth">
                 <div class="header__search">
                     <input type="text" class="search__input" placeholder="Search post..." />
                     <span class="search__icon">
@@ -28,11 +28,9 @@
                     </span>
                 </div>
                 <router-link to="/auth/signup" class="header__btn--signup">
-                    <!-- <button >Đăng nhập</button> -->
                     Đăng ký
                 </router-link>
                 <router-link to="/auth/signin" class="header__btn">
-                    <!-- <button >Đăng nhập</button> -->
                     Đăng nhập
                 </router-link>
             </div>
@@ -50,7 +48,8 @@
                         bài</button>
                 </router-link>
                 <div class="header__avatar" @click="handleOpenOptions">
-                    <img src="../assets/images/bin.jpg" alt="">
+                    <img src={userData.value.profile_image} alt="" v-if="userData.profile_image">
+                    <img src="../assets/images/avatar-default.png" alt="" v-else>
                 </div>
                 <OptionUser :isOpen="isOpen" />
             </div>
@@ -69,7 +68,16 @@ import {
     ref
 } from 'vue';
 import OptionUser from "../components/OptionUser.vue"
-const isAuth = ref(false)
+import { useAuthStore } from '../stores/authStore';
+
+const authStore = useAuthStore()
+
+const isAuth = ref(localStorage.getItem("isLogin"));
+
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+console.log("🚀 ~ file: Header.vue:76 ~ userData:", userData.value)
+
+console.log(authStore.user);
 let isOpen = ref(false);
 
 const handleOpenOptions = () => {
@@ -80,7 +88,8 @@ const handleOpenOptions = () => {
 
 <style lang="scss" scoped>
 .header__container {
-    padding: 10px 122px;
+    height: 80px;
+    padding: 0px 122px;
     position: fixed;
     top: 0;
     right: 0;
@@ -93,6 +102,7 @@ const handleOpenOptions = () => {
 }
 
 .header__top {
+    margin-top: 5px;
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -109,6 +119,7 @@ const handleOpenOptions = () => {
     gap: 20px;
     margin-left: 10px;
     font-size: 22px;
+    margin-top: 10px;
 }
 
 .header__item {
@@ -122,7 +133,7 @@ const handleOpenOptions = () => {
     max-width: 70px;
     border-right: 1px solid var(--primary-color);
     padding-right: 20px;
-
+    height: 50px;
 }
 
 .header__right {

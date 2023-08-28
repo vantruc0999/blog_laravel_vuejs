@@ -1,6 +1,6 @@
 <template >
     <router-link to="/profile" class="detail__author">
-        <img src="../assets/images/bin.jpg" alt="">
+        <img src="../assets/images/avatar-default.png" alt="">
         <div class="detail__infor">
             <h2 class="detail__name">Bin zét</h2>
             <p class="detail__desc">Gastronomy atmosphere set aside. Slice butternut cooking home. Delicious romantic
