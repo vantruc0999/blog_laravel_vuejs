@@ -84,7 +84,7 @@ class PostResource extends Resource
                 TextColumn::make('blogger.name')
                     ->searchable()
                     ->sortable(),
-                // TextColumn::make('status'),
+                TextColumn::make('slug')->limit(20),
                 // TextColumn::make('new_post'),
                 // TextColumn::make('highlight'),
                 TextColumn::make('created_at'),

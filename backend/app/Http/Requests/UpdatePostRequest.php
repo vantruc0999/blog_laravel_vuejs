@@ -3,6 +3,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Auth;
 
 class UpdatePostRequest extends FormRequest
 {
@@ -13,7 +14,7 @@ class UpdatePostRequest extends FormRequest
      */
     public function authorize()
     {
-        return false;
+        return true;
     }
 
     /**
@@ -25,6 +26,10 @@ class UpdatePostRequest extends FormRequest
     {
         return [
             //
+            // 'title' => 'required|max:255',
+            // 'description' => 'required',
+            // 'category_id' => 'required',
+            // 'tags' => 'required',
         ];
     }
 }
