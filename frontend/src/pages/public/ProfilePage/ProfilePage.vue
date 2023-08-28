@@ -4,7 +4,7 @@
             <img src="https://images.unsplash.com/photo-1692685934729-ade81906226e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
                 alt="" class="background">
             <div class="user__avatar">
-                <img src="../../../assets/images/bin.jpg" class="avatar__img" alt="" />
+                <img src="../../../assets/images/avatar-default.png" class="avatar__img" alt="" />
             </div>
             <router-link to="/" class="profile__logo">
                 <img src="../../../assets/images/logo-small.png" class="profile__logo__img" />

@@ -13,23 +13,18 @@
 
             </div>
             <div class='header-right'>
-                <div class='user-name'>Dong</div>
+                <div class='user-name'>{{ userData?.name }}</div>
             </div>
         </div>
         <ul class='option'>
             <hr />
             <ul class='option-list'>
-                <router-link class='option-item-link' to="/">
+                <router-link class='option-item-link' to="/profile">
                     <span class="option-icon"><ion-icon name="person-circle-outline"></ion-icon></span>
                     <li class='option-item'>Trang cá nhân</li>
                 </router-link>
             </ul>
-            <ul class='option-list'>
-                <router-link class='option-item-link' to="/">
-                    <span class="option-icon"><ion-icon name="create-outline"></ion-icon></span>
-                    <li class='option-item'>Bài viết của tôi</li>
-                </router-link>
-            </ul>
+
             <ul class='option-list'>
                 <router-link class='option-item-link' to="/">
                     <span class="option-icon"><ion-icon name="bookmark-outline"></ion-icon></span>
@@ -45,21 +40,30 @@
                 </router-link>
                 <hr />
 
-                <router-link class='option-item-link' to="/auth/signin">
+                <span class='option-item-link' @click="handleLogout">
                     <span class="option-icon"><ion-icon name="log-out-outline"></ion-icon></span>
                     <li class='option-item'>Đăng xuất</li>
-                </router-link>
+                </span>
             </ul>
         </ul>
     </div>
 </template>
 
 <script setup>
+import { ref } from "vue"
 import { defineProps } from 'vue';
+import { useAuthStore } from '../stores/authStore';
 
+const authStore = useAuthStore()
+
+const userData = ref(JSON.parse(localStorage.getItem("user")));
 const props = defineProps({
     isOpen: Boolean
 });
+
+const handleLogout = () => {
+    authStore.logout()
+}
 
 </script>
 
