@@ -3,7 +3,7 @@
         <div class="header__top">
             <div class="header__left">
                 <router-link to="/">
-                    <img src="../assets/images/logo-small.png" class="header__logo" />
+                    <img src="../assets/images/logo-monkey.png" class="header__logo" />
                 </router-link>
                 <ul class="header__menu">
                     <a href="https://www.facebook.com/profile.php?id=100092331052158">
@@ -36,7 +36,6 @@
             </div>
             <div class="header__user" v-else>
                 <div class="header__search">
-
                     <input type="text" class="search__input" placeholder="Search post..." />
                     <span class="search__icon">
                         <ion-icon name="search-outline"></ion-icon>
@@ -130,10 +129,10 @@ const handleOpenOptions = () => {
 
 .header__logo {
     display: block;
-    max-width: 70px;
+    max-width: 80%;
     border-right: 1px solid var(--primary-color);
     padding-right: 20px;
-    height: 50px;
+    height: 40px;
 }
 
 .header__right {

@@ -37,6 +37,7 @@
                 </div>
             </div>
             <button class="account__password">Đổi mật khẩu</button>
+            <!-- <ChangePasssword /> -->
         </div>
         <div class="account__controller">
             <button class="account__btn">Hủy</button>
@@ -47,6 +48,7 @@
 
 <script setup>
 import { ref } from 'vue';
+// import ChangePasssword from "../../../pages/private/SettingPage/ChangePassword.vue"
 
 const value1 = ref();
 const valueChecked = ref()

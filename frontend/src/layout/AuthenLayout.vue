@@ -5,7 +5,6 @@
             <img src="../assets/images/logo-large.png" alt="plantshop" class="container__logo" />
         </router-link>
         <router-view></router-view>
-
     </div>
 </template>
 
