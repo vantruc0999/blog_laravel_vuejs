@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\EditBloggerProfileRequest;
 use App\Models\Blogger;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -34,7 +36,16 @@ class BloggerProfileController extends Controller
 
     public function getMyProfileInfor()
     {
-        $blogger = Auth::user();
+        $blogger = Auth::user() ?? "";
+        
+        $tmp_created_date = new Carbon($blogger->created_at);
+        $dt['created'] = $tmp_created_date->format('Y-m-d H:i:s');
+        
+        $blogger = json_decode($blogger);
+        
+        $blogger->date_joined = $dt['created'];
+        
+        unset($blogger->created_at,  $blogger->updated_at);
 
         return response([
             'message' => 'sucecss',
@@ -42,7 +53,8 @@ class BloggerProfileController extends Controller
         ]);
     }
 
-    public function editBloggerProfile()
+    public function updateBloggerProfile(EditBloggerProfileRequest $request)
     {
+        
     }
 }

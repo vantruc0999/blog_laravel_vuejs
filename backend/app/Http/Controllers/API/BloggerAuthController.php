@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Blogger;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -12,10 +13,6 @@ use Illuminate\Support\Str;
 
 class BloggerAuthController extends Controller
 {
-    //
-    public function getInfor(){
-        return Auth::user();
-    }
 
     public function register(Request $request)
     {
@@ -43,7 +40,6 @@ class BloggerAuthController extends Controller
             'slug' => $slug
         ]);
 
-
         $token = $blogger->createToken('token_' . $blogger->name)->accessToken;
 
         return response([
@@ -65,14 +61,19 @@ class BloggerAuthController extends Controller
 
         if ($blogger && Hash::check($request->password, $blogger->password)) {
 
-            $token =  $blogger->createToken('token_' . $blogger->name)->accessToken;
+            $token =  $blogger->createToken('token_' . $blogger->name);
+            $access_token =  $token->accessToken;
+            // $refresh_token =  $blogger->createToken('token_' . $blogger->name)->refreshToken;
 
-            unset($blogger['password'], $blogger['created_at'], $blogger['updated_at']);
+            // unset($blogger['password'], $blogger['created_at'], $blogger['updated_at']);
+            $blogger->makeHidden(['password', 'created_at','updated_at']);
 
             return response()->json([
                 'status' => 200,
                 'message' => 'Login successfully, Hello ' . $blogger->name,
-                'token' => $token,
+                'access_token' => $access_token,
+                'token_type' => 'Bearer',
+                // 'refresh_token' => $refresh_token,
                 'blogger_infor' => $blogger
             ]);
         } else {
