@@ -7,12 +7,30 @@
                 <img src="../../../assets/images/avatar-default.png" class="avatar__img" alt="" />
             </div>
             <router-link to="/" class="profile__logo">
-                <img src="../../../assets/images/logo-small.png" class="profile__logo__img" />
-                <span class="profile__logo__title">Money Blog</span>
+                <img src="../../../assets/images/logo-monkey-white.png" class="profile__logo__img" />
             </router-link>
-            <div class="profile__authen">
+            <div class="profile__authen" v-if="isAuth">
                 <button class="profile__authen__sub">Đăng ký</button>
                 <button class="profile__authen__btn">Đăng nhập</button>
+            </div>
+            <div class="header__user" v-else>
+                <div class="header__search">
+                    <input type="text" class="search__input" placeholder="Search post..." />
+                    <span class="search__icon">
+                        <ion-icon name="search-outline"></ion-icon>
+                    </span>
+                </div>
+                <span class="header__notifi"><ion-icon name="notifications-outline"></ion-icon></span>
+                <router-link to="/blog-post">
+                    <button class="header__write__btn"><img src="../../../assets/images/pen.png"
+                            class="header__write__pen">Viết
+                        bài</button>
+                </router-link>
+                <div class="header__avatar" @click="handleOpenOptions">
+                    <!-- <img src={userData.value.profile_image} alt="" v-if="userData.profile_image"> -->
+                    <img src="../../../assets/images/avatar-default.png" alt="">
+                </div>
+                <OptionUser :isOpen="isOpen" />
             </div>
         </div>
     </div>
@@ -88,11 +106,18 @@
 </template>
 
 <script setup>
-import { watchEffect } from "vue"
+import { ref, watchEffect } from "vue"
 import Footer from "../../../components/Footer.vue"
 import DropDown from "../../../components/DropDown.vue"
 import CardNew from "../../../components/CardNew.vue"
+import OptionUser from "../../../components/OptionUser.vue"
 
+const isAuth = ref(false)
+let isOpen = ref(false);
+
+const handleOpenOptions = () => {
+    isOpen.value = !isOpen.value;
+};
 const filterData = [{
     title: "Theo ngày gần nhất",
     link: "#"
@@ -118,6 +143,82 @@ watchEffect(() => {
 
     .profile__heading {
         position: relative;
+
+        .header__user {
+            position: absolute;
+            display: flex;
+            gap: 10px;
+            top: 30px;
+            right: 180px;
+            align-items: center;
+
+            .header__avatar {
+                width: 70px;
+                height: 40px;
+
+                img {
+                    cursor: pointer;
+                    width: 100%;
+                    border-radius: 50%;
+                    object-fit: cover;
+                    height: 100%;
+                }
+            }
+
+            .header__right {
+                display: flex;
+                flex: 1;
+            }
+
+            .header__search {
+                margin-left: auto;
+                padding: 13px;
+                border: 1px solid var(--border-color);
+                border-radius: 8px;
+                width: 100%;
+                max-width: 320px;
+                background-color: var(--white-color);
+                position: relative;
+            }
+
+            .search__input {
+                width: 100%;
+                padding-right: 35px;
+            }
+
+            .search__icon {
+                position: absolute;
+                top: 50%;
+                transform: translateY(-50%);
+                right: 25px;
+                cursor: pointer;
+            }
+
+            .header__write__btn {
+                border-radius: 16px;
+                background-color: var(--white-color);
+                border: 1px solid var(--border-color);
+                width: 120px;
+                padding: 10px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                .header__write__pen {
+
+                    width: 20px;
+                    height: 20px;
+                }
+            }
+
+            .header__notifi {
+                display: inline-block;
+                font-size: 23px;
+                margin-top: 10px;
+                cursor: pointer;
+            }
+
+        }
     }
 
     .profile__logo {
@@ -129,10 +230,9 @@ watchEffect(() => {
         top: 10px;
         left: 200px;
 
-        .profile__logo__title {
-            color: var(--secondary-color);
-            font-family: 'Quicksand', sans-serif;
-            font-size: 18px;
+        .profile__logo__img {
+            width: 60%;
+            height: 60px;
         }
     }
 

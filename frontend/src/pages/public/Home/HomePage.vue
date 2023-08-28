@@ -1,4 +1,5 @@
 <template>
+    <!-- <Loading /> -->
     <div class="home__container">
         <div class="home__banner">
             <div class="home__content">
@@ -86,6 +87,7 @@ import CardFeature from "../../../components/CardFeature.vue"
 import CardNew from "../../../components/CardNew.vue"
 import RelatedPage from "./RelatedPage/RelatedPage.vue";
 import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import Loading from "../../../components/Loading.vue"
 
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue';

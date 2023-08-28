@@ -2,7 +2,6 @@
     <div class="editor__container">
         <router-link to="/">
             <img src="../../../assets/images/logo-small.png" alt="">
-
         </router-link>
         <div class="editor__wrapper">
             <div class="editor__content">
@@ -12,7 +11,7 @@
             </div>
             <div class="editor__tool">
                 <a-select v-model="selectedCategory" placeholder="Thể loại">
-                    <a-select-option v-for="item in filterCategory" :key="item.name" :value="item.name">
+                    <a-select-option v-for="item in categoryData" :key="item.name" :value="item.name">
                         {{ item.name }}
                     </a-select-option>
                 </a-select>
@@ -23,7 +22,8 @@
                 </div>
                 <div class="editor__controller">
                     <div class="editor__btn">Hủy</div>
-                    <div class="editor__btn editor__btn--submit">Đăng bài</div>
+                    <div class="editor__btn editor__btn--submit" @click="handleSubmit" :disabled="!isFormValid">Đăng bài
+                    </div>
                 </div>
             </div>
         </div>
@@ -34,20 +34,33 @@
 import { ref, computed } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CKEditor from '@ckeditor/ckeditor5-vue';
-import { toRefs } from 'vue';
 import { Select } from 'ant-design-vue';
 
 const temporaryImage = ref('');
-const { Option } = Select;
-
 const categoryData = [
-    { name: 'Văn học' },
-    { name: 'IT' },
-    { name: 'Công nghệ' },
-    { name: 'Khoa học' },
-    { name: 'Xã hội' },
-    { name: 'Bàn luận' }
+    { id: 1, name: 'Văn học' },
+    { id: 2, name: 'IT' },
+    { id: 3, name: 'Công nghệ' },
+    { id: 4, name: 'Khoa học' },
+    { id: 5, name: 'Xã hội' },
+    { id: 6, name: 'Bàn luận' }
 ];
+
+const selectedCategory = ref('');
+const editor = ref(ClassicEditor);
+const editorData = ref('');
+const editorConfig = ref({
+    placeholder: 'Nhập nội dung...'
+});
+
+const title = ref('');
+const textarea = ref('');
+const height = ref(35);
+
+const handleResize = () => {
+    height.value = textarea.value.scrollHeight;
+    // console.log(textarea.value.scrollHeight);
+};
 
 const handleImageChange = (event) => {
     const file = event.target.files[0];
@@ -60,26 +73,26 @@ const handleImageChange = (event) => {
     }
 };
 
-const editor = ref(ClassicEditor);
-const editorData = ref('');
-const editorConfig = ref({
-    placeholder: 'Nhập nội dung...',
-});
 
-let title = ref('');
-const textarea = ref('');
-const height = ref(35);
-const handleResize = () => {
-    height.value = textarea.value.scrollHeight;
-    console.log(textarea.value.scrollHeight);
+
+const handleSubmit = () => {
+    // if (!isFormValid.value) {
+    //     console.log('Vui lòng điền đầy đủ thông tin.');
+    //     return;
+    // }
+
+    const submittedTitle = title.value;
+    const submittedEditorData = editorData.value;
+    const submittedSelectedCategory = selectedCategory.value; // Lấy đối tượng được chọn
+
+    // Kiểm tra submittedSelectedCategory có tồn tại và lấy giá trị name
+    const selectedCategoryName = submittedSelectedCategory ? submittedSelectedCategory.name : '';
+
+    // Gửi các giá trị đi theo yêu cầu của bạn
+    console.log('Title:', submittedTitle);
+    console.log('Editor Data:', submittedEditorData);
+    console.log('Selected Category:', submittedSelectedCategory);
 };
-
-const filterCategory = computed(() => {
-    return categoryData.map((item) => {
-        return item;
-    });
-});
-
 </script>
 
 <style lang="scss" scoped>
