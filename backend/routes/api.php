@@ -24,6 +24,7 @@ use Illuminate\Support\Facades\Route;
 
 Route::post('/register', [BloggerAuthController::class, 'register']);
 Route::post('/login', [BloggerAuthController::class, 'login']);
+Route::get('/tags/get-all-tags', [PostController::class, 'getAllTags']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
@@ -39,11 +40,13 @@ Route::middleware(['auth:blogger'])->group(function () {
 
     Route::prefix('/blogger')->group(function () {
         Route::get('/me/profile', [BloggerProfileController::class, 'getMyProfileInfor']);
+        Route::get('/me/update-profile', [BloggerProfileController::class, 'updateBloggerProfile']);
     });
     
     Route::prefix('/posts')->group(function () {
         Route::post('/create-post', [PostController::class, 'store']);
+        Route::post('/update-post/{slug}', [PostController::class, 'update']);
+        Route::delete('/delete-post/{slug}', [PostController::class, 'delete']);
     });
-
     
 });

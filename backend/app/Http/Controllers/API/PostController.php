@@ -9,9 +9,12 @@ use App\Http\Requests\PostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Like;
 use App\Models\Post;
+use App\Models\Tag;
 use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Str;
 
 class PostController extends Controller
 {
@@ -19,7 +22,6 @@ class PostController extends Controller
     public function getAllActivePost()
     {
         $posts = Post::where('status', 1)->get();
-        // $posts = Post::where('status', 1)->get();
 
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
@@ -49,71 +51,214 @@ class PostController extends Controller
             unset($item->created_at, $item->updated_at, $item->id, $item->pivot);
         }
         return $tags;
-        // asd
     }
 
-    // private function getTagsInfor($tags)
-    // {
-    //     foreach ($tags as $item) {
-    //         unset($item->created_at, $item->updated_at, $item->id, $item->pivot);
-    //     }
-    //     return $tags;
-    // }
-
-
-    public function getDetailPostBySlug($slug)
+    public function getAllTags()
     {
-        
-        $post = Post::where('slug', $slug)->firstOrFail();
-        
-        Post::where('id', $post->id)
-            ->update([
-                'view_count' => ++$post->view_count
-            ]);
-
-        $post->category_name = $post->category->name;
-        $post->blogger_name = $post->blogger->name;
-        $post->likes_count = $post->likes->count();
-        $post->comments = $this->getCommentInfors($post->comments);
-        $post->tags = $this->getTagsInfor($post->tags);
-
-        $tmp_created_date = new Carbon($post->created_at);
-        $tmp_updated_date = new Carbon($post->created_at);
-        $dt['created'] = $tmp_created_date->format('Y-m-d H:i:s');
-        $dt['updated'] = $tmp_updated_date->format('Y-m-d H:i:s');
-        // $post->created_at = $dt['datetime'];
-
-        $post = json_decode($post);
-        $post->created_at = $dt['created'];
-        $post->updated_at = $dt['updated'];
-        
-        // return $post;
-
-        unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->likes);
-
+        $tags = Tag::all();
         return response([
             "message" => "success",
-            "data" => $post
+            "data" => $tags
         ]);
     }
 
-    public function store(AddPostRequest $request){
-        return $request;
-        $data = [
-            'title'=> $request->input('title'),
-            'description' => $request->input('description'),
-        ];
+    private function checkActivePost($slug)
+    {
+        $post = Post::where(
+            [
+                'slug' => $slug,
+                'status' => 1,
+            ]
+        )->first();
 
-        $post = Post::create($data);
-        //h
+        if (!$post) {
+            return false;
+        }
+
         return $post;
     }
 
-    public function update(UpdatePostRequest $request, $slug){
+    public function getDetailPostBySlug($slug)
+    {
+        $post = $this->checkActivePost($slug);
 
+        if (!$post) {
+            return response()->json([
+                'message' => 'No post available',
+            ], 500);
+        }
+
+        try {
+            $post->update([
+                'view_count' => ++$post->view_count
+            ]);
+
+            $post->category_name = $post->category->name;
+            $post->blogger_name = $post->blogger->name;
+            $post->likes_count = $post->likes->count();
+            $post->comments = $this->getCommentInfors($post->comments);
+            $post->tags = $this->getTagsInfor($post->tags);
+
+            $tmp_created_date = new Carbon($post->created_at);
+            $tmp_updated_date = new Carbon($post->created_at);
+            $dt['created'] = $tmp_created_date->format('Y-m-d H:i:s');
+            $dt['updated'] = $tmp_updated_date->format('Y-m-d H:i:s');
+
+            $post = json_decode($post);
+            $post->created_at = $dt['created'];
+            $post->updated_at = $dt['updated'];
+
+            unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->likes);
+
+            return response([
+                "message" => "success",
+                "data" => $post
+            ]);
+        } catch (\Exception $err) {
+
+            return response()->json([
+                'message' => 'An error occurred while getting post',
+                'error' => $err->getMessage()
+            ], 500);
+        }
     }
 
-    public function delete($slug){
+    public function store(AddPostRequest $request)
+    {
+        // return $request;
+        try {
+            $slug = Str::slug($request->title);
 
+            if ($request->has('banner')) {
+                $image = $request->banner;
+                $name = time() . '-' . $image->getClientOriginalName();
+                $path = public_path('images');
+                $image->move($path, $name);
+                $newPath = 'images/' . $name;
+            }
+
+            $data = [
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'banner' => $newPath ?? 'images/default.jpg',
+                'blogger_id' => Auth::user()['id'],
+                'category_id' => $request->input('category_id'),
+                'new_post' => 0,
+                'highlight' => 0,
+                'view_count' => 0,
+                'status' => 0,
+            ];
+
+            $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+
+            $post = Post::create($data);
+
+            $post->tags()->sync($tags);
+
+            $post->update(
+                [
+                    'slug' => Str::slug($slug) . "-" . time() . $post->id
+                ]
+            );
+
+            $post->slug = $post->slug;
+
+            return response()->json([
+                'message' => 'Post created successfully',
+                'post' => $post
+            ], 201);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while creating post',
+                'error' => $err->getMessage()
+            ], 500);
+        }
+    }
+
+    public function update(UpdatePostRequest $request, $slug)
+    {
+        try {
+            $post = $this->checkActivePost($slug);
+
+            if (!$post) {
+                return response()->json([
+                    'message' => 'No post available',
+                ], 500);
+            }
+
+            if (Auth::user()['id'] !== $post->blogger_id) {
+                return response()->json([
+                    'message' => 'You do not have permission to edit this post',
+                ], 500);
+            }
+
+            $data = [
+                'title' => $request->input('title'),
+                'description' => $request->input('description'),
+                'category_id' => $request->input('category_id'),
+            ];
+
+            if ($request->has('banner')) {
+                $image = $request->banner;
+                $name = time() . '-' . $image->getClientOriginalName();
+                $path = public_path('images');
+                $image->move($path, $name);
+                $newPath = 'images/' . $name;
+                $data['banner'] = $newPath;
+            }
+
+            if ($request->input('title')) {
+                $slug = Str::slug($request->title);
+                $data['slug'] = Str::slug($slug) . "-" . time() . $post->id;
+            }
+
+            $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+
+            $post->tags()->sync($tags);
+
+            $post->update($data);
+
+            return response()->json([
+                'message' => 'Post updated successfully',
+                'post' => $post
+            ], 201);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while updating post',
+                'error' => $err->getMessage()
+            ], 500);
+        }
+    }
+
+    public function delete($slug)
+    {
+        try {
+            $post = $this->checkActivePost($slug);
+
+            if (!$post) {
+                return response()->json([
+                    'message' => 'No post available',
+                ], 500);
+            }
+    
+            if (Auth::user()['id'] !== $post->blogger_id) {
+                return response()->json([
+                    'message' => 'You do not have permission to delete this post',
+                ], 500);
+            }
+    
+            $post->delete();
+    
+            return response()->json([
+                'message' => 'Post deleted successfully',
+                'post' => $post
+            ], 201);
+        }catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while deleting post',
+                'error' => $err->getMessage()
+            ], 500);
+        }
+       
     }
 }
