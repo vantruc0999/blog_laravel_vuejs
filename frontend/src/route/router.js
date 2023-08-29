@@ -38,6 +38,11 @@
           component: AuthorPage,
         },
         {
+          path: "/blog-post",
+          name: "postblog",
+          component: PostBlog,
+        },
+        {
           path: "/",
           name: "related",
           component: RelatedPost,
@@ -90,11 +95,7 @@
       name: "profile",
       component: ProfilePage,
     },
-    {
-      path: "/blog-post",
-      name: "postblog",
-      component: PostBlog,
-    },
+    
     // {
     //   path: "/:pathMatch(.*)*",
     //   name: "Error",

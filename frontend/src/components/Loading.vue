@@ -9,7 +9,7 @@
         <div></div>
         <div></div>
         <div></div> -->
-            <img src="../assets/images/loading.png" />
+            <img src="../assets/images/loading.gif" />
         </div>
     </div>
 </template>
@@ -37,9 +37,6 @@ export default {
 
     img {
         margin: 0 auto;
-        width: 20%;
-        z-index: 2;
-        padding-left: 30px;
     }
 
     // .lds-roller {
@@ -61,10 +58,10 @@ export default {
     //     height: 80px;
     // }
 
-    .lds-roller img {
-        animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-        transform-origin: 40px 40px;
-    }
+    // .lds-roller img {
+    //     animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+    //     transform-origin: 40px 40px;
+    // }
 
     // .lds-roller div:after {
     //     content: ' ';

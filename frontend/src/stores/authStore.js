@@ -34,10 +34,10 @@ export const useAuthStore = defineStore("authStore", {
       try {
         this.isLoading = true;
         const response = await AuthService.signin(userData);
-        console.log(response.data.blogger_infor);
+        // console.log(response.data.access_token);
         this.user = response.data.blogger_infor;
         // Lưu token vào LocalStorage
-        localStorage.setItem("token", response.data.token);
+        localStorage.setItem("token", response.data.access_token);
         localStorage.setItem("user", JSON.stringify(response.data.blogger_infor));
         localStorage.setItem("isLogin", "true");
         router.push('/'); // Sử dụng router từ Vue Router để chuyển hướng

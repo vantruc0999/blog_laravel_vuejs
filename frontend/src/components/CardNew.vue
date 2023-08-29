@@ -36,6 +36,10 @@
 
                         <div class="blog__comment">
                             <span class="blog__comment--icon">
+                                <ion-icon name="eye-outline"></ion-icon>
+                            </span>
+                            <span class="blog__amount">1,2k lượt xem</span>
+                            <span class="blog__comment--icon">
                                 <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
                             </span>
                             <span class="blog__amount">7</span>
@@ -65,11 +69,7 @@
                 <div class="blog__title">
                     Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
                 </div>
-                <div class="blog__content">
-                    Đây là bộ phim mà mình đã trông Đây là bộ phim mà mình đã trông ngóng suốt gần một năm qua, với ba điều
-                    cuốn
-                    hút nhất: Tâm trí con
-                </div>
+
 
                 <div class="blog__bottom">
                     <div class="blog__user">
@@ -82,9 +82,9 @@
 
                     <div class="blog__comment">
                         <span class="blog__comment--icon">
-                            <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                            <ion-icon name="eye-outline"></ion-icon>
                         </span>
-                        <span class="blog__amount">7</span>
+                        <span class="blog__amount">1,2k lượt xem</span>
                     </div>
                 </div>
             </div>
@@ -173,9 +173,11 @@ const props = defineProps({
     display: flex;
     align-items: center;
     justify-content: space-between;
+    margin-bottom: 10px;
 }
 
 .blog__image {
+
     img {
         width: 100%;
         border-radius: 10px;
@@ -204,27 +206,20 @@ const props = defineProps({
 }
 
 .blog__title {
-    margin-top: 10px;
+    margin-top: 20px;
     font-size: 18px;
     color: var(--black-color);
     font-weight: 600;
     margin-bottom: 10px;
     display: -webkit-box;
-    -webkit-line-clamp: 2;
+    -webkit-line-clamp: 6;
     -webkit-box-orient: vertical;
     overflow: hidden !important;
 }
 
-.blog__content {
-    display: -webkit-box;
-    color: var(--text-color-4);
-    -webkit-line-clamp: 4;
-    -webkit-box-orient: vertical;
-    overflow: hidden !important;
-}
+
 
 .blog__user {
-    margin-top: 30px;
     display: flex;
     gap: 10px;
     align-items: center;
@@ -246,19 +241,22 @@ const props = defineProps({
 }
 
 .blog__comment {
-    margin-top: 30px;
-}
+    display: flex;
+    gap: 2px;
+    align-items: center;
 
-.blog__comment--icon {
-    cursor: pointer;
-    font-size: 20px;
-}
+    .blog__comment--icon {
+        cursor: pointer;
+        font-size: 20px;
+        color: var(--text-color-4);
+        margin-left: 5px;
+    }
 
-.blog__amount {
-    color: var(--text-color-4);
-    border-radius: 50%;
-    // border: 1px solid var(--border-color);
-    position: relative;
-    top: -16px;
+    .blog__amount {
+        color: var(--text-color-4);
+        font-size: 12px;
+        position: relative;
+        top: -2px;
+    }
 }
 </style>

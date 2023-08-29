@@ -1,4 +1,7 @@
 <template>
+    <div v-if="authStore.isLoading">
+        <Loading />
+    </div>
     <div className="login__header">
         <h1 className="login__title">
             SignIn
@@ -39,6 +42,7 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "../../../stores/authStore";
+import Loading from "../../../components/Loading.vue"
 
 const authStore = useAuthStore();
 const showPassword = ref(false);

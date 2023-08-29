@@ -13,19 +13,3 @@ export const AuthService = {
   },
 };
 
-//   signout(next) {
-//     if (window !== "undefined") {
-//       localStorage.removeItem("user");
-//       next();
-//       return httpClient.get("/signout");
-//     }
-//   },
-//   postarticle(post) {
-//     return httpClient.post(API_POSTARTICLE, post);
-//   },
-//   getAllUsers(users) {
-//     return httpClient.get(API_GETALLUSER);
-//   },
-//   resetPassword(data) {
-//     return httpClient.post(`${API_GETALLUSER}/password/reset`, data);
-//   },

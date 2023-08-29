@@ -1,36 +1,51 @@
 <template>
     <div class="profile__container">
         <div class="profile__heading">
-            <img src="https://images.unsplash.com/photo-1692685934729-ade81906226e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
-                alt="" class="background">
+            <div class="profile_wrapper">
+                <img src="https://images.unsplash.com/photo-1692685934729-ade81906226e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
+                    alt="" class="background">
+                <div class="profile__top">
+                    <img src="../../../assets/images/logo-monkey-white.png" alt="">
+                    <div class="profile__right">
+                        <div class="header__right" v-if="!isAuth">
+                            <div class="header__search">
+                                <input type="text" class="search__input" placeholder="Search post..." />
+                                <span class="search__icon">
+                                    <ion-icon name="search-outline"></ion-icon>
+                                </span>
+                            </div>
+                            <router-link to="/auth/signup" class="header__btn--signup">
+                                Đăng ký
+                            </router-link>
+                            <router-link to="/auth/signin" class="header__btn">
+                                Đăng nhập
+                            </router-link>
+                        </div>
+                        <div class="header__user" v-else>
+                            <div class="header__user__search" v-if="$route.path !== '/blog-post'">
+                                <input type="text" class="header__user__input" placeholder="Search post..." />
+                                <span class="header__user__icon">
+                                    <ion-icon name="search-outline"></ion-icon>
+                                </span>
+                            </div>
+                            <span class="header__user__notifi"><ion-icon name="notifications-outline"></ion-icon></span>
+                            <router-link to="/blog-post" v-if="$route.path !== '/blog-post'">
+                                <button class="header__user__write__btn">
+                                    <img src="../../../assets/images/pen.png" class="header__user__write__pen">
+                                    Viết bài
+                                </button>
+                            </router-link>
+                            <div class="header__user__avatar" @click="handleOpenOptions">
+                                <img src={userData.value.profile_image} alt="" v-if="userData.profile_image">
+                                <img src="../../../assets/images/avatar-default.png" alt="" v-else>
+                            </div>
+                            <OptionUser :isOpen="isOpen" />
+                        </div>
+                    </div>
+                </div>
+            </div>
             <div class="user__avatar">
                 <img src="../../../assets/images/avatar-default.png" class="avatar__img" alt="" />
-            </div>
-            <router-link to="/" class="profile__logo">
-                <img src="../../../assets/images/logo-monkey-white.png" class="profile__logo__img" />
-            </router-link>
-            <div class="profile__authen" v-if="isAuth">
-                <button class="profile__authen__sub">Đăng ký</button>
-                <button class="profile__authen__btn">Đăng nhập</button>
-            </div>
-            <div class="header__user" v-else>
-                <div class="header__search">
-                    <input type="text" class="search__input" placeholder="Search post..." />
-                    <span class="search__icon">
-                        <ion-icon name="search-outline"></ion-icon>
-                    </span>
-                </div>
-                <span class="header__notifi"><ion-icon name="notifications-outline"></ion-icon></span>
-                <router-link to="/blog-post">
-                    <button class="header__write__btn"><img src="../../../assets/images/pen.png"
-                            class="header__write__pen">Viết
-                        bài</button>
-                </router-link>
-                <div class="header__avatar" @click="handleOpenOptions">
-                    <!-- <img src={userData.value.profile_image} alt="" v-if="userData.profile_image"> -->
-                    <img src="../../../assets/images/avatar-default.png" alt="">
-                </div>
-                <OptionUser :isOpen="isOpen" />
             </div>
         </div>
     </div>
@@ -38,7 +53,7 @@
         <div class="profile__desc">
             <div class="profile__detail">
                 <div class="user__infor">
-                    <span class="user__name">Bin zét</span>
+                    <span class="user__name">{{ userData.name }}</span>
                     <span class="user__follow">3355 <span class="user__follow--text">followers</span></span>
                     <span class="user__social">
                         <ion-icon name="logo-facebook"></ion-icon>
@@ -112,7 +127,9 @@ import DropDown from "../../../components/DropDown.vue"
 import CardNew from "../../../components/CardNew.vue"
 import OptionUser from "../../../components/OptionUser.vue"
 
-const isAuth = ref(false)
+const isAuth = ref(localStorage.getItem("isLogin"));
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+
 let isOpen = ref(false);
 
 const handleOpenOptions = () => {
@@ -141,131 +158,150 @@ watchEffect(() => {
     position: relative;
     display: flex !important;
 
-    .profile__heading {
+    .profile_wrapper {
         position: relative;
 
-        .header__user {
+        .profile__top {
             position: absolute;
+            top: 25px;
             display: flex;
-            gap: 10px;
-            top: 30px;
-            right: 180px;
             align-items: center;
+            justify-content: space-between;
+            padding: 0 140px;
+            width: 100%;
 
-            .header__avatar {
-                width: 70px;
-                height: 40px;
+            img {
+                width: 150px;
+            }
 
-                img {
-                    cursor: pointer;
+            .profile__right {
+                .header__right {
+                    display: flex;
+                    flex: 1;
+                }
+
+                .header__search {
+                    margin-left: auto;
+                    padding: 13px;
+                    border: 1px solid var(--border-color);
+                    border-radius: 8px;
                     width: 100%;
-                    border-radius: 50%;
-                    object-fit: cover;
-                    height: 100%;
+                    max-width: 320px;
+                    position: relative;
+                    background-color: var(--white-color);
+                }
+
+                .search__input {
+                    width: 100%;
+                    padding-right: 35px;
+                }
+
+                .search__icon {
+                    position: absolute;
+                    top: 50%;
+                    transform: translateY(-50%);
+                    right: 25px;
+                    cursor: pointer;
+                }
+
+                .header__btn {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    max-width: 160px;
+                    height: 45px;
+                    color: var(--white-color);
+                    font-weight: 700;
+                    font-size: 18px;
+                    cursor: pointer;
+                    background-color: var(--btn-color);
+                    border-radius: 10px;
+                    margin-left: 10px;
+                }
+
+                .header__btn--signup {
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    width: 100%;
+                    max-width: 160px;
+                    height: 45px;
+                    color: var(--black-color);
+                    font-weight: 700;
+                    font-size: 18px;
+                    cursor: pointer;
+                    background-color: var(--white-color);
+                    border-radius: 10px;
+                    margin-left: 10px;
+                    border: 1px solid var(--border-color);
+                }
+
+                .header__user {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .header__user__search {
+                        margin-left: auto;
+                        padding: 13px;
+                        border: 1px solid var(--border-color);
+                        border-radius: 8px;
+                        width: 100%;
+                        max-width: 320px;
+                        position: relative;
+                        background-color: var(--white-color);
+
+                        .header__user__input {
+                            width: 100%;
+                            padding-right: 35px;
+                        }
+
+                        .header__user__icon {
+                            position: absolute;
+                            top: 50%;
+                            transform: translateY(-50%);
+                            right: 25px;
+                            cursor: pointer;
+                        }
+
+                    }
+
+
+                    .header__user__notifi {
+                        display: inline-block;
+                        font-size: 23px;
+                        margin-top: 10px;
+                        cursor: pointer;
+                        color: var(--white-color);
+                    }
+
+                    .header__user__write__btn {
+                        border-radius: 16px;
+                        background-color: var(--white-color);
+                        border: 1px solid var(--border-color);
+                        width: 120px;
+                        padding: 10px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+
+                        img {
+                            width: 20px;
+                        }
+                    }
+
+                    .header__user__avatar {
+                        img {
+                            width: 50px;
+                            border-radius: 50%;
+                            cursor: pointer;
+                        }
+                    }
                 }
             }
-
-            .header__right {
-                display: flex;
-                flex: 1;
-            }
-
-            .header__search {
-                margin-left: auto;
-                padding: 13px;
-                border: 1px solid var(--border-color);
-                border-radius: 8px;
-                width: 100%;
-                max-width: 320px;
-                background-color: var(--white-color);
-                position: relative;
-            }
-
-            .search__input {
-                width: 100%;
-                padding-right: 35px;
-            }
-
-            .search__icon {
-                position: absolute;
-                top: 50%;
-                transform: translateY(-50%);
-                right: 25px;
-                cursor: pointer;
-            }
-
-            .header__write__btn {
-                border-radius: 16px;
-                background-color: var(--white-color);
-                border: 1px solid var(--border-color);
-                width: 120px;
-                padding: 10px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-
-                .header__write__pen {
-
-                    width: 20px;
-                    height: 20px;
-                }
-            }
-
-            .header__notifi {
-                display: inline-block;
-                font-size: 23px;
-                margin-top: 10px;
-                cursor: pointer;
-            }
-
         }
     }
-
-    .profile__logo {
-        cursor: pointer;
-        position: absolute;
-        display: flex;
-        gap: 10px;
-        align-items: center;
-        top: 10px;
-        left: 200px;
-
-        .profile__logo__img {
-            width: 60%;
-            height: 60px;
-        }
-    }
-
-    .profile__authen {
-        position: absolute;
-        display: flex;
-        gap: 10px;
-        top: 30px;
-        right: 180px;
-
-        .profile__authen__sub {
-            width: 150px;
-            font-size: 16px;
-            cursor: pointer;
-            font-weight: 600;
-            // color: var(--white-color);
-            border-color: 1px solid var(--border-color);
-            background-color: rgb(241, 234, 234);
-            border-radius: 12px;
-            opacity: .7;
-        }
-
-        .profile__authen__btn {
-            padding: 15px;
-            font-size: 16px;
-            width: 150px;
-            background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
-            color: var(--white-color);
-            border-radius: 12px;
-        }
-    }
-
-
 
     .background {
         width: 100vw;
@@ -297,7 +333,7 @@ watchEffect(() => {
 }
 
 .profile__content {
-    padding: 0px 180px;
+    padding: 0px 140px;
     background-color: #F5F7FA;
 
     .profile__desc {

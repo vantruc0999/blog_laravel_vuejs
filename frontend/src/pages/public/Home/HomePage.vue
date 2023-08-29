@@ -20,9 +20,8 @@
             <div class="home__card">
                 <h2 class="home__card--title">Tính năng</h2>
                 <div class="card__render">
-                    <swiper :modules="modules" :slides-per-view="3" :space-between="50" navigation
-                        :pagination="{ clickable: true }" :scrollbar="{ draggable: true }" @swiper="onSwiper"
-                        @slideChange="onSlideChange">
+                    <swiper :modules="modules" :loop="true" :slides-per-view="3" :space-between="50" navigation
+                        :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange">
                         <swiper-slide>
                             <CardFeature />
                         </swiper-slide>
@@ -44,8 +43,8 @@
             </div>
             <div class="home__ads">
                 <swiper :modules="modules" :slides-per-view="3" :space-between="50" navigation
-                    :pagination="{ clickable: true }" :scrollbar="{ draggable: true }" @swiper="onSwiper"
-                    @slideChange="onSlideChange">
+                    :pagination="{ clickable: true }" :autoplay="{ delay: 1000 }" :scrollbar="{ draggable: true }"
+                    @swiper="onSwiper" @slideChange="onSlideChange">
                     <swiper-slide>
                         <img src="../../../assets/images/ads1.png" class="home__ads__image" />
                     </swiper-slide>
@@ -86,7 +85,7 @@
 import CardFeature from "../../../components/CardFeature.vue"
 import CardNew from "../../../components/CardNew.vue"
 import RelatedPage from "./RelatedPage/RelatedPage.vue";
-import { Navigation, Pagination, Scrollbar, A11y } from 'swiper/modules';
+import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
 import Loading from "../../../components/Loading.vue"
 
 // Import Swiper Vue.js components
@@ -105,7 +104,8 @@ const onSlideChange = () => {
     console.log('slide change');
 };
 
-const modules = [Navigation, Pagination, Scrollbar, A11y]
+const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
+
 </script>
 
 <style lang="scss" scoped>
@@ -229,9 +229,5 @@ const modules = [Navigation, Pagination, Scrollbar, A11y]
 .ant-tabs-tab-active {
     color: var(--black-color) !important;
 
-}
-
-.swiper-scrollbar {
-    display: none;
 }
 </style>

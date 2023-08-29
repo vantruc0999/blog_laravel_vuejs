@@ -15,7 +15,7 @@
                         <div class="detail__user">
                             <img src="../../../assets/images/banner.png" />
                             <div class="detail__user__infor">
-                                <span class="detail__user__name">Bin Zét</span>
+                                <span class="detail__user__name">{{ userData.name }}</span>
                             </div>
                         </div>
                         <span class="detail__time">28/10</span>
@@ -25,7 +25,7 @@
                             <ion-icon name="chatbubbles-outline"></ion-icon>220
                         </span>
                         <span class="detail__viewer">
-                            <ion-icon name="eye-outline"></ion-icon> 1208
+                            <ion-icon name="eye-outline"></ion-icon> 1208 lượt xem
                         </span>
                     </div>
                 </div>
@@ -140,6 +140,8 @@ import "swiper/css";
 
 let isOpenComment = ref(false);
 
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+
 const handleOpenComment = () => {
     isOpenComment.value = !isOpenComment.value
 }
@@ -222,6 +224,7 @@ watchEffect(() => {
     font-size: 14px;
 
     .detail__viewer {
+        color: var(--text-color-4);
         cursor: pointer;
         display: flex;
         align-items: center;
