@@ -5,7 +5,9 @@
                 <img src="https://images.unsplash.com/photo-1692685934729-ade81906226e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
                     alt="" class="background">
                 <div class="profile__top">
-                    <img src="../../../assets/images/logo-monkey-white.png" alt="">
+                    <router-link to="/">
+                        <img src="../../../assets/images/logo-monkey-white.png" alt="">
+                    </router-link>
                     <div class="profile__right">
                         <div class="header__right" v-if="!isAuth">
                             <div class="header__search">
@@ -328,8 +330,6 @@ watchEffect(() => {
             margin-right: 20px;
         }
     }
-
-
 }
 
 .profile__content {

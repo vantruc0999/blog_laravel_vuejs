@@ -1,35 +1,31 @@
 <template>
     <div class="card" v-if="isCard">
-        <router-link to="/detail">
+        <router-link :to="`/detail/${post?.id}`">
             <div class="card__image">
-                <img src="https://images.unsplash.com/photo-1682685797088-283404e24b9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80"
-                    alt="">
+                <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="">
             </div>
         </router-link>
         <div class="card__detail">
             <div class="card__header">
-                <div class="card__category">Khoa học</div>
+                <div class="card__category">{{ post?.category_name }}</div>
                 <span class="card__comment--icon blog__favorites">
                     <ion-icon name="bookmark-outline"></ion-icon>
                 </span>
             </div>
-            <router-link to="/detail">
+            <router-link :to="`/detail/${post?.id}`">
                 <div class="blog__body">
                     <div class="blog__title">
-                        Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+                        {{ post?.title }}
                     </div>
                     <div class="blog__content">
-                        Đây là bộ phim mà mình đã trông Đây là bộ phim mà mình đã trông ngóng suốt gần một năm qua, với ba
-                        điều
-                        cuốn
-                        hút nhất: Tâm trí con
+                        {{ post?.description }}
                     </div>
 
                     <div class="blog__bottom">
                         <div class="blog__user">
                             <img src="../assets/images/banner.png" />
                             <div class="blog__user__infor">
-                                <span class="blog__user__name">Dong Pham</span>
+                                <span class="blog__user__name">{{ post?.blogger_name }}</span>
                                 <div class="blog__user__time">9 giờ trước</div>
                             </div>
                         </div>
@@ -53,29 +49,24 @@
     <!-- Blog -->
     <div class="blog" v-else>
         <div class="blog__header">
-            <div class="blog__category">Khoa học</div>
+            <div class="blog__category">{{ post?.category_name }}</div>
             <span class="blog__comment--icon blog__favorites">
                 <ion-icon name="bookmark-outline"></ion-icon>
             </span>
-
         </div>
-        <router-link to="/detail">
-
+        <router-link :to="`/detail/${post?.id}`">
             <div class="blog__image">
-                <img
-                    src="https://images.unsplash.com/photo-1682685795463-0674c065f315?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1926&q=80" />
+                <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="">
             </div>
             <div class="blog__body">
                 <div class="blog__title">
-                    Hướng dẫn setup phòng cực chill dành cho người mới toàn tập
+                    {{ post?.title }}
                 </div>
-
-
                 <div class="blog__bottom">
                     <div class="blog__user">
                         <img src="../assets/images/banner.png" />
                         <div class="blog__user__infor">
-                            <span class="blog__user__name">Dong Pham</span>
+                            <span class="blog__user__name">{{ post?.blogger_name }}</span>
                             <div class="blog__user__time">9 giờ trước</div>
                         </div>
                     </div>
@@ -84,7 +75,7 @@
                         <span class="blog__comment--icon">
                             <ion-icon name="eye-outline"></ion-icon>
                         </span>
-                        <span class="blog__amount">1,2k lượt xem</span>
+                        <span class="blog__amount">{{ post?.view_count }} k lượt xem</span>
                     </div>
                 </div>
             </div>
@@ -99,8 +90,11 @@ import {
 
 // Định nghĩa prop "message"
 const props = defineProps({
-    isCard: Boolean
+    isCard: Boolean,
+    post: Object
+
 })
+
 </script>
 
 <style lang="scss" scoped>
@@ -110,11 +104,12 @@ const props = defineProps({
     .card__image {
         max-width: 200px;
         margin-right: 20px;
+        width: 200px;
 
         img {
             width: 100%;
-            border-radius: 10px;
             height: 200px;
+            border: 1px solid var(--border-color);
             // object-fit: cover;
         }
     }
@@ -161,8 +156,9 @@ const props = defineProps({
 .blog {
     border-radius: 12px;
     width: 100%;
-    // border: 1px solid var(--border-color);
     padding: 10px;
+    display: flex;
+    flex-direction: column;
     position: relative;
     background-color: var(--white-color);
     cursor: pointer;
@@ -177,12 +173,12 @@ const props = defineProps({
 }
 
 .blog__image {
-
     img {
+        border: 1px solid var(--border-color);
+        flex-shrink: 0;
         width: 100%;
         border-radius: 10px;
         height: 200px;
-        object-fit: cover;
     }
 }
 
@@ -205,18 +201,34 @@ const props = defineProps({
     margin-bottom: 5px;
 }
 
-.blog__title {
-    margin-top: 20px;
-    font-size: 18px;
-    color: var(--black-color);
-    font-weight: 600;
-    margin-bottom: 10px;
-    display: -webkit-box;
-    -webkit-line-clamp: 6;
-    -webkit-box-orient: vertical;
-    overflow: hidden !important;
-}
+.blog__body {
+    display: flex;
+    flex-direction: column;
+    color: var(--text-color-4);
 
+
+    .blog__title {
+        flex: 1;
+        margin-top: 20px;
+        font-size: 18px;
+        color: var(--black-color);
+        font-weight: 600;
+        margin-bottom: 10px;
+        display: -webkit-box;
+        -webkit-line-clamp: 6;
+        -webkit-box-orient: vertical;
+        overflow: hidden !important;
+    }
+
+    .blog__bottom {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        margin-top: auto;
+        flex-shrink: 0;
+    }
+}
 
 
 .blog__user {
@@ -231,14 +243,18 @@ const props = defineProps({
         border: 1px solid var(--border-color);
         background-color: var(--white-color);
         object-fit: cover;
+        flex-shrink: 0;
     }
 }
 
-.blog__bottom {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
+// .blog__bottom {
+//     margin-top: auto !important;
+//     display: flex;
+//     justify-content: space-between;
+//     align-items: center;
+//     padding: 15px 0;
+//     flex-shrink: 0;
+// }
 
 .blog__comment {
     display: flex;

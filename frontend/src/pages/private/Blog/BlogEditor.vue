@@ -39,11 +39,8 @@ import { ref, computed } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import { Select } from 'ant-design-vue';
-import { usePostStore } from "../../../stores/postStore";
 
-const postStore = usePostStore();
 
-// const token = localStorage.getItem("token")
 const categoryData = [
     { id: 1, name: 'Văn học' },
     { id: 2, name: 'IT' },
@@ -54,8 +51,8 @@ const categoryData = [
 ];
 const selectedCategory = ref('');
 
-const temporaryImage = ref('');
-const imagePath = ref('');
+const temporaryImage = ref(null);
+const imagePath = ref(null);
 
 const editor = ref(ClassicEditor);
 const editorData = ref('');
@@ -81,12 +78,14 @@ const handleCategoryChange = (value) => {
 const handleImageChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            temporaryImage.value = reader.result;
-            imagePath.value = reader.result; // Gán đường dẫn ảnh cho imagePath
-        };
-        reader.readAsDataURL(file);
+        temporaryImage.value = URL.createObjectURL(file)
+        imagePath.value = file
+        // const reader = new FileReader();
+        // reader.onload = () => {
+        //     //     temporaryImage.value = reader.result;
+        //     imagePath.value = reader.result; // Gán đường dẫn ảnh cho imagePath
+        // };
+        // reader.readAsDataURL(file);
     }
 };
 
@@ -122,21 +121,30 @@ const handleSubmit = () => {
     const submittedSelectedCategory = selectedCategory.value;
     const submittedIntro = intro.value;
     const submittedBanner = imagePath.value;
-    const blogData = {
-        title: submittedTitle,
-        description: submittedEditorData,
-        category_id: 1,
-        intro: submittedIntro,
-        banner: submittedBanner,
-        // banner: "https://images.unsplash.com/photo-1692840878189-80862783705a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
-        tags: "[1,2]"
-    };
+    const formData = new FormData();
+    formData.append('banner', imagePath.value)
+    formData.append('title', submittedTitle)
+    // formData.append('intro', submittedIntro)
+    formData.append('description', submittedEditorData)
+    formData.append('category_id', 1)
+    formData.append('tags', [1, 2])
+    // const blogData = {
+    //     title: submittedTitle,
+    //     description: submittedEditorData,
+    //     category_id: 1,
+    //     // intro: submittedIntro,
+    //     banner: formData,
+    //     // banner: "https://images.unsplash.com/photo-1692840878189-80862783705a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
+    //     tags: [1, 2],
+    // };
+    console.log("🚀 ~ file: BlogEditor.vue:134 ~ handleSubmit ~ blogData:", formData)
+    postStore.actCreatePost(formData)
+
     title.value = '';
     intro.value = '';
     editorData.value = '';
     selectedCategory.value = '';
     temporaryImage.value = '';
-    // postStore.actCreatePost(blogData)
 
 };
 </script>
@@ -215,7 +223,6 @@ const handleSubmit = () => {
 .image-select .temporary-image {
     width: 100%;
     height: 100%;
-    object-fit: cover;
 }
 
 .image-select .image-input {
@@ -253,17 +260,20 @@ const handleSubmit = () => {
     margin-top: 40px;
 
     .editor__btn {
+        background-color: var(--white-color);
         cursor: pointer;
-        width: 100px;
+        width: 130px;
+        height: 50px;
         border-radius: 12px;
         padding: 10px;
         display: flex;
+        align-items: center;
         justify-content: center;
         border: 1px solid var(--border-color);
         font-weight: 700;
 
         &--submit {
-            background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+            background-color: var(--secondary-color);
             color: var(--white-color);
         }
 

@@ -240,7 +240,7 @@ const togglePasswordVisibility = () => {
         font-weight: 600;
         border-radius: 12px;
         min-height: 56px;
-        background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+        background-color: var(--secondary-color);
         color: var(--white-color);
         cursor: pointer;
 

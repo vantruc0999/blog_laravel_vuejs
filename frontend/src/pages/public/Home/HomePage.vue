@@ -57,19 +57,13 @@
                 <h2 class="home__card--title">Tin tức cập nhật</h2>
 
                 <div class="update__list">
-                    <CardNew :isCard="false" />
-                    <CardNew :isCard="false" />
-                    <CardNew :isCard="false" />
-                    <CardNew :isCard="false" />
+                    <CardNew :isCard="false" :post="post" v-for="(post, index) in postStore.posts " :key="index" />
                 </div>
 
                 <div class="home__special">
                     <h2 class="home__card--title">Nổi bật trong tháng</h2>
                     <div class="home__blog">
-                        <CardNew :isCard="false" />
-                        <CardNew :isCard="false" />
-                        <CardNew :isCard="false" />
-                        <CardNew :isCard="false" />
+                        <CardNew :isCard="false" :post="post" v-for="(post, index) in postStore.posts " :key="index" />
                     </div>
                 </div>
             </div>
@@ -87,7 +81,6 @@ import CardNew from "../../../components/CardNew.vue"
 import RelatedPage from "./RelatedPage/RelatedPage.vue";
 import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
 import Loading from "../../../components/Loading.vue"
-
 // Import Swiper Vue.js components
 import { Swiper, SwiperSlide } from 'swiper/vue';
 
@@ -96,6 +89,11 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
+import { usePostStore } from "../../../stores/postStore";
+
+
+const postStore = usePostStore()
+postStore.fetchAllPosts()
 
 const onSwiper = (swiper) => {
     // console.log(swiper);

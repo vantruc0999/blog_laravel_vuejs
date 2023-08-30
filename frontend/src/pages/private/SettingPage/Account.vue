@@ -20,7 +20,7 @@
                     <textarea v-model="title" ref="textarea" class="editor__input" placeholder="@Bio..."></textarea>
                 </div>
             </div>
-            <div class="account__name">
+            <form class="account__name">
                 <div class="account__col">
                     <div class="account__name--text">Tên hiển thị</div>
                     <input type="text" value="Dong Pham" class="account__name--input">
@@ -35,13 +35,13 @@
                 </a-space>
                 <div class="account__col">
                     <div class="account__name--text">Giới tính</div>
-                    <a-radio-group v-model:value="valueChecked">
+                    <a-radio-group v-model:value="valueChecked" @click="handleGenderChange">
                         <a-radio :value="1">Nam</a-radio>
                         <a-radio :value="2">Nữ</a-radio>
                         <a-radio :value="3">Giới tính khác</a-radio>
                     </a-radio-group>
                 </div>
-            </div>
+            </form>
             <button class="account__password" @click="handleOpenForgotPassword">Đổi mật khẩu</button>
             <form class="forgot__form" :class="{ active: isOpenForgotPassword }">
                 <div class="forgot__field">
@@ -86,11 +86,17 @@ const errorMessages = {
 };
 const passwordMatchError = ref('');
 
+
 const value1 = ref();
 const valueChecked = ref();
 const temporaryBanner = ref('');
 const temporaryAvatar = ref('');
 
+
+const handleGenderChange = (value) => {
+    valueChecked.value = value;
+    console.log(valueChecked.value);
+};
 const handleBannerChange = (event) => {
     const file = event.target.files[0];
     if (file) {

@@ -11,20 +11,37 @@ export const usePostStore = defineStore("postStore", {
     isLoading: false,
   }),
   actions: {
-    async actCreatePost(postData, token) {
+    async fetchAllPosts() {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getallpost();
+        this.posts = response?.data?.data;
+        console.log("🚀 ~ file: postStore.js:20 ~ fetchAllPosts ~ posts:", this.posts)
+        this.isLoading = false;
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy danh sách bài viết. Vui lòng thử lại sau.");
+      }
+    },
+    async actCreatePost(postData) {
       try {
         this.isLoading = true
         const response = await PostService.postblog(postData);
         this.posts.push(response.data.posts);
         // // router.push(`/posts/${response.data.post.id}`);
-        toast.success("Bài viết đã được đăng thành công!");
         this.isLoading = false
-        // createPost(postData, token).then(() => {
-          
-          // })
-          
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi đăng bài. Vui lòng thử lại sau.");
+      }
+    },
+    async getPostById(postId) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getpostbyid(postId);
+        this.post = response?.data;
+        console.log("🚀 ~ file: postStore.js:44 ~ getPostById ~ this.post:", this.post)
+        this.isLoading = false;
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy bài viết. Vui lòng thử lại sau.");
       }
     },
   },
