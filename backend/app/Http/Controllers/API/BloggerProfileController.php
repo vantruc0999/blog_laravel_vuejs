@@ -15,9 +15,9 @@ use Illuminate\Support\Facades\DB;
 class BloggerProfileController extends Controller
 {
     //
-    public function getPublicProfileInfor($slug)
+    public function getPublicProfileInfor($id)
     {
-        $blogger = Blogger::where('slug', $slug)->first();
+        $blogger = Blogger::where('id', $id)->first();
 
         $blogger->posts = $blogger
             ->posts()
@@ -87,7 +87,7 @@ class BloggerProfileController extends Controller
             if ($request->has('profile_image')) {
                 $image = $request->profile_image;
                 $name = time() . '-' . $image->getClientOriginalName();
-                $path = public_path('storage/profile/avatar');
+                $path = public_path('images/avatar');
                 $image->move($path, $name);
                 $newPath = $name;
                 $data['profile_image'] = $newPath;
@@ -96,7 +96,7 @@ class BloggerProfileController extends Controller
             if ($request->has('profile_banner')) {
                 $image = $request->profile_banner;
                 $name = time() . '-' . $image->getClientOriginalName();
-                $path = public_path('storage/profile/banner');
+                $path = public_path('images/banner');
                 $image->move($path, $name);
                 $newPath = $name;
                 $data['banner'] = $newPath;
@@ -116,4 +116,15 @@ class BloggerProfileController extends Controller
             ], 500);
         }
     }
+
+    public function follow($blogger_id){
+        Follow::create([
+            'blogger_id' => $blogger_id,
+            'following_id' => Auth::user()['id'],
+        ]);
+        return response([
+            'message' => 'sucecss',
+        ]);
+    }
+
 }
