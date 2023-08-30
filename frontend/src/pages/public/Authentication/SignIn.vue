@@ -1,4 +1,7 @@
 <template>
+    <div v-if="authStore.isLoading">
+        <Loading />
+    </div>
     <div className="login__header">
         <h1 className="login__title">
             SignIn
@@ -39,6 +42,7 @@
 <script setup>
 import { ref } from "vue";
 import { useAuthStore } from "../../../stores/authStore";
+import Loading from "../../../components/Loading.vue"
 
 const authStore = useAuthStore();
 const showPassword = ref(false);
@@ -236,7 +240,7 @@ const togglePasswordVisibility = () => {
         font-weight: 600;
         border-radius: 12px;
         min-height: 56px;
-        background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+        background-color: var(--secondary-color);
         color: var(--white-color);
         cursor: pointer;
 

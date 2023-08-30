@@ -35,16 +35,18 @@
                 </router-link>
             </div>
             <div class="header__user" v-else>
-                <div class="header__search">
+                <div class="header__search" v-if="$route.path !== '/blog-post'">
                     <input type="text" class="search__input" placeholder="Search post..." />
                     <span class="search__icon">
                         <ion-icon name="search-outline"></ion-icon>
                     </span>
                 </div>
                 <span class="header__notifi"><ion-icon name="notifications-outline"></ion-icon></span>
-                <router-link to="/blog-post">
-                    <button class="header__write__btn"><img src="../assets/images/pen.png" class="header__write__pen">Viết
-                        bài</button>
+                <router-link to="/blog-post" v-if="$route.path !== '/blog-post'">
+                    <button class="header__write__btn">
+                        <img src="../assets/images/pen.png" class="header__write__pen">
+                        Viết bài
+                    </button>
                 </router-link>
                 <div class="header__avatar" @click="handleOpenOptions">
                     <img src={userData.value.profile_image} alt="" v-if="userData.profile_image">
@@ -54,11 +56,7 @@
             </div>
         </div>
         <!-- </div> -->
-        <div class="header__category">
-            <ul class="header__menu">
 
-            </ul>
-        </div>
     </header>
 </template>
 
@@ -74,9 +72,7 @@ const authStore = useAuthStore()
 const isAuth = ref(localStorage.getItem("isLogin"));
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-console.log("🚀 ~ file: Header.vue:76 ~ userData:", userData.value)
 
-console.log(authStore.user);
 let isOpen = ref(false);
 
 const handleOpenOptions = () => {
@@ -110,15 +106,16 @@ const handleOpenOptions = () => {
 .header__left {
     display: flex;
     align-items: center;
+    justify-content: space-between;
 }
 
 .header__menu {
     display: flex;
     align-items: center;
     gap: 20px;
-    margin-left: 10px;
     font-size: 22px;
-    margin-top: 10px;
+    margin-top: 20px;
+    margin-left: 20px;
 }
 
 .header__item {
@@ -129,7 +126,7 @@ const handleOpenOptions = () => {
 
 .header__logo {
     display: block;
-    max-width: 80%;
+    max-width: 150px;
     border-right: 1px solid var(--primary-color);
     padding-right: 20px;
     height: 40px;
@@ -148,6 +145,7 @@ const handleOpenOptions = () => {
     width: 100%;
     max-width: 320px;
     position: relative;
+    background-color: var(--white-color);
 }
 
 .search__input {
@@ -216,6 +214,7 @@ const handleOpenOptions = () => {
     display: flex;
     gap: 10px;
     width: 100%;
+    justify-content: flex-end;
 
     .header__write__btn {
         border-radius: 16px;

@@ -15,6 +15,7 @@
   import AuthorPage from "../pages/public/Author/AuthorPage.vue"
   import RelatedPost from "../pages/public/Home/RelatedPage/RelatedPost.vue"
   import ForYouPage from "../pages/public/Home/RelatedPage/PageContent/ForYouPage.vue"
+import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
 
   const routes = [
     {
@@ -28,7 +29,7 @@
           component: HomePage,
         },
         {
-          path: "/detail",
+          path: "/detail/:id",
           name: "detail",
           component: DetailPage,
         },
@@ -36,6 +37,16 @@
           path: "/author",
           name: "author",
           component: AuthorPage,
+        },
+        {
+          path: "/blog-post",
+          name: "postblog",
+          component: PostBlog,
+        },
+        {
+          path: "/search",
+          name: "search",
+          component: SearchPage,
         },
         {
           path: "/",
@@ -90,11 +101,7 @@
       name: "profile",
       component: ProfilePage,
     },
-    {
-      path: "/blog-post",
-      name: "postblog",
-      component: PostBlog,
-    },
+    
     // {
     //   path: "/:pathMatch(.*)*",
     //   name: "Error",

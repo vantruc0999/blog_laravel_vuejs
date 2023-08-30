@@ -1,21 +1,23 @@
 <template>
+    <div v-if="postStore.isLoading">
+        <Loading />
+    </div>
     <div class="detail__container">
         <div class="detail__heading">
-            <img
-                src="https://images.unsplash.com/photo-1692107329566-0ce6353eedf5?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80" />
+            <img :src="'http://127.0.0.1:8000/' + postStore.post?.data?.banner" alt="">
             <div class="detail__infor">
                 <div class="detail__category">
                     <span>Đời sống</span>
                 </div>
                 <p class="detail__title">
-                    Lời thú nhận của anh Chàng IT sinh năm 2001
+                    {{ postStore.post?.data?.title }}
                 </p>
                 <div class="detail__view">
                     <div class="detail__view--public">
                         <div class="detail__user">
                             <img src="../../../assets/images/banner.png" />
                             <div class="detail__user__infor">
-                                <span class="detail__user__name">Bin Zét</span>
+                                <span class="detail__user__name">{{ postStore.post?.data?.blogger_name }}</span>
                             </div>
                         </div>
                         <span class="detail__time">28/10</span>
@@ -25,7 +27,7 @@
                             <ion-icon name="chatbubbles-outline"></ion-icon>220
                         </span>
                         <span class="detail__viewer">
-                            <ion-icon name="eye-outline"></ion-icon> 1208
+                            <ion-icon name="eye-outline"></ion-icon> {{ postStore.post?.data?.view_count }} lượt xem
                         </span>
                     </div>
                 </div>
@@ -34,29 +36,18 @@
         </div>
         <div class="detail__content">
             <div class="detail__wrapper">
-                <p class="detail__text">
-                    Khó khăn lớn nhất trong đời tôi cho tới giờ vẫn luôn là học cách phớt lờ những cám dỗ. Đúng vậy, phớt lờ
-                    thay vì vượt qua. Tôi vẫn đủ tỉnh táo để không sa đà vào bất cứ tệ nạn nào quá nghiêm trọng, nhưng chỉ
-                    riêng game thôi đã khiến tôi khổ sở đôi ba lần, và cũng ngốn không ít nước mắt của người nhà tôi (kỳ lạ
-                    là không phải của tôi vì tôi chưa bao giờ ăn đập vì bị bắt đi net).
-                    Như bất cứ thằng con trai nào với gia cảnh bình thường, sống ở miền quê, cộng thêm việc hiếm khi được
-                    tiếp xúc với các trò chơi điện tử từ bé, sự ra đời của các quán net bỗng thu hút tôi một cách lạ lùng.
-                    Các quán net sớm trở thành mái nhà thứ hai của tôi, chỉ còn nước là chưa cắm trại ăn ngủ ở đó thôi.
-                    "Nắng tháng Sáu chết cả cá cờ" nhưng tinh thần game thủ thì còn khuya mới chết. Tôi vẫn nhớ những ngày
-                    đạp xe lóc cóc 4, 5 cây số giữa trưa hè 40 độ ra quán net rồi an tọa ở đó cả buổi chiều, trong căn gác
-                    mái nóng nực kinh hồn, ngột ngạt, không khí nồng nặc nicotine và học được cách nghe tiếng chửi thề như
-                    nghe cô giáo giảng bài trong giờ Văn.
-                    Ngẫm lại những ngày đó không làm tôi hối hận mà thấy ngớ ngẩn, dù không ít lần tôi trốn học, nói dối ông
-                    bà để đi chơi game, nhưng tôi tự hào vì ít ra nó còn vui, và vì tôi có bạn, những người tới giờ vẫn là
-                    bạn thân của tôi.
-                    Một điều khác khiến tôi tự hào là vì suốt 10 năm ‘nghiện ngập’, tôi chỉ chơi độc một game Liên Minh
-                    Huyền Thoại. Như tất cả anh em vẫn bông đùa rằng, nếu có thể thu hồi tất cả số tiền đã đổ vào game trong
-                    suốt những năm qua, khối đứa sẽ giàu sụ và nếu anh em nào từng nói câu đó đang ở đây thì - tôi đồng ý
-                    với anh em nhé.
-                </p>
+                <p class="detail__text" v-html="postStore.post?.data?.description" target="_blank"></p>
             </div>
         </div>
-        <CardAuthor />
+        <!-- Author -->
+        <router-link to="/profile" class="detail__author">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUaaiyZexlQOXhA3XvW096dvlFLpQWg3DackZB1d49rB5yONuSswV6_yyeKSXoBN18Ypk&usqp=CAU"
+                alt="">
+            <div class="detail__infor">
+                <h2 class="detail__name">{{ postStore.post?.data?.blogger_infor.name }}</h2>
+                <p class="detail__desc">{{ postStore.post?.data?.blogger_infor.bio }} </p>
+            </div>
+        </router-link>
 
         <h1 class="detail__related__title">Bài viết liên quan</h1>
         <div class="detail__related">
@@ -126,27 +117,46 @@
 <script setup>
 import {
     ref,
-    watchEffect
+    watchEffect,
+    computed,
+    onMounted
 } from "vue";
 import CardNew from "../../../components/CardNew.vue";
-import CardAuthor from "../../../components/CardAuthor.vue"
 import Comment from "../../public/Home/Comment/Comment.vue"
+import {
+    useRoute,
+    useRouter
+} from 'vue-router';
 import {
     Swiper,
     SwiperSlide
 } from "swiper/vue";
 import "swiper/swiper-bundle.css";
 import "swiper/css";
+import { usePostStore } from "../../../stores/postStore";
+import Loading from "../../../components/Loading.vue"
+
+const postStore = usePostStore()
+console.log("🚀 ~ file: DetailPage.vue:149 ~ postStore:", postStore.post.data)
+const route = useRoute();
+const refDetail = ref(route.params.id)
 
 let isOpenComment = ref(false);
+
+const userData = ref(JSON.parse(localStorage.getItem("user")));
 
 const handleOpenComment = () => {
     isOpenComment.value = !isOpenComment.value
 }
 
+const getDetailPost = computed(() => {
+    return postStore.getPostById(refDetail.value)
+})
+onMounted(async () => {
+    await getDetailPost.value;
+});
 watchEffect(() => {
     window.scrollTo(0, 0);
-
 })
 </script>
 
@@ -167,6 +177,43 @@ watchEffect(() => {
         border-radius: 12px;
         margin-right: 70px;
     }
+
+}
+
+.detail__author {
+    margin: 0 auto;
+    width: 100%;
+    border: 1px solid var(--border-color);
+    max-width: 780px;
+    display: flex;
+    border-radius: 12px;
+
+    img {
+        width: 100%;
+        height: auto;
+        max-height: 220px;
+        max-width: 240px;
+        // height: 237px;
+        border-radius: 12px;
+        object-fit: cover;
+    }
+
+    .detail__infor {
+        padding: 20px;
+    }
+
+    .detail__name {
+        font-size: 22px;
+        color: var(--secondary-color);
+        font-weight: 600;
+    }
+
+    .detail__desc {
+        margin-top: 10px;
+        color: var(--black-color);
+        font-size: 18px;
+    }
+
 }
 
 .detail__category {
@@ -222,6 +269,7 @@ watchEffect(() => {
     font-size: 14px;
 
     .detail__viewer {
+        color: var(--text-color-4);
         cursor: pointer;
         display: flex;
         align-items: center;
