@@ -7,6 +7,7 @@ use App\Filament\Resources\PostResource\RelationManagers;
 use App\Models\Post;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -40,6 +41,8 @@ class PostResource extends Resource
                         TextInput::make('title')
                             ->required()
                             ->maxLength(255),
+                        FileUpload::make('banner')
+                            ->label('Post banner'),
                         TextInput::make('slug')
                             ->required()
                             ->maxLength(255),

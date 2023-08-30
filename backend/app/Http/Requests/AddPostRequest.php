@@ -28,7 +28,7 @@ class AddPostRequest extends FormRequest
             'title' => 'required|max:255',
             'description' => 'required',
             'category_id' => 'required',
-            'tags' => 'required',
+            // 'tags' => 'required',
         ];
     }
 }

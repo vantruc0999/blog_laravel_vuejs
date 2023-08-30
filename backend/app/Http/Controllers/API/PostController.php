@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AddPostRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Category;
+use App\Models\Comment;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
@@ -14,6 +16,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -26,7 +29,7 @@ class PostController extends Controller
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
             $post->blogger_name = $post->blogger->name;
-            unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->description);
+            unset($post->category, $post->blogger_id, $post->blogger, $post->description);
         }
 
         return response([
@@ -53,20 +56,35 @@ class PostController extends Controller
         return $tags;
     }
 
+    public function getAllCategories(){
+        $categories = Category::all();
+
+        return response([
+            "message" => "success",
+            "data" => $categories
+        ]);
+    }
+
     public function getAllTags()
     {
         $tags = Tag::all();
+
+        foreach($tags as $item){
+            $item->category_name = $item->category->name;
+            unset($item->category);
+        }
+
         return response([
             "message" => "success",
             "data" => $tags
         ]);
     }
 
-    private function checkActivePost($slug)
+    private function checkActivePost($id)
     {
         $post = Post::where(
             [
-                'slug' => $slug,
+                'id' => $id,
                 'status' => 1,
             ]
         )->first();
@@ -78,9 +96,9 @@ class PostController extends Controller
         return $post;
     }
 
-    public function getDetailPostBySlug($slug)
+    public function getDetailPostById($id)
     {
-        $post = $this->checkActivePost($slug);
+        $post = $this->checkActivePost($id);
 
         if (!$post) {
             return response()->json([
@@ -97,7 +115,7 @@ class PostController extends Controller
             $post->blogger_name = $post->blogger->name;
             $post->likes_count = $post->likes->count();
             $post->comments = $this->getCommentInfors($post->comments);
-            $post->tags = $this->getTagsInfor($post->tags);
+            $post->tags = $this->getTagsInfor($post->category->tags);
 
             $tmp_created_date = new Carbon($post->created_at);
             $tmp_updated_date = new Carbon($post->created_at);
@@ -108,7 +126,7 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
-            unset($post->category_id, $post->category, $post->blogger_id, $post->blogger, $post->likes);
+            unset($post->category, $post->blogger_id, $post->blogger, $post->likes);
 
             return response([
                 "message" => "success",
@@ -125,22 +143,22 @@ class PostController extends Controller
 
     public function store(AddPostRequest $request)
     {
-        // return $request;
         try {
             $slug = Str::slug($request->title);
 
             if ($request->has('banner')) {
                 $image = $request->banner;
                 $name = time() . '-' . $image->getClientOriginalName();
-                $path = public_path('images');
+                $path = public_path('storage');
                 $image->move($path, $name);
-                $newPath = 'images/' . $name;
+                $newPath = $name;
             }
 
             $data = [
                 'title' => $request->input('title'),
+                'intro' => $request->input('intro'),
                 'description' => $request->input('description'),
-                'banner' => $newPath ?? 'images/default.jpg',
+                'banner' => $newPath ?? 'default.jpg',
                 'blogger_id' => Auth::user()['id'],
                 'category_id' => $request->input('category_id'),
                 'new_post' => 0,
@@ -149,11 +167,11 @@ class PostController extends Controller
                 'status' => 0,
             ];
 
-            $tags = json_decode(str_replace("'", '"', $request->input('tags')));
-
             $post = Post::create($data);
-
-            $post->tags()->sync($tags);
+            
+            if($request->input('tags')){
+                $post->tags()->sync($request->input('tags'));
+            }
 
             $post->update(
                 [
@@ -175,10 +193,10 @@ class PostController extends Controller
         }
     }
 
-    public function update(UpdatePostRequest $request, $slug)
+    public function update(UpdatePostRequest $request, $id)
     {
         try {
-            $post = $this->checkActivePost($slug);
+            $post = $this->checkActivePost($id);
 
             if (!$post) {
                 return response()->json([
@@ -194,6 +212,7 @@ class PostController extends Controller
 
             $data = [
                 'title' => $request->input('title'),
+                'intro' => $request->input('intro'),
                 'description' => $request->input('description'),
                 'category_id' => $request->input('category_id'),
             ];
@@ -201,20 +220,26 @@ class PostController extends Controller
             if ($request->has('banner')) {
                 $image = $request->banner;
                 $name = time() . '-' . $image->getClientOriginalName();
-                $path = public_path('images');
+                $path = public_path('storage');
                 $image->move($path, $name);
-                $newPath = 'images/' . $name;
+                $newPath = $name;
                 $data['banner'] = $newPath;
             }
+
+            // if ($request->input('title') && $request->input('title') != $post->title) {
+            //     $slug = Str::slug($request->title);
+            //     $data['slug'] = Str::slug($slug) . "-" . time() . $post->id;
+            // }
 
             if ($request->input('title')) {
                 $slug = Str::slug($request->title);
                 $data['slug'] = Str::slug($slug) . "-" . time() . $post->id;
             }
 
-            $tags = json_decode(str_replace("'", '"', $request->input('tags')));
-
-            $post->tags()->sync($tags);
+            // $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+            if($request->input('tags')){
+                $post->tags()->sync($request->input('tags'));
+            }
 
             $post->update($data);
 
@@ -230,35 +255,36 @@ class PostController extends Controller
         }
     }
 
-    public function delete($slug)
+    public function delete($id)
     {
         try {
-            $post = $this->checkActivePost($slug);
+            $post = $this->checkActivePost($id);
 
             if (!$post) {
                 return response()->json([
                     'message' => 'No post available',
                 ], 500);
             }
-    
+
             if (Auth::user()['id'] !== $post->blogger_id) {
                 return response()->json([
                     'message' => 'You do not have permission to delete this post',
                 ], 500);
             }
-    
+
             $post->delete();
-    
+
             return response()->json([
                 'message' => 'Post deleted successfully',
                 'post' => $post
             ], 201);
-        }catch (\Exception $err) {
+        } catch (\Exception $err) {
             return response()->json([
                 'message' => 'An error occurred while deleting post',
                 'error' => $err->getMessage()
             ], 500);
         }
-       
     }
+
+    
 }

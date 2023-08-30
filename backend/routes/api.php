@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\API\BloggerAuthController;
 use App\Http\Controllers\API\BloggerProfileController;
+use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -21,14 +22,14 @@ use Illuminate\Support\Facades\Route;
 //     return $request->user();
 // });
 
-
 Route::post('/register', [BloggerAuthController::class, 'register']);
 Route::post('/login', [BloggerAuthController::class, 'login']);
 Route::get('/tags/get-all-tags', [PostController::class, 'getAllTags']);
+Route::get('/categories/get-all-categories', [PostController::class, 'getAllCategories']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
-    Route::get('/{slug}', [PostController::class, 'getDetailPostBySlug']);
+    Route::get('/{slug}', [PostController::class, 'getDetailPostById']);
 });
 
 Route::prefix('/blogger')->group(function () {
@@ -40,13 +41,19 @@ Route::middleware(['auth:blogger'])->group(function () {
 
     Route::prefix('/blogger')->group(function () {
         Route::get('/me/profile', [BloggerProfileController::class, 'getMyProfileInfor']);
-        Route::get('/me/update-profile', [BloggerProfileController::class, 'updateBloggerProfile']);
+        Route::post('/me/update-profile', [BloggerProfileController::class, 'updateBloggerProfile']);
     });
     
     Route::prefix('/posts')->group(function () {
         Route::post('/create-post', [PostController::class, 'store']);
         Route::post('/update-post/{slug}', [PostController::class, 'update']);
         Route::delete('/delete-post/{slug}', [PostController::class, 'delete']);
+    });
+
+    Route::prefix('/comment')->group(function () {
+        Route::post('/{slug}', [CommentController::class, 'commentPost']);
+        Route::post('/edit-comment/{id}', [CommentController::class, 'editComment']);
+        Route::delete('/delete-comment/{id}', [CommentController::class, 'deleteComment']);
     });
     
 });

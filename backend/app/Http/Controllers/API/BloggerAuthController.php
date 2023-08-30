@@ -63,8 +63,8 @@ class BloggerAuthController extends Controller
 
             $token =  $blogger->createToken('token_' . $blogger->name);
             $access_token =  $token->accessToken;
-            // $refresh_token =  $blogger->createToken('token_' . $blogger->name)->refreshToken;
 
+            // dd($token);
             // unset($blogger['password'], $blogger['created_at'], $blogger['updated_at']);
             $blogger->makeHidden(['password', 'created_at','updated_at']);
 
@@ -73,7 +73,6 @@ class BloggerAuthController extends Controller
                 'message' => 'Login successfully, Hello ' . $blogger->name,
                 'access_token' => $access_token,
                 'token_type' => 'Bearer',
-                // 'refresh_token' => $refresh_token,
                 'blogger_infor' => $blogger
             ]);
         } else {
