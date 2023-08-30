@@ -56,7 +56,8 @@ class PostController extends Controller
         return $tags;
     }
 
-    public function getAllCategories(){
+    public function getAllCategories()
+    {
         $categories = Category::all();
 
         return response([
@@ -69,7 +70,7 @@ class PostController extends Controller
     {
         $tags = Tag::all();
 
-        foreach($tags as $item){
+        foreach ($tags as $item) {
             $item->category_name = $item->category->name;
             unset($item->category);
         }
@@ -167,11 +168,18 @@ class PostController extends Controller
                 'status' => 0,
             ];
 
+            // $post = Post::create($data);
+
+            // if($request->input('tags')){
+
+            //     $post->tags()->sync($request->input('tags'));
+            // }
+
+            $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+
             $post = Post::create($data);
-            
-            if($request->input('tags')){
-                $post->tags()->sync($request->input('tags'));
-            }
+
+            $post->tags()->sync($tags);
 
             $post->update(
                 [
@@ -237,8 +245,12 @@ class PostController extends Controller
             }
 
             // $tags = json_decode(str_replace("'", '"', $request->input('tags')));
-            if($request->input('tags')){
-                $post->tags()->sync($request->input('tags'));
+            // if($request->input('tags')){
+            //     $post->tags()->sync($request->input('tags'));
+            // }
+            if ($request->input('tags')) {
+                $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+                $post->tags()->sync($tags);
             }
 
             $post->update($data);
@@ -285,6 +297,4 @@ class PostController extends Controller
             ], 500);
         }
     }
-
-    
 }
