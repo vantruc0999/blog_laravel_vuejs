@@ -100,7 +100,7 @@ class PostController extends Controller
     public function getDetailPostById($id)
     {
         $post = $this->checkActivePost($id);
-
+        // return $post->blogger;
         if (!$post) {
             return response()->json([
                 'message' => 'No post available',
@@ -117,6 +117,9 @@ class PostController extends Controller
             $post->likes_count = $post->likes->count();
             $post->comments = $this->getCommentInfors($post->comments);
             $post->tags = $this->getTagsInfor($post->category->tags);
+            $post->blogger_infor = $post->blogger;
+
+            unset($post->blogger_infor->password);
 
             $tmp_created_date = new Carbon($post->created_at);
             $tmp_updated_date = new Carbon($post->created_at);
@@ -127,7 +130,7 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
-            unset($post->category, $post->blogger_id, $post->blogger, $post->likes);
+            unset($post->blogger_name,$post->category, $post->blogger_id, $post->blogger, $post->likes);
 
             return response([
                 "message" => "success",
