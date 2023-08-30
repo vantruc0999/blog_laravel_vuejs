@@ -1,85 +1,93 @@
 <template>
     <div class="card" v-if="isCard">
-        <router-link :to="`/detail/${post?.id}`">
-            <div class="card__image">
-                <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="">
+        <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="card img" class="card__image">
+        <div class="card__right">
+            <div class="card__favorite">
+                <div class="card__categori">{{ post?.category_name }}</div>
+                <ion-icon name="bookmark-outline" class="card__bookmark"></ion-icon>
             </div>
-        </router-link>
-        <div class="card__detail">
-            <div class="card__header">
-                <div class="card__category">{{ post?.category_name }}</div>
-                <span class="card__comment--icon blog__favorites">
-                    <ion-icon name="bookmark-outline"></ion-icon>
-                </span>
-            </div>
-            <router-link :to="`/detail/${post?.id}`">
-                <div class="blog__body">
-                    <div class="blog__title">
-                        {{ post?.title }}
+            <div class="card__content">
+                <div class="card__top">
+                    <router-link :to="`/detail/${post?.id}`">
+                        <h3 class="card__title">
+                            {{ post?.title }}
+                        </h3>
+                        <p class="card__description">{{ post?.description }}</p>
+                    </router-link>
+                </div>
+                <div class="card__bottom">
+                    <div class="card__user">
+                        <img src="../assets/images/avatar-default.png" alt="" class="card__user__avatar">
+                        <router-link to="/profile">
+                            <div class="card__user__infor">
+                                <div class="card__user__top">
+                                    <div class="card__user__name">{{ post?.blogger_name }}</div>
+                                </div>
+                                <div class="card__user__time">9 giờ trước</div>
+                            </div>
+                        </router-link>
                     </div>
-                    <div class="blog__content">
-                        {{ post?.description }}
-                    </div>
-
-                    <div class="blog__bottom">
-                        <div class="blog__user">
-                            <img src="../assets/images/banner.png" />
-                            <div class="blog__user__infor">
-                                <span class="blog__user__name">{{ post?.blogger_name }}</span>
-                                <div class="blog__user__time">9 giờ trước</div>
+                    <router-link :to="`/detail/${post?.id}`">
+                        <div class="card__footer">
+                            <div class="card__watch">
+                                <ion-icon name="eye-outline"></ion-icon>
+                                <span>{{ post?.view_count }}k lượt xem</span>
+                            </div>
+                            <div class="card__comment">
+                                <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                                <span>12</span>
                             </div>
                         </div>
+                    </router-link>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- <img :src="'http://127.0.0.1:8000/' + post?.banner" alt=""> -->
 
-                        <div class="blog__comment">
-                            <span class="blog__comment--icon">
-                                <ion-icon name="eye-outline"></ion-icon>
-                            </span>
-                            <span class="blog__amount">1,2k lượt xem</span>
-                            <span class="blog__comment--icon">
-                                <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                            </span>
-                            <span class="blog__amount">7</span>
+    <!-- Blog -->
+    <div class="blog" v-else>
+        <div class="blog__favorite">
+            <div class="blog__categori">{{ post?.category_name }}</div>
+            <ion-icon name="bookmark-outline" class="blog__bookmark"></ion-icon>
+        </div>
+        <router-link :to="`/detail/${post?.id}`">
+            <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="blog img" class="blog__image">
+        </router-link>
+
+        <div class="blog__content">
+            <div class="blog__top">
+                <router-link :to="`/detail/${post?.id}`">
+                    <h3 class="blog__title">
+                        {{ post?.title }}
+                    </h3>
+                </router-link>
+                <div class="blog__user">
+                    <img src="../assets/images/avatar-default.png" alt="" class="blog__user__avatar">
+                    <router-link to="/profile">
+                        <div class="blog__user__infor">
+                            <div class="blog__user__top">
+                                <div class="blog__user__name">{{ post?.blogger_name }}</div>
+                            </div>
+                            <div class="blog__user__time">9 giờ trước</div>
                         </div>
+                    </router-link>
+                </div>
+            </div>
+            <router-link :to="`/detail/${post?.id}`">
+                <div class="blog__bottom">
+                    <div class="blog__watch">
+                        <ion-icon name="eye-outline"></ion-icon>
+                        <span>{{ post?.view_count }}k lượt xem</span>
+                    </div>
+                    <div class="blog__comment">
+                        <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
+                        <span>12</span>
                     </div>
                 </div>
             </router-link>
         </div>
-    </div>
 
-    <!-- Blog -->
-    <div class="blog" v-else>
-        <div class="blog__header">
-            <div class="blog__category">{{ post?.category_name }}</div>
-            <span class="blog__comment--icon blog__favorites">
-                <ion-icon name="bookmark-outline"></ion-icon>
-            </span>
-        </div>
-        <router-link :to="`/detail/${post?.id}`">
-            <div class="blog__image">
-                <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="">
-            </div>
-            <div class="blog__body">
-                <div class="blog__title">
-                    {{ post?.title }}
-                </div>
-                <div class="blog__bottom">
-                    <div class="blog__user">
-                        <img src="../assets/images/banner.png" />
-                        <div class="blog__user__infor">
-                            <span class="blog__user__name">{{ post?.blogger_name }}</span>
-                            <div class="blog__user__time">9 giờ trước</div>
-                        </div>
-                    </div>
-
-                    <div class="blog__comment">
-                        <span class="blog__comment--icon">
-                            <ion-icon name="eye-outline"></ion-icon>
-                        </span>
-                        <span class="blog__amount">{{ post?.view_count }} k lượt xem</span>
-                    </div>
-                </div>
-            </div>
-        </router-link>
     </div>
 </template>
 
@@ -98,181 +106,247 @@ const props = defineProps({
 </script>
 
 <style lang="scss" scoped>
+//  Card 
 .card {
     display: flex;
 
-    .card__image {
-        max-width: 200px;
-        margin-right: 20px;
-        width: 200px;
-
-        img {
-            width: 100%;
-            height: 200px;
-            border: 1px solid var(--border-color);
-            // object-fit: cover;
-        }
-    }
-
-    .card__detail {
-        flex: 1;
-
-        .card__header {
-            display: flex;
-            justify-content: space-between;
-
-            .card__category {
-                color: var(--text-color-4);
-                padding: 5px 15px;
-                border-radius: 10px;
-                border: 1px solid var(--border-color);
-                font-size: 14px;
-                display: flex;
-                justify-content: center;
-                font-weight: 600;
-                display: flex;
-                justify-content: center;
-                background-color: var(--white-color);
-                display: -webkit-box;
-                -webkit-line-clamp: 1;
-                -webkit-box-orient: vertical;
-                overflow: hidden;
-                margin-bottom: 5px;
-            }
-
-            .card__comment--icon {
-                cursor: pointer;
-                font-size: 20px;
-            }
-        }
-
-
-    }
-}
-
-
-// Blog
-
-.blog {
-    border-radius: 12px;
-    width: 100%;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-    position: relative;
-    background-color: var(--white-color);
-    cursor: pointer;
-    box-shadow: rgba(0, 0, 0, 0.4) 0px 2px 4px, rgba(0, 0, 0, 0.3) 0px 7px 13px -3px, rgba(0, 0, 0, 0.2) 0px -3px 0px inset;
-}
-
-.blog__header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 10px;
-}
-
-.blog__image {
-    img {
-        border: 1px solid var(--border-color);
-        flex-shrink: 0;
+    .card__right {
         width: 100%;
-        border-radius: 10px;
-        height: 200px;
-    }
-}
-
-.blog__category {
-    color: var(--text-color-4);
-    padding: 5px 15px;
-    border-radius: 10px;
-    border: 1px solid var(--border-color);
-    font-size: 14px;
-    display: flex;
-    justify-content: center;
-    font-weight: 600;
-    display: flex;
-    justify-content: center;
-    background-color: var(--white-color);
-    display: -webkit-box;
-    -webkit-line-clamp: 1;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
-    margin-bottom: 5px;
-}
-
-.blog__body {
-    display: flex;
-    flex-direction: column;
-    color: var(--text-color-4);
-
-
-    .blog__title {
-        flex: 1;
-        margin-top: 20px;
-        font-size: 18px;
-        color: var(--black-color);
-        font-weight: 600;
-        margin-bottom: 10px;
-        display: -webkit-box;
-        -webkit-line-clamp: 6;
-        -webkit-box-orient: vertical;
-        overflow: hidden !important;
     }
 
-    .blog__bottom {
+    .card__image {
+        width: 100%;
+        max-width: 230px;
+        height: auto;
+        object-fit: cover;
+        margin-right: 10px;
+        border: 1px solid var(--border-color);
+    }
+
+    .card__favorite {
         display: flex;
         justify-content: space-between;
+    }
+
+    .card__categori {
+        color: var(--text-color-4);
+        padding: 5px 15px;
+        border-radius: 10px;
+        border: 1px solid var(--border-color);
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
+        background-color: var(--white-color);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .card__bookmark {
+        cursor: pointer;
+        font-size: 20px;
+    }
+
+    .card__content {
+        &:hover {
+            color: var(--black-color);
+        }
+    }
+
+    .card__bottom {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .card__title {
+        font-size: 20px;
+        font-weight: 700;
+    }
+
+    .card__description {
+        font-size: 14px;
+    }
+
+    .card__user {
+        display: flex;
         align-items: center;
-        padding: 15px 0;
         margin-top: auto;
         flex-shrink: 0;
+
+        .card__user__avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .card__user__infor {
+            padding-left: 10px;
+            flex: 1;
+        }
+
+        .card__user__top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .card__user__name {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .card__user__time {
+            color: #999;
+            font-weight: 300;
+            font-size: 13px;
+        }
+    }
+
+    .card__footer {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        color: var(--text-color-4);
+        font-weight: 700;
+        margin-top: auto;
+        align-items: center;
+        display: flex;
+        gap: 15px;
     }
 }
 
-
-.blog__user {
+// Blog
+.blog {
+    border-radius: 10px;
+    overflow: hidden;
+    background-color: var(--white-color);
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 29px 0;
     display: flex;
-    gap: 10px;
-    align-items: center;
+    flex-direction: column;
 
-    img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
+    .blog__favorite {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px;
+    }
+
+    .blog__categori {
+        color: var(--text-color-4);
+        padding: 5px 15px;
+        border-radius: 10px;
         border: 1px solid var(--border-color);
+        font-size: 14px;
+        display: flex;
+        justify-content: center;
+        font-weight: 600;
+        display: flex;
+        justify-content: center;
         background-color: var(--white-color);
+        display: -webkit-box;
+        -webkit-line-clamp: 1;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .blog__bookmark {
+        cursor: pointer;
+        font-size: 20px;
+    }
+
+    .blog__image {
+        height: 200px;
+        width: 100%;
         object-fit: cover;
         flex-shrink: 0;
     }
-}
 
-// .blog__bottom {
-//     margin-top: auto !important;
-//     display: flex;
-//     justify-content: space-between;
-//     align-items: center;
-//     padding: 15px 0;
-//     flex-shrink: 0;
-// }
-
-.blog__comment {
-    display: flex;
-    gap: 2px;
-    align-items: center;
-
-    .blog__comment--icon {
-        cursor: pointer;
-        font-size: 20px;
-        color: var(--text-color-4);
-        margin-left: 5px;
+    .blog__content {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
     }
 
-    .blog__amount {
+    .blog__top {
+        padding: 15px;
+        display: flex;
+        flex: 1;
+        flex-direction: column;
+    }
+
+    .blog__title {
+        margin-bottom: 20px;
+    }
+
+    .blog__user {
+        display: flex;
+        align-items: center;
+        margin-top: auto;
+        flex-shrink: 0;
+
+        .blog__user__avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            flex-shrink: 0;
+        }
+
+        .blog__user__infor {
+            padding-left: 10px;
+            flex: 1;
+        }
+
+        .blog__user__top {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .blog__user__name {
+            font-weight: 500;
+            font-size: 14px;
+            line-height: 1;
+        }
+
+        .blog__user__time {
+            color: #999;
+            font-weight: 300;
+            font-size: 13px;
+        }
+
+    }
+
+    .blog__bottom {
+        padding: 15px;
+        border-top: 1px solid #eee;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
         color: var(--text-color-4);
-        font-size: 12px;
-        position: relative;
-        top: -2px;
+        font-weight: 700;
+        margin-top: auto;
+
+        .blog__watch {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+        }
+
+        .blog__comment {
+            display: flex;
+            align-items: center;
+            gap: 2px;
+
+            span {
+                font-size: 14px;
+            }
+        }
     }
 }
 </style>

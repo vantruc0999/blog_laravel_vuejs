@@ -1,17 +1,7 @@
 <template >
     <div class='wrapper' v-if="isOpen">
         <div class='header'>
-            <div class='header-left'>
-                <!-- {user.imageUrl ? (
-            <img class='avatar-img avatar' src={user.imageUrl} alt={user.imageUrl} />
-            ) : (
-            <img class='avatar' src={images.avatarDefault} alt="Avatar" />
-            )} -->
-                <img class='avatar'
-                    src="https://prtimes.jp/data/corp/52087/ogp/tmp-76356af6bbe6808780560cbb9a079658-4f2a31ac93df6dfcbea753878b5607c7.jpg"
-                    alt="Avatar" />
 
-            </div>
             <div class='header-right'>
                 <div class='user-name'>{{ userData?.name }}</div>
             </div>
@@ -121,20 +111,13 @@ const handleLogout = () => {
     justify-content: space-between;
     padding: 10px;
 
-    .header-left {
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin-right: 10px;
-
-        .avatar {
-            --size: 50px;
-            border-radius: 50%;
-            object-fit: cover;
-            background-repeat: no-repeat;
-            width: var(--size);
-            height: var(--size);
-        }
+    .avatar {
+        --size: 50px;
+        border-radius: 50%;
+        object-fit: cover;
+        background-repeat: no-repeat;
+        width: var(--size);
+        height: var(--size);
     }
 
     .header-right {
