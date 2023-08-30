@@ -11,11 +11,11 @@ use Illuminate\Support\Facades\Auth;
 class CommentController extends Controller
 {
     //
-    private function checkActivePost($slug)
+    private function checkActivePost($id)
     {
         $post = Post::where(
             [
-                'slug' => $slug,
+                'id' => $id,
                 'status' => 1,
             ]
         )->first();
@@ -27,10 +27,15 @@ class CommentController extends Controller
         return $post;
     }
 
-    public function commentPost(Request $request, $slug)
+    public function commentPost(Request $request, $id)
     {
         try {
-            $post = $this->checkActivePost($slug);
+            $post = $this->checkActivePost($id);
+            if(!$post){
+                return response()->json([
+                    'message' => 'No post available',
+                ], 500);
+            }
             $this->validate($request, [
                 'description' => 'required|max:255',
             ]);

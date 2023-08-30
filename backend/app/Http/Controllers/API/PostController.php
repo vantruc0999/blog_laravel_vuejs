@@ -56,7 +56,8 @@ class PostController extends Controller
         return $tags;
     }
 
-    public function getAllCategories(){
+    public function getAllCategories()
+    {
         $categories = Category::all();
 
         return response([
@@ -69,7 +70,7 @@ class PostController extends Controller
     {
         $tags = Tag::all();
 
-        foreach($tags as $item){
+        foreach ($tags as $item) {
             $item->category_name = $item->category->name;
             unset($item->category);
         }
@@ -99,7 +100,7 @@ class PostController extends Controller
     public function getDetailPostById($id)
     {
         $post = $this->checkActivePost($id);
-
+        // return $post->blogger;
         if (!$post) {
             return response()->json([
                 'message' => 'No post available',
@@ -116,6 +117,9 @@ class PostController extends Controller
             $post->likes_count = $post->likes->count();
             $post->comments = $this->getCommentInfors($post->comments);
             $post->tags = $this->getTagsInfor($post->category->tags);
+            $post->blogger_infor = $post->blogger;
+
+            unset($post->blogger_infor->password);
 
             $tmp_created_date = new Carbon($post->created_at);
             $tmp_updated_date = new Carbon($post->created_at);
@@ -126,7 +130,7 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
-            unset($post->category, $post->blogger_id, $post->blogger, $post->likes);
+            unset($post->blogger_name,$post->category, $post->blogger_id, $post->blogger, $post->likes);
 
             return response([
                 "message" => "success",
@@ -167,11 +171,18 @@ class PostController extends Controller
                 'status' => 0,
             ];
 
+            // $post = Post::create($data);
+
+            // if($request->input('tags')){
+
+            //     $post->tags()->sync($request->input('tags'));
+            // }
+
+            $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+
             $post = Post::create($data);
-            
-            if($request->input('tags')){
-                $post->tags()->sync($request->input('tags'));
-            }
+
+            $post->tags()->sync($tags);
 
             $post->update(
                 [
@@ -237,8 +248,12 @@ class PostController extends Controller
             }
 
             // $tags = json_decode(str_replace("'", '"', $request->input('tags')));
-            if($request->input('tags')){
-                $post->tags()->sync($request->input('tags'));
+            // if($request->input('tags')){
+            //     $post->tags()->sync($request->input('tags'));
+            // }
+            if ($request->input('tags')) {
+                $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+                $post->tags()->sync($tags);
             }
 
             $post->update($data);
@@ -285,6 +300,4 @@ class PostController extends Controller
             ], 500);
         }
     }
-
-    
 }

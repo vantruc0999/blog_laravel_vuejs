@@ -33,7 +33,7 @@ Route::prefix('/posts')->group(function () {
 });
 
 Route::prefix('/blogger')->group(function () {
-    Route::get('/{slug}', [BloggerProfileController::class, 'getPublicProfileInfor']);
+    Route::get('/{id}', [BloggerProfileController::class, 'getPublicProfileInfor']);
 });
 
 Route::middleware(['auth:blogger'])->group(function () {
@@ -42,6 +42,7 @@ Route::middleware(['auth:blogger'])->group(function () {
     Route::prefix('/blogger')->group(function () {
         Route::get('/me/profile', [BloggerProfileController::class, 'getMyProfileInfor']);
         Route::post('/me/update-profile', [BloggerProfileController::class, 'updateBloggerProfile']);
+        Route::post('/follow/{id}', [BloggerProfileController::class, 'follow']);
     });
     
     Route::prefix('/posts')->group(function () {
