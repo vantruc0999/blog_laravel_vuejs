@@ -51,7 +51,7 @@ class CommentController extends Controller
         } catch (\Exception $err) {
 
             return response()->json([
-                'message' => 'An error occurred while createing comment',
+                'message' => 'An error occurred while creating comment',
                 'error' => $err->getMessage()
             ], 500);
         }
