@@ -14,4 +14,5 @@ export const PostService = {
   getpostbyid(id) {
     return httpClient.get(`${API_GETALLPOST}/${id}`)
   }
+
 };

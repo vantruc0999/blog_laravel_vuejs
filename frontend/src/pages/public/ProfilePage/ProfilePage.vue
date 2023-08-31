@@ -2,11 +2,14 @@
     <div class="profile__container">
         <div class="profile__heading">
             <div class="profile_wrapper">
-                <img src="https://images.unsplash.com/photo-1692685934729-ade81906226e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
-                    alt="" class="background">
+                <img v-if="authStore?.user?.blogger_infor?.banner"
+                    :src="'http://127.0.0.1:8000/images/banner/' + authStore?.user?.blogger_infor?.banner"
+                    class="background" />
+                <img src="../../../assets/images/books.jpg" v-else class="background" />
+
                 <div class="profile__top">
                     <router-link to="/">
-                        <img src="../../../assets/images/logo-monkey-white.png" alt="">
+                        <img src="../../../assets/images/logo-monkey-white.png">
                     </router-link>
                     <div class="profile__right">
                         <div class="header__right" v-if="!isAuth">
@@ -38,16 +41,20 @@
                                 </button>
                             </router-link>
                             <div class="header__user__avatar" @click="handleOpenOptions">
-                                <img src={userData.value.profile_image} alt="" v-if="userData.profile_image">
+                                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt=""
+                                    v-if="userData.value?.profile_image">
                                 <img src="../../../assets/images/avatar-default.png" alt="" v-else>
                             </div>
                             <OptionUser :isOpen="isOpen" />
                         </div>
                     </div>
                 </div>
+
             </div>
             <div class="user__avatar">
-                <img src="../../../assets/images/avatar-default.png" class="avatar__img" alt="" />
+                <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore?.user?.blogger_infor?.profile_image"
+                    class="avatar__img" v-if="authStore?.user?.blogger_infor?.profile_image" />
+                <img src="../../../assets/images/avatar-default.png" class="avatar__img" alt="" v-else />
             </div>
         </div>
     </div>
@@ -55,7 +62,7 @@
         <div class="profile__desc">
             <div class="profile__detail">
                 <div class="user__infor">
-                    <span class="user__name">{{ userData.name }}</span>
+                    <span class="user__name">{{ authStore?.user?.blogger_infor?.name }}</span>
                     <span class="user__follow">3355 <span class="user__follow--text">followers</span></span>
                     <span class="user__social">
                         <ion-icon name="logo-facebook"></ion-icon>
@@ -72,19 +79,13 @@
                         16
                         <span class="profile__interaction--text">followers</span>
                     </div>
-                    <div class="profile__followers">
-                        32
-                        <span class="profile__interaction--text">following</span>
-                    </div>
+
                     <div class="profile__followers">
                         1200
                         <span class="profile__interaction--text">views</span>
                     </div>
                 </div>
-                <p class="profile__about">Một rapper đến từ hư vô, bậc thầy trong làng lùa gà, chém gió với những kiến thức
-                    tích lũy hàng chục năm. Tôi tin rằng tôi có thể khai phá cho bạn một chân trời mới về những kiến thức
-                    bạn còn thiếu sót trong xã hội ngày nay. Thứ bạn cần là một con đường dẫn đến vinh quang, còn thứ tôi
-                    làm là đưa bạn ra xa khỏi xã hội rối ren này.</p>
+                <p class="profile__about">{{ authStore?.user?.blogger_infor?.bio }}</p>
             </div>
             <div class="profile__action">
                 <div class="profile__action__controller">
@@ -108,12 +109,7 @@
                 </div>
                 <!-- Card -->
                 <div class="profile__card">
-                    <CardNew />
-                    <CardNew />
-                    <CardNew />
-                    <CardNew />
-                    <CardNew />
-                    <CardNew />
+                    <CardNew :post="post" v-for="(  post, index  ) in   authStore?.user?.blogger_infor?.posts  " />
                 </div>
             </div>
 
@@ -123,15 +119,24 @@
 </template>
 
 <script setup>
-import { ref, watchEffect } from "vue"
+import { onMounted, computed, ref, watchEffect } from "vue"
 import Footer from "../../../components/Footer.vue"
 import DropDown from "../../../components/DropDown.vue"
 import CardNew from "../../../components/CardNew.vue"
 import OptionUser from "../../../components/OptionUser.vue"
+import { useAuthStore } from "../../../stores/authStore"
+import {
+    useRoute,
+    useRouter
+} from 'vue-router';
 
+const authStore = useAuthStore()
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-
+console.log("🚀 ~ file: ProfilePage.vue:135 ~ userData:", userData.value.profile_image)
+console.log('http://127.0.0.1:8000/images/avatar/' + authStore?.user?.blogger_infor?.profile_image);
+const route = useRoute();
+const refAuthor = ref(route.params.id)
 let isOpen = ref(false);
 
 const handleOpenOptions = () => {
@@ -146,6 +151,13 @@ const filterData = [{
     link: "#"
 },
 ]
+
+const getProfileAuthor = computed(() => {
+    return authStore.getAuthorById(refAuthor.value)
+})
+onMounted(async () => {
+    await getProfileAuthor.value;
+});
 
 watchEffect(() => {
     window.scrollTo(0, 0);

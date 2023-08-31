@@ -97,7 +97,7 @@ import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
       ],
     },
     {
-      path: "/profile",
+      path: "/profile/:id",
       name: "profile",
       component: ProfilePage,
     },
