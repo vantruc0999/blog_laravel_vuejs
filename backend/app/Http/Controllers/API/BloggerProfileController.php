@@ -15,25 +15,42 @@ use Illuminate\Support\Facades\DB;
 class BloggerProfileController extends Controller
 {
     //
+    public function getAllBloggers(){
+        return Blogger::all()->makeHidden(['password']);
+    }
+
     public function getPublicProfileInfor($id)
     {
-        $blogger = Blogger::where('id', $id)->first();
+        try {
+            $blogger = Blogger::where('id', $id)->first();
 
-        $blogger->posts = $blogger
-            ->posts()
-            ->where('status', 1)
-            ->get();
+            $numberOfFollowing = Follow::where('blogger_id', $blogger->id)->count('following_id');
+            $numberOfFollowers = Follow::where('blogger_id', $blogger->id)->count('follower_id');
 
-        unset($blogger->password, $blogger->created_at, $blogger->updated_at);
+            $blogger->number_of_following = $numberOfFollowing;
+            $blogger->number_of_followers = $numberOfFollowers;
 
-        foreach ($blogger->posts as $item) {
-            unset($item->description, $item->new_post, $item->highlight, $item->blogger_id);
+            $blogger->posts = $blogger
+                ->posts()
+                ->where('status', 1)
+                ->get();
+
+            unset($blogger->password, $blogger->created_at, $blogger->updated_at);
+
+            foreach ($blogger->posts as $item) {
+                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id);
+            }
+
+            return response([
+                'message' => 'success',
+                'blogger_infor' => $blogger,
+            ]);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while getting profile',
+                'error' => $err->getMessage()
+            ], 500);
         }
-
-        return response([
-            'message' => 'success',
-            'blogger_infor' => $blogger,
-        ]);
     }
 
     public function getMyProfileInfor()
@@ -43,8 +60,6 @@ class BloggerProfileController extends Controller
 
             $numberOfFollowing = Follow::where('blogger_id', $blogger->id)->count('following_id');
             $numberOfFollowers = Follow::where('blogger_id', $blogger->id)->count('follower_id');
-
-            // return $numberOfFollowers;
 
             $tmp_created_date = new Carbon($blogger->created_at);
             $dt['created'] = $tmp_created_date->format('Y-m-d H:i:s');
@@ -117,14 +132,87 @@ class BloggerProfileController extends Controller
         }
     }
 
-    public function follow($blogger_id){
-        Follow::create([
-            'blogger_id' => $blogger_id,
-            'following_id' => Auth::user()['id'],
-        ]);
-        return response([
-            'message' => 'sucecss',
-        ]);
+    public function follow($blogger_id)
+    {
+        try {
+            $following = Follow::where([
+                'blogger_id' => Auth::user()['id'],
+                'following_id' => $blogger_id,
+            ])->first();
+
+            $follower = Follow::where([
+                'blogger_id' => $blogger_id,
+                'follower_id' => Auth::user()['id'],
+            ])->first();
+
+            if ($following && $follower) {
+                $following->delete();
+                $follower->delete();
+                return response([
+                    'message' => 'unfollow sucecssfully',
+                ]);
+            }
+
+            Follow::create(
+                [
+                    'blogger_id' => $blogger_id,
+                    'follower_id' => Auth::user()['id'],
+                ]
+            );
+
+            Follow::create(
+                [
+                    'blogger_id' => Auth::user()['id'],
+                    'following_id' => $blogger_id,
+                ],
+            );
+
+            return response([
+                'message' => 'follow sucecssfully',
+            ]);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while following blogger, maybe blogger is not available',
+                'error' => $err->getMessage()
+            ], 500);
+        }
     }
 
+    public function isFollowed($blogger_id)
+    {
+        $follow = Follow::where(function($query) use ($blogger_id) {
+            $query->where('blogger_id', Auth::user()['id'])
+                  ->where('following_id', $blogger_id);
+        })->orWhere(function($query) use ($blogger_id) {
+            $query->where('blogger_id', $blogger_id)
+                  ->where('follower_id', Auth::user()['id']);
+        })->first();
+
+        if ($follow) {
+            return response([
+                'message' => 'You\'ve already followed this blogger',
+                'is_followed' => 1,
+            ]);
+        }
+        else{
+            return response([
+                'message' => 'You have not followed this blogger before',
+                'is_followed' => 0,
+            ]);
+        }
+    }
+
+    // public function unfollow($blogger_id)
+    // {
+    //     $follow = Follow::where([
+    //         'blogger_id' => Auth::user()['id'],
+    //         'following_id' => $blogger_id,
+    //     ])->first();
+
+    //     $follow->delete();
+
+    //     return response([
+    //         'message' => 'sucecss',
+    //     ]);
+    // }
 }

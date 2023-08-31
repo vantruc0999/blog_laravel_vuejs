@@ -26,6 +26,7 @@ Route::post('/register', [BloggerAuthController::class, 'register']);
 Route::post('/login', [BloggerAuthController::class, 'login']);
 Route::get('/tags/get-all-tags', [PostController::class, 'getAllTags']);
 Route::get('/categories/get-all-categories', [PostController::class, 'getAllCategories']);
+Route::get('/bloggers', [BloggerProfileController::class, 'getAllBloggers']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
@@ -43,6 +44,8 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::get('/me/profile', [BloggerProfileController::class, 'getMyProfileInfor']);
         Route::post('/me/update-profile', [BloggerProfileController::class, 'updateBloggerProfile']);
         Route::post('/follow/{id}', [BloggerProfileController::class, 'follow']);
+        Route::post('/check-follow/{id}', [BloggerProfileController::class, 'isFollowed']);
+        // Route::delete('/unfollow/{id}', [BloggerProfileController::class, 'unfollow']);
     });
     
     Route::prefix('/posts')->group(function () {

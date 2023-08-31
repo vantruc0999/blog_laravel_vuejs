@@ -28,8 +28,8 @@ class PostController extends Controller
 
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
-            $post->blogger_name = $post->blogger->name;
-            unset($post->category, $post->blogger_id, $post->blogger, $post->description);
+            $post->blogger_infor = $post->blogger;
+            unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description);
         }
 
         return response([
@@ -251,6 +251,7 @@ class PostController extends Controller
             // if($request->input('tags')){
             //     $post->tags()->sync($request->input('tags'));
             // }
+
             if ($request->input('tags')) {
                 $tags = json_decode(str_replace("'", '"', $request->input('tags')));
                 $post->tags()->sync($tags);
