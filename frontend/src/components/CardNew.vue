@@ -1,6 +1,6 @@
 <template>
     <div class="card" v-if="isCard">
-        <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="card img" class="card__image">
+        <img :src="'http://127.0.0.1:8000/storage/' + post?.banner" alt="card img" class="card__image">
         <div class="card__right">
             <div class="card__favorite">
                 <div class="card__categori">{{ post?.category_name }}</div>
@@ -12,7 +12,7 @@
                         <h3 class="card__title">
                             {{ post?.title }}
                         </h3>
-                        <p class="card__description">{{ post?.description }}</p>
+                        <p class="card__intro">{{ post?.intro }}</p>
                     </router-link>
                 </div>
                 <div class="card__bottom">
@@ -31,7 +31,7 @@
                         <div class="card__footer">
                             <div class="card__watch">
                                 <ion-icon name="eye-outline"></ion-icon>
-                                <span>{{ post?.view_count }}k lượt xem</span>
+                                <span>{{ post?.view_count }} lượt xem</span>
                             </div>
                             <div class="card__comment">
                                 <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
@@ -52,7 +52,7 @@
             <ion-icon name="bookmark-outline" class="blog__bookmark"></ion-icon>
         </div>
         <router-link :to="`/detail/${post?.id}`">
-            <img :src="'http://127.0.0.1:8000/' + post?.banner" alt="blog img" class="blog__image">
+            <img :src="'http://127.0.0.1:8000/storage/' + post?.banner" alt="blog img" class="blog__image">
         </router-link>
 
         <div class="blog__content">
@@ -64,7 +64,7 @@
                 </router-link>
                 <div class="blog__user">
                     <img src="../assets/images/avatar-default.png" alt="" class="blog__user__avatar">
-                    <router-link to="/profile">
+                    <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`">
                         <div class="blog__user__infor">
                             <div class="blog__user__top">
                                 <div class="blog__user__name">{{ post?.blogger_name }}</div>
@@ -78,7 +78,7 @@
                 <div class="blog__bottom">
                     <div class="blog__watch">
                         <ion-icon name="eye-outline"></ion-icon>
-                        <span>{{ post?.view_count }}k lượt xem</span>
+                        <span>{{ post?.view_count }} lượt xem</span>
                     </div>
                     <div class="blog__comment">
                         <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
@@ -95,7 +95,10 @@
 import {
     ref
 } from "vue"
+import { usePostStore } from "../stores/postStore";
 
+const postStore = usePostStore()
+console.log("hello", props.post);
 // Định nghĩa prop "message"
 const props = defineProps({
     isCard: Boolean,
@@ -165,10 +168,18 @@ const props = defineProps({
     .card__title {
         font-size: 20px;
         font-weight: 700;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .card__description {
         font-size: 14px;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .card__user {
@@ -281,6 +292,10 @@ const props = defineProps({
 
     .blog__title {
         margin-bottom: 20px;
+        display: -webkit-box;
+        -webkit-line-clamp: 4;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
     }
 
     .blog__user {

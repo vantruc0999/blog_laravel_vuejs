@@ -15,8 +15,8 @@
 
                 <span class="editor__title">Lời giới thiệu</span>
                 <div class="editor__intro">
-                    <textarea v-model="intro" ref="textarea" :style="{ height: `${height}px` }" class="editor__intro__input"
-                        @input="handleResize" placeholder="Nhập giới thiệu của bạn..."></textarea>
+                    <textarea v-model="intro" ref="textarea" class="editor__intro__input"
+                        placeholder="Nhập giới thiệu của bạn..."></textarea>
                 </div>
 
                 <span class="editor__title">Chọn ảnh cho tiêu đề</span>
@@ -39,7 +39,9 @@ import { ref, computed } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CKEditor from '@ckeditor/ckeditor5-vue';
 import { Select } from 'ant-design-vue';
+import { usePostStore } from '../../../stores/postStore';
 
+const postStore = usePostStore()
 
 const categoryData = [
     { id: 1, name: 'Văn học' },
@@ -124,7 +126,7 @@ const handleSubmit = () => {
     const formData = new FormData();
     formData.append('banner', imagePath.value)
     formData.append('title', submittedTitle)
-    // formData.append('intro', submittedIntro)
+    formData.append('intro', submittedIntro)
     formData.append('description', submittedEditorData)
     formData.append('category_id', 1)
     formData.append('tags', [1, 2])

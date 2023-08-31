@@ -4,10 +4,10 @@
     </div>
     <div class="detail__container">
         <div class="detail__heading">
-            <img :src="'http://127.0.0.1:8000/' + postStore.post?.data?.banner" alt="">
+            <img :src="'http://127.0.0.1:8000/storage/' + postStore.post?.data?.banner" alt="">
             <div class="detail__infor">
                 <div class="detail__category">
-                    <span>Đời sống</span>
+                    <span>{{ postStore.post?.data?.category_name }}</span>
                 </div>
                 <p class="detail__title">
                     {{ postStore.post?.data?.title }}
@@ -17,7 +17,7 @@
                         <div class="detail__user">
                             <img src="../../../assets/images/banner.png" />
                             <div class="detail__user__infor">
-                                <span class="detail__user__name">{{ postStore.post?.data?.blogger_name }}</span>
+                                <span class="detail__user__name">{{ postStore.post?.data?.blogger_infor.name }}</span>
                             </div>
                         </div>
                         <span class="detail__time">28/10</span>
@@ -40,12 +40,16 @@
             </div>
         </div>
         <!-- Author -->
-        <router-link to="/profile" class="detail__author">
-            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQUaaiyZexlQOXhA3XvW096dvlFLpQWg3DackZB1d49rB5yONuSswV6_yyeKSXoBN18Ypk&usqp=CAU"
-                alt="">
+        <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`" class="detail__author">
+            <img :src="'http://127.0.0.1:8000/images/avatar/' + postStore.post?.data?.blogger_infor?.profile_image" alt=""
+                v-if="postStore.post?.data?.blogger_infor?.profile_image">
+            <img src="../../../assets/images/avatar-default.png" alt="" v-else>
             <div class="detail__infor">
                 <h2 class="detail__name">{{ postStore.post?.data?.blogger_infor.name }}</h2>
-                <p class="detail__desc">{{ postStore.post?.data?.blogger_infor.bio }} </p>
+                <p class="detail__desc" v-if="postStore.post?.data?.blogger_infor.bio">{{
+                    postStore.post?.data?.blogger_infor.bio }} </p>
+                <p class="detail__desc" v-else>Một tác giả đến từ Monkey Blog với những bài đăng chia sẻ thú vị về kiến thức
+                </p>
             </div>
         </router-link>
 
@@ -137,7 +141,7 @@ import { usePostStore } from "../../../stores/postStore";
 import Loading from "../../../components/Loading.vue"
 
 const postStore = usePostStore()
-console.log("🚀 ~ file: DetailPage.vue:149 ~ postStore:", postStore.post.data)
+
 const route = useRoute();
 const refDetail = ref(route.params.id)
 
@@ -176,6 +180,7 @@ watchEffect(() => {
         height: 465px;
         border-radius: 12px;
         margin-right: 70px;
+        object-fit: cover;
     }
 
 }
@@ -206,6 +211,7 @@ watchEffect(() => {
         font-size: 22px;
         color: var(--secondary-color);
         font-weight: 600;
+        text-transform: uppercase;
     }
 
     .detail__desc {

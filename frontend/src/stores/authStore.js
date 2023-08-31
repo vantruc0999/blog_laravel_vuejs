@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import { AuthService } from "../services/authServices";
+import { PostService } from "../services/postServices";
 import router from "../route/router";
 
 export const useAuthStore = defineStore("authStore", {
@@ -34,7 +35,6 @@ export const useAuthStore = defineStore("authStore", {
       try {
         this.isLoading = true;
         const response = await AuthService.signin(userData);
-        // console.log(response.data.access_token);
         this.user = response.data.blogger_infor;
         // Lưu token vào LocalStorage
         localStorage.setItem("token", response.data.access_token);
@@ -59,7 +59,6 @@ export const useAuthStore = defineStore("authStore", {
         localStorage.removeItem("user");
 
         this.isLogin = false
-        // Đẩy lại đến trang /auth/signin
         toast.success("Đăng xuất thành công", {
           position: "top-right",
           duration: 2500,
@@ -68,6 +67,19 @@ export const useAuthStore = defineStore("authStore", {
 
       } catch (error) {
         console.error(error);
+      }
+    },
+
+
+    async getAuthorById(authorId) {
+      try {
+        this.isLoading = true;
+        const response = await AuthService.getauthorbyid(authorId);
+        this.user = response?.data;
+        console.log("🚀 ~ file: authStore.js:90 ~ getAuthorById ~ this.user:", this.user)
+        this.isLoading = false;
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
       }
     },
   },

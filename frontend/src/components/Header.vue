@@ -50,7 +50,7 @@
                 </router-link>
                 <div class="header__avatar" @click="handleOpenOptions">
                     <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt="avatar"
-                        v-if="userData.profile_image">
+                        v-if="userData.value?.profile_image">
                     <img src="../assets/images/avatar-default.png" alt="" v-else>
                 </div>
                 <OptionUser :isOpen="isOpen" />

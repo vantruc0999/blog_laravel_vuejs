@@ -1,5 +1,7 @@
 <template>
-    <!-- <Loading /> -->
+    <div v-if="postStore.isLoading">
+        <Loading />
+    </div>
     <div class="home__container">
         <div class="home__banner">
             <div class="home__content">
