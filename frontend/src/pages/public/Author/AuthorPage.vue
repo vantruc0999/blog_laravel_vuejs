@@ -1,4 +1,7 @@
 <template >
+    <div v-if="authStore.isLoading">
+        <Loading />
+    </div>
     <div class="author__container">
         <div class="author__banner">
             <img src="../../../assets/images/books.jpg" alt="" class="author__image">
@@ -12,17 +15,21 @@
             <span class="author__time">Mọi thời điểm</span>
         </div>
         <div class="author__list">
-            <SignatureAuthor />
-            <SignatureAuthor />
-            <SignatureAuthor />
+            <SignatureAuthor :author="author" v-for="(author, index) in authStore.users" :key="index" />
         </div>
     </div>
 </template>
 <script setup>
 import SignatureAuthor from "../../../pages/public/Home/RelatedPage/SignatureAuthor.vue"
+
 import {
     watchEffect
 } from "vue";
+import { useAuthStore } from "../../../stores/authStore";
+import Loading from "../../../components/Loading.vue";
+
+const authStore = useAuthStore()
+authStore.fetchAllBlogger()
 
 
 watchEffect(() => {
@@ -65,13 +72,7 @@ watchEffect(() => {
                 justify-content: center;
             }
 
-            // position: absolute;
-            // top: 0;
-            // right: 0;
-            // left: 0;
-            // bottom: 0;
-            // background-color: var(--white-color);
-            // opacity: .3;
+
         }
     }
 

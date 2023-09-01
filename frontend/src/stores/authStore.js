@@ -70,7 +70,17 @@ export const useAuthStore = defineStore("authStore", {
       }
     },
 
-
+    async fetchAllBlogger() {
+      try {
+        this.isLoading = true;
+        const response = await AuthService.getallblogger();
+        this.users = response?.data;
+        console.log("🚀 ~ file: authStore.js:78 ~ fetchAllBlogger ~ this.users:", this.users)
+        this.isLoading = false;
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy danh sách bài viết. Vui lòng thử lại sau.");
+      }
+    },
     async getAuthorById(authorId) {
       try {
         this.isLoading = true;
@@ -82,5 +92,16 @@ export const useAuthStore = defineStore("authStore", {
         toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
       }
     },
+    async getMyProfile() {
+      try {
+        this.isLoading = true;
+        const response = await AuthService.getmyprofile();
+        console.log("🚀 ~ file: authStore.js:98 ~ getMyProfile ~ response:", response.data)
+        this.user = response?.data;
+        this.isLoading = false;
+      }catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+      }
+    }
   },
 });

@@ -10,15 +10,19 @@
                     Xem thêm
                 </router-link>
             </div>
-            <SignatureAuthor />
+            <SignatureAuthor :author="author" v-for="(author, index) in authStore.users" :key="index" />
         </div>
 
     </div>
 </template>
 
 <script setup>
+import { useAuthStore } from '../../../../stores/authStore';
 import RelatedPost from './RelatedPost.vue';
 import SignatureAuthor from './SignatureAuthor.vue';
+
+const authStore = useAuthStore()
+authStore.fetchAllBlogger()
 
 </script>
 

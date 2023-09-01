@@ -1,39 +1,53 @@
 <template >
     <div class="signature__wrapper">
         <div class="signature__user">
-            <router-link to="/profile">
+            <router-link :to="`/profile/${author?.id}`">
                 <div class="signature__user__left">
-                    <img class="signature__user__img"
-                        src="https://images.unsplash.com/photo-1682685797366-715d29e33f9d?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
-                        alt="">
+                    <img class="signature__user__img" :src="'http://127.0.0.1:8000/images/avatar/' + author?.profile_image"
+                        alt="" v-if="author?.profile_image">
+                    <img class="signature__user__img" src="../../../../assets/images/avatar-default.png" alt="" v-else>
                     <div class="signature__user__infor">
-                        <span class="signature__user__author">Hải Haven</span>
-                        <span class="signature__user__nickname">Ein Verrückter</span>
+                        <span class="signature__user__author">{{ author?.name }}</span>
+                        <span class="signature__user__nickname">{{ author?.slug }}</span>
                     </div>
                 </div>
             </router-link>
             <div class="signature__user__right">
-                <button class="signature__user__btn">Theo dõi</button>
-            </div>
-        </div>
-        <div class="signature__user">
-            <router-link to="/profile">
-                <div class="signature__user__left">
-                    <img class="signature__user__img" src="../../../../assets/images/bin2.jpg" alt="">
-                    <div class="signature__user__infor">
-                        <span class="signature__user__author">Jackies Bin Duong</span>
-                        <span class="signature__user__nickname">Daiza Vú</span>
-                    </div>
-                </div>
-            </router-link>
-            <div class="signature__user__right">
-                <button class="signature__user__btn">Theo dõi</button>
+                <button class="signature__user__btn signature__user__btn--follow " @click="handleGetFollow(author?.id)"
+                    v-if="authorStore?.isFollow">Theo dõi
+                    <ion-icon name="person-add-outline"></ion-icon>
+                </button>
+                <button class="signature__user__btn signature__user__btn--followed" @click="handleGetFollow(author?.id)"
+                    v-else>Đang theo dõi
+                    <ion-icon name="checkmark-circle-outline"></ion-icon>
+                </button>
             </div>
         </div>
     </div>
 </template>
 <script setup>
+import { watchEffect, onMounted, ref } from "vue"
+import { useAuthorStore } from "../../../../stores/authorStore";
+import { useAuthStore } from "../../../../stores/authStore";
 
+const authStore = useAuthStore()
+console.log("hello", authStore?.user?.blogger_infor?.id);
+const authorStore = useAuthorStore()
+const props = defineProps({
+    author: Object
+})
+const handleGetFollow = (id) => {
+    authorStore.getFollowAuthor(id);
+    authorStore.getAuthorFollowed(id)
+}
+onMounted(async () => {
+    await authorStore.getAuthorFollowed(props.author?.id)
+});
+
+watchEffect(() => {
+    window.scrollTo(0, 0);
+
+})
 </script>
 <style lang="scss" scoped>
 .signature__wrapper {
@@ -75,9 +89,30 @@
         }
 
         .signature__user__btn {
-            padding: 12px;
-            border-radius: 12px;
-            width: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 10px;
+            width: 150px;
+            gap: 5px;
+            cursor: pointer;
+            background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+            color: var(--white-color);
+            font-size: 15px;
+
+            &--follow {
+                background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+                color: var(--white-color);
+
+            }
+
+            &--followed {
+                border: 1px solid var(--border-color);
+                color: var(--green-color);
+                font-weight: 700;
+                background-image: var(--white-color) !important;
+            }
         }
     }
 }
