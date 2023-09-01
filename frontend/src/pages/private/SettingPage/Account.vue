@@ -17,28 +17,31 @@
                     </span>
                 </div>
                 <div class="account__desc">
-                    <textarea v-model="title" ref="textarea" class="editor__input" placeholder="@Bio..."></textarea>
+                    <textarea v-model="title" ref="textarea" class="editor__input" placeholder="@Bio...">
+                    </textarea>
                 </div>
             </div>
             <form class="account__name">
                 <div class="account__col">
                     <div class="account__name--text">Tên hiển thị</div>
-                    <input type="text" value="Dong Pham" class="account__name--input">
+                    <input type="text" :value="authStore.user.blogger_info?.name" @input="updateName"
+                        class="account__name--input">
                 </div>
                 <div class="account__col">
                     <div class="account__name--text">Email</div>
-                    <input type="text" placeholder="dongpham@gmail.com" class="account__name--input">
+                    <button class="account__name--input">{{ authStore.user.blogger_info?.email }}</button>
+                    <ion-icon name="pencil-outline"></ion-icon>
                 </div>
                 <a-space direction="vertical" :size="12">
                     <div class="account__name--text">Ngày sinh</div>
-                    <a-date-picker v-model:value="value1" />
+                    <a-date-picker v-model:value="birthValue" />
                 </a-space>
+
                 <div class="account__col">
                     <div class="account__name--text">Giới tính</div>
-                    <a-radio-group v-model:value="valueChecked" @click="handleGenderChange">
+                    <a-radio-group v-model:value="genderValue" @change="handleGenderChange">
                         <a-radio :value="1">Nam</a-radio>
-                        <a-radio :value="2">Nữ</a-radio>
-                        <a-radio :value="3">Giới tính khác</a-radio>
+                        <a-radio :value="0">Nữ</a-radio>
                     </a-radio-group>
                 </div>
             </form>
@@ -67,14 +70,20 @@
         </div>
         <div class="account__controller">
             <button class="account__btn">Hủy</button>
-            <button class="account__btn account__btn--save">Lưu</button>
+            <button class="account__btn account__btn--save" @click="handleUpdateProfile">Lưu</button>
         </div>
     </div>
 </template>
 
 <script setup>
 import { ref } from 'vue';
+import { useAuthStore } from '../../../stores/authStore';
 
+// store
+const authStore = useAuthStore()
+authStore.getMyProfile()
+// form password
+const passwordMatchError = ref('');
 const isOpenForgotPassword = ref(false);
 const oldPassword = ref('');
 const newPassword = ref('');
@@ -84,19 +93,40 @@ const errorMessages = {
     newPassword: '',
     confirmPassword: '',
 };
-const passwordMatchError = ref('');
-
-
-const value1 = ref();
-const valueChecked = ref();
+// form information
 const temporaryBanner = ref('');
 const temporaryAvatar = ref('');
+const birthValue = ref(null);
+const genderValue = ref();
 
-
-const handleGenderChange = (value) => {
-    valueChecked.value = value;
-    console.log(valueChecked.value);
+// handle udpdate information
+const updateName = (event) => {
+    authStore.user.blogger_info.name = event.target.value;
 };
+const handleGenderChange = (value) => {
+    if (value === 1) {
+        genderValue.value = 1;
+    } else if (value === 0) {
+        genderValue.value = 0;
+    }
+};
+
+const handleUpdateProfile = () => {
+    if (birthValue.value) {
+        const date = new Date(birthValue.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString();
+        const formattedDate = `${day}/${month}/${year}`;
+        birthValue.value = formattedDate
+    }
+    console.log("🚀 ~ file: Account.vue:100 ~ handleUpdateProfile ~ birthValue.value:", birthValue.value)
+    console.log(authStore.user.blogger_info.name);
+    console.log("genderValue:", genderValue.value);
+
+};
+
+//  handle image
 const handleBannerChange = (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -119,6 +149,7 @@ const handleAvatarChange = (event) => {
     }
 };
 
+// handle password
 const handleOpenForgotPassword = () => {
     isOpenForgotPassword.value = !isOpenForgotPassword.value;
 };
@@ -138,21 +169,26 @@ const handleSave = (e) => {
     errorMessages.oldPassword = '';
     errorMessages.newPassword = '';
     errorMessages.confirmPassword = '';
-
-    // Perform validation
-    if (oldPassword.value === '') {
-        errorMessages.oldPassword = 'Vui lòng nhập mật khẩu cũ.';
-    }
-    if (newPassword.value === '') {
-        errorMessages.newPassword = 'Vui lòng nhập mật khẩu mới.';
-    }
-
     if (newPassword.value !== confirmPassword.value) {
         passwordMatchError.value = "Mật khẩu mới và xác nhận không khớp.";
     }
     if (newPassword.value === confirmPassword.value) {
-        console.log(newPassword.value, confirmPassword.value);
+        console.log(oldPassword.value);
+        console.log(newPassword.value);
+        console.log(confirmPassword.value);
+
     }
+    // Perform validation
+    // if (oldPassword.value === '') {
+    //     errorMessages.oldPassword = 'Vui lòng nhập mật khẩu cũ.';
+    // }
+    // if (newPassword.value === '') {
+    //     errorMessages.newPassword = 'Vui lòng nhập mật khẩu mới.';
+    // }
+
+    // if (newPassword.value === confirmPassword.value) {
+    //     console.log(newPassword.value, confirmPassword.value);
+    // }
 };
 </script>
 
@@ -318,6 +354,15 @@ const handleSave = (e) => {
             display: flex;
             flex-direction: column;
             gap: 20px;
+            position: relative;
+
+            ion-icon {
+                position: absolute;
+                top: 51px;
+                font-size: 18px;
+                right: 15px;
+                cursor: pointer;
+            }
 
             .account__name--text {
                 text-transform: uppercase;
@@ -326,13 +371,19 @@ const handleSave = (e) => {
             }
 
             .account__name--input {
+                cursor: pointer;
                 width: 100% height;
                 background-color: #edf2f7;
                 height: 50px;
                 padding: 5px;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
                 border-radius: 12px;
                 border: 1px solid var(--border-color);
             }
+
+
         }
 
 

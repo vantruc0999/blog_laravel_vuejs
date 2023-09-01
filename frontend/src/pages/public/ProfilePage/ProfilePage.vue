@@ -1,4 +1,7 @@
 <template>
+    <div v-if="authStore.isLoading">
+        <Loading />
+    </div>
     <div class="profile__container">
         <div class="profile__heading">
             <div class="profile_wrapper">
@@ -63,25 +66,33 @@
             <div class="profile__detail">
                 <div class="user__infor">
                     <span class="user__name">{{ authStore?.user?.blogger_infor?.name }}</span>
-                    <span class="user__follow">3355 <span class="user__follow--text">followers</span></span>
+                    <span class="user__follow">{{ authStore?.user?.blogger_infor?.number_of_followers }} <span
+                            class="user__follow--text">followers</span></span>
                     <span class="user__social">
                         <ion-icon name="logo-facebook"></ion-icon>
                     </span>
                 </div>
+
                 <div class="profile__options">
-                    <button class="profile__btn">Theo dõi</button>
+                    <button class="profile__btn" @click="handleGetFollow(authStore?.user?.blogger_infor?.id)"
+                        v-if="authorStore?.isFollow">Theo
+                        dõi<ion-icon name="person-add-outline"></ion-icon></button>
+                    <button class="profile__btn profile__btn--follow"
+                        @click="handleGetFollow(authStore?.user?.blogger_infor?.id)" v-else>Đang theo dõi
+                        <ion-icon name="checkmark-circle-outline"></ion-icon></button>
                     <span class="profile__delete">
                         <ion-icon name="ellipsis-vertical-outline"></ion-icon>
                     </span>
                 </div>
+
                 <div class="profile__interaction">
                     <div class="profile__followers">
-                        16
-                        <span class="profile__interaction--text">followers</span>
+                        {{ authStore?.user?.blogger_infor?.number_of_following }}
+                        <span class="profile__interaction--text">following</span>
                     </div>
 
                     <div class="profile__followers">
-                        1200
+                        {{ authStore?.user?.blogger_infor?.posts?.view_count }}
                         <span class="profile__interaction--text">views</span>
                     </div>
                 </div>
@@ -109,7 +120,9 @@
                 </div>
                 <!-- Card -->
                 <div class="profile__card">
-                    <CardNew :post="post" v-for="(  post, index  ) in   authStore?.user?.blogger_infor?.posts  " />
+                    <CardNew :isCard="false" :post="post" v-for="(post, index) in authStore?.user?.blogger_infor?.posts"
+                        :key="index" />
+
                 </div>
             </div>
 
@@ -129,12 +142,13 @@ import {
     useRoute,
     useRouter
 } from 'vue-router';
+import Loading from "../../../components/Loading.vue"
+import { useAuthorStore } from "../../../stores/authorStore"
 
+const authorStore = useAuthorStore()
 const authStore = useAuthStore()
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-console.log("🚀 ~ file: ProfilePage.vue:135 ~ userData:", userData.value.profile_image)
-console.log('http://127.0.0.1:8000/images/avatar/' + authStore?.user?.blogger_infor?.profile_image);
 const route = useRoute();
 const refAuthor = ref(route.params.id)
 let isOpen = ref(false);
@@ -152,11 +166,18 @@ const filterData = [{
 },
 ]
 
+const handleGetFollow = (id) => {
+    authorStore.getFollowAuthor(id);
+    authorStore.getAuthorFollowed(id)
+}
+
+
 const getProfileAuthor = computed(() => {
     return authStore.getAuthorById(refAuthor.value)
 })
 onMounted(async () => {
     await getProfileAuthor.value;
+    await authorStore.getAuthorFollowed(refAuthor.value)
 });
 
 watchEffect(() => {
@@ -399,33 +420,53 @@ watchEffect(() => {
         display: flex;
         align-items: center;
         justify-content: space-between;
+
+        .profile__btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 10px;
+            border-radius: 10px;
+            width: 150px;
+            cursor: pointer;
+            background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+            color: var(--white-color);
+            font-size: 15px;
+
+        }
+
+        .profile__btn--follow {
+            border: 1px solid var(--border-color);
+            color: var(--green-color);
+            font-weight: 700;
+            background-image: var(--white-color) !important;
+        }
     }
 
     .profile__interaction {
         margin-top: 30px;
         display: flex;
         gap: 40px;
+        font-size: 16px;
+        font-family: "Noto Sans", sans-serif;
 
         .profile__followers {
             color: var(--black-color);
             font-weight: 700;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
 
             .profile__interaction--text {
                 font-weight: 400;
-                font-size: 13px;
+                font-size: 18px;
+
             }
         }
     }
 
-    .profile__btn {
-        padding: 10px;
-        border-radius: 10px;
-        width: 150px;
-        cursor: pointer;
-        background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
-        color: var(--white-color);
-        font-size: 15px;
-    }
+
 
     .profile__about {
         line-height: 1.3;

@@ -12,9 +12,13 @@
                         {{ item.name }}
                     </a-select-option>
                 </a-select>
+                <a-space direction="vertical">
+                    <a-select v-model:value="value2" :options="options" mode="multiple" :size="size"
+                        placeholder="Please select" style="width: 200px" @popupScroll="popupScroll"></a-select>
+                </a-space>
 
-                <span class="editor__title">Lời giới thiệu</span>
                 <div class="editor__intro">
+                    <span class="editor__title">Lời giới thiệu</span>
                     <textarea v-model="intro" ref="textarea" class="editor__intro__input"
                         placeholder="Nhập giới thiệu của bạn..."></textarea>
                 </div>
@@ -42,7 +46,10 @@ import { Select } from 'ant-design-vue';
 import { usePostStore } from '../../../stores/postStore';
 
 const postStore = usePostStore()
-
+const value1 = ref('a1');
+const value2 = ref(['a1', 'b2']);
+const value3 = ref(['a1', 'b2']);
+const options = [...Array(25)].map((_, i) => ({ value: (i + 10).toString(36) + (i + 1) }));
 const categoryData = [
     { id: 1, name: 'Văn học' },
     { id: 2, name: 'IT' },
@@ -130,15 +137,7 @@ const handleSubmit = () => {
     formData.append('description', submittedEditorData)
     formData.append('category_id', 1)
     formData.append('tags', [1, 2])
-    // const blogData = {
-    //     title: submittedTitle,
-    //     description: submittedEditorData,
-    //     category_id: 1,
-    //     // intro: submittedIntro,
-    //     banner: formData,
-    //     // banner: "https://images.unsplash.com/photo-1692840878189-80862783705a?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
-    //     tags: [1, 2],
-    // };
+
     console.log("🚀 ~ file: BlogEditor.vue:134 ~ handleSubmit ~ blogData:", formData)
     postStore.actCreatePost(formData)
 

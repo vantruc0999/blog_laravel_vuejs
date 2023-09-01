@@ -16,7 +16,7 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = true;
         const response = await PostService.getallpost();
         this.posts = response?.data?.data;
-        console.log("🚀 ~ file: postStore.js:20 ~ fetchAllPosts ~ posts:", this.posts)
+        console.log("🚀 ~ file: postStore.js:19 ~ fetchAllPosts ~ this.posts:", this.posts)
         this.isLoading = false;
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi lấy danh sách bài viết. Vui lòng thử lại sau.");

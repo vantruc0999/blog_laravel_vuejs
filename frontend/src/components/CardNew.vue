@@ -4,7 +4,18 @@
         <div class="card__right">
             <div class="card__favorite">
                 <div class="card__categori">{{ post?.category_name }}</div>
-                <ion-icon name="bookmark-outline" class="card__bookmark"></ion-icon>
+                <div class="card__icon">
+                    <ion-icon name="bookmark-outline" class="card__bookmark" @click="handleAddBookmark"></ion-icon>
+                    <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"></ion-icon>
+                    <div class="card__options" v-if="isOpen">
+                        <div class="card__options--edit">
+                            <ion-icon name="create-outline"></ion-icon>Sửa
+                        </div>
+                        <div class="card__options--delete">
+                            <ion-icon name="trash-outline"></ion-icon>Xóa
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="card__content">
                 <div class="card__top">
@@ -18,10 +29,10 @@
                 <div class="card__bottom">
                     <div class="card__user">
                         <img src="../assets/images/avatar-default.png" alt="" class="card__user__avatar">
-                        <router-link to="/profile">
+                        <router-link :to="`/profile/${post?.blogger_infor?.id}`">
                             <div class="card__user__infor">
                                 <div class="card__user__top">
-                                    <div class="card__user__name">{{ post?.blogger_name }}</div>
+                                    <div class="card__user__name">{{ post?.blogger_infor?.name }}</div>
                                 </div>
                                 <div class="card__user__time">9 giờ trước</div>
                             </div>
@@ -43,13 +54,24 @@
             </div>
         </div>
     </div>
-    <!-- <img :src="'http://127.0.0.1:8000/' + post?.banner" alt=""> -->
 
     <!-- Blog -->
     <div class="blog" v-else>
         <div class="blog__favorite">
             <div class="blog__categori">{{ post?.category_name }}</div>
-            <ion-icon name="bookmark-outline" class="blog__bookmark"></ion-icon>
+            <div class="blog__icon">
+                <ion-icon name="bookmark-outline" class="blog__bookmark"></ion-icon>
+                <ion-icon name="ellipsis-vertical-outline" class="blog__menu"
+                    v-if="post?.blogger_id == post?.blogger_infor?.id" @click="handleOpenOption"></ion-icon>
+                <div class="card__options" v-if="isOpen">
+                    <div class="card__options--edit">
+                        <ion-icon name="create-outline"></ion-icon>Sửa
+                    </div>
+                    <div class="card__options--delete">
+                        <ion-icon name="trash-outline"></ion-icon>Xóa
+                    </div>
+                </div>
+            </div>
         </div>
         <router-link :to="`/detail/${post?.id}`">
             <img :src="'http://127.0.0.1:8000/storage/' + post?.banner" alt="blog img" class="blog__image">
@@ -64,10 +86,10 @@
                 </router-link>
                 <div class="blog__user">
                     <img src="../assets/images/avatar-default.png" alt="" class="blog__user__avatar">
-                    <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`">
+                    <router-link :to="`/profile/${post?.blogger_infor?.id}`">
                         <div class="blog__user__infor">
                             <div class="blog__user__top">
-                                <div class="blog__user__name">{{ post?.blogger_name }}</div>
+                                <div class="blog__user__name">{{ post?.blogger_infor?.name }}</div>
                             </div>
                             <div class="blog__user__time">9 giờ trước</div>
                         </div>
@@ -98,14 +120,17 @@ import {
 import { usePostStore } from "../stores/postStore";
 
 const postStore = usePostStore()
-console.log("hello", props.post);
 // Định nghĩa prop "message"
 const props = defineProps({
     isCard: Boolean,
     post: Object
-
 })
 
+const isOpen = ref(false)
+const handleOpenOption = () => {
+    isOpen.value = !isOpen.value
+}
+const handleAddBookmark = () => { }
 </script>
 
 <style lang="scss" scoped>
@@ -149,9 +174,17 @@ const props = defineProps({
         overflow: hidden;
     }
 
-    .card__bookmark {
-        cursor: pointer;
-        font-size: 20px;
+    .card__icon {
+        position: relative;
+
+        .card__bookmark {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .card__menu {
+            cursor: pointer;
+        }
     }
 
     .card__content {
@@ -265,9 +298,17 @@ const props = defineProps({
         overflow: hidden;
     }
 
-    .blog__bookmark {
-        cursor: pointer;
-        font-size: 20px;
+    .blog__icon {
+        position: relative;
+
+        .blog__bookmark {
+            cursor: pointer;
+            font-size: 20px;
+        }
+
+        .blog__menu {
+            cursor: pointer;
+        }
     }
 
     .blog__image {
@@ -363,5 +404,58 @@ const props = defineProps({
             }
         }
     }
+}
+
+.card__options {
+    position: absolute;
+    top: 25px;
+    z-index: 1;
+    right: 5px;
+    width: 120px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 17px;
+    background-color: var(--white-color);
+    box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+    cursor: pointer;
+    border-radius: 12px;
+    transition: cubic-bezier(0.165, 0.84, 0.44, 1);
+
+    &--edit {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        justify-content: center;
+        border-bottom: 1px solid var(--border-color);
+        width: 100%;
+        padding: 5px;
+        border-radius: 12px 12px 0px 0px;
+
+        &:hover {
+            background-color: var(--secondary-color);
+            color: var(--white-color);
+        }
+    }
+
+    &--delete {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        justify-content: center;
+        width: 100%;
+        padding: 0px 5px;
+        border-radius: 0px 0px 12px 12px;
+        padding: 5px;
+
+        &:hover {
+            color: red;
+            background-color: #eee;
+        }
+    }
+}
+
+.card__bookmark--active {
+    color: var(--primary-color);
 }
 </style>

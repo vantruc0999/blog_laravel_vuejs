@@ -9,7 +9,7 @@
         <ul class='option'>
             <hr />
             <ul class='option-list'>
-                <router-link class='option-item-link' to="/profile">
+                <router-link class='option-item-link' :to="`/profile/${userData?.id}`">
                     <span class="option-icon"><ion-icon name="person-circle-outline"></ion-icon></span>
                     <li class='option-item'>Trang cá nhân</li>
                 </router-link>

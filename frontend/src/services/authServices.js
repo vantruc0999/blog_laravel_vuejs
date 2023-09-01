@@ -2,7 +2,10 @@ import httpClient from "../api/httpClient";
 import {
   API_SIGNIN,
   API_SIGNUP,
-  API_GETALLAUTHOR
+  API_GETALLBLOGGER,
+  API_GETAUTHOR,
+  API_GETMYPROFILE,
+  API_GETFOLLOWAUTHOR
 } from "../config/apis";
 
 export const AuthService = {
@@ -12,11 +15,17 @@ export const AuthService = {
   signup(user) {
     return httpClient.post(API_SIGNUP, user);
   },
-  // getallauthor() {
-  //   return httpClient.get(API_GETALLAUTHOR)
-  // },
+  getallblogger() {
+    return httpClient.get(API_GETALLBLOGGER)
+  },
   getauthorbyid(authorid) {
-    return httpClient.get(`${API_GETALLAUTHOR}/${authorid}`)
-  }
+    return httpClient.get(`${API_GETAUTHOR}/${authorid}`)
+  },
+  getmyprofile() {
+    return httpClient.get(API_GETMYPROFILE)
+  },
+  getfollowauthor(authorid) {
+    return httpClient.get(`${API_GETFOLLOWAUTHOR}/${authorid}`)
+  } 
 };
 

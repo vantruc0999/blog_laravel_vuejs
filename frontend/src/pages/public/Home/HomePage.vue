@@ -92,11 +92,13 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import { usePostStore } from "../../../stores/postStore";
+import { useAuthStore } from "../../../stores/authStore";
 
 
 const postStore = usePostStore()
+const authStore = useAuthStore()
 postStore.fetchAllPosts()
-
+authStore.fetchAllBlogger()
 const onSwiper = (swiper) => {
     // console.log(swiper);
 };
