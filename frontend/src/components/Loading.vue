@@ -1,14 +1,6 @@
-<template>
+<!-- <template>
     <div class='loading-block'>
         <div class='lds-roller'>
-            <!-- <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div> -->
             <img src="../assets/images/loading.gif" />
         </div>
     </div>
@@ -39,113 +31,6 @@ export default {
         margin: 0 auto;
     }
 
-    // .lds-roller {
-    //     position: relative;
-
-    //     .lds-cloud {
-    //         top: -80px;
-    //         right: -20px;
-    //         position: absolute;
-    //         z-index: 1 !important;
-    //         width: 120%;
-    //     }
-    // }
-
-    // .lds-roller {
-    //     display: inline-block;
-    //     position: relative;
-    //     width: 80px;
-    //     height: 80px;
-    // }
-
-    // .lds-roller img {
-    //     animation: lds-roller 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
-    //     transform-origin: 40px 40px;
-    // }
-
-    // .lds-roller div:after {
-    //     content: ' ';
-    //     display: block;
-    //     position: absolute;
-    //     width: 7px;
-    //     height: 7px;
-    //     border-radius: 50%;
-    //     background: #fff;
-    //     margin: -4px 0 0 -4px;
-    // }
-
-    // .lds-roller div:nth-child(1) {
-    //     animation-delay: -0.036s;
-    // }
-
-    // .lds-roller div:nth-child(1):after {
-    //     top: 63px;
-    //     left: 63px;
-    // }
-
-    // .lds-roller div:nth-child(2) {
-    //     animation-delay: -0.072s;
-    // }
-
-    // .lds-roller div:nth-child(2):after {
-    //     top: 68px;
-    //     left: 56px;
-    // }
-
-    // .lds-roller div:nth-child(3) {
-    //     animation-delay: -0.108s;
-    // }
-
-    // .lds-roller div:nth-child(3):after {
-    //     top: 71px;
-    //     left: 48px;
-    // }
-
-    // .lds-roller div:nth-child(4) {
-    //     animation-delay: -0.144s;
-    // }
-
-    // .lds-roller div:nth-child(4):after {
-    //     top: 72px;
-    //     left: 40px;
-    // }
-
-    // .lds-roller div:nth-child(5) {
-    //     animation-delay: -0.18s;
-    // }
-
-    // .lds-roller div:nth-child(5):after {
-    //     top: 71px;
-    //     left: 32px;
-    // }
-
-    // .lds-roller div:nth-child(6) {
-    //     animation-delay: -0.216s;
-    // }
-
-    // .lds-roller div:nth-child(6):after {
-    //     top: 68px;
-    //     left: 24px;
-    // }
-
-    // .lds-roller div:nth-child(7) {
-    //     animation-delay: -0.252s;
-    // }
-
-    // .lds-roller div:nth-child(7):after {
-    //     top: 63px;
-    //     left: 17px;
-    // }
-
-    // .lds-roller div:nth-child(8) {
-    //     animation-delay: -0.288s;
-    // }
-
-    // .lds-roller div:nth-child(8):after {
-    //     top: 56px;
-    //     left: 12px;
-    // }
-
     @keyframes lds-roller {
         0% {
             transform: rotate(0deg);
@@ -156,4 +41,152 @@ export default {
         }
     }
 }
+</style> -->
+
+<template >
+    <div class="loading-block">
+        <svg class="ip" viewBox="0 0 256 128" width="256px" height="128px" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <linearGradient id="grad1" x1="0" y1="0" x2="1" y2="0">
+                    <stop offset="0%" stop-color="#5ebd3e" />
+                    <stop offset="33%" stop-color="#ffb900" />
+                    <stop offset="67%" stop-color="#f78200" />
+                    <stop offset="100%" stop-color="#e23838" />
+                </linearGradient>
+                <linearGradient id="grad2" x1="1" y1="0" x2="0" y2="0">
+                    <stop offset="0%" stop-color="#e23838" />
+                    <stop offset="33%" stop-color="#973999" />
+                    <stop offset="67%" stop-color="#009cdf" />
+                    <stop offset="100%" stop-color="#5ebd3e" />
+                </linearGradient>
+            </defs>
+            <g fill="none" stroke-linecap="round" stroke-width="16">
+                <g class="ip__track" stroke="#ddd">
+                    <path d="M8,64s0-56,60-56,60,112,120,112,60-56,60-56" />
+                    <path d="M248,64s0-56-60-56-60,112-120,112S8,64,8,64" />
+                </g>
+                <g stroke-dasharray="180 656">
+                    <path class="ip__worm1" stroke="url(#grad1)" stroke-dashoffset="0"
+                        d="M8,64s0-56,60-56,60,112,120,112,60-56,60-56" />
+                    <path class="ip__worm2" stroke="url(#grad2)" stroke-dashoffset="358"
+                        d="M248,64s0-56-60-56-60,112-120,112S8,64,8,64" />
+                </g>
+            </g>
+        </svg>
+    </div>
+</template>
+<script>
+export default {
+
+}
+</script>
+<style lang="scss" scoped>
+* {
+    border: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+:root {
+    --hue: 223;
+    --bg: hsl(var(--hue), 90%, 95%);
+    --fg: hsl(var(--hue), 90%, 5%);
+    --trans-dur: 0.3s;
+    font-size: calc(16px + (24 - 16) * (100vw - 320px) / (1280 - 320));
+}
+
+body {
+    background-color: var(--bg);
+    color: var(--fg);
+    font: 1em/1.5 sans-serif;
+    height: 100vh;
+    display: grid;
+    place-items: center;
+    transition: background-color var(--trans-dur);
+}
+
+main {
+    padding: 1.5em 0;
+}
+
+.loading-block {
+    width: 100vw;
+    height: 100vh;
+    position: fixed;
+    display: flex;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.ip {
+    width: 11em;
+    height: 4em;
+}
+
+.ip__track {
+    stroke: hsl(var(--hue), 90%, 90%);
+    transition: stroke var(--trans-dur);
+}
+
+.ip__worm1,
+.ip__worm2 {
+    animation: worm1 1.5s linear infinite;
+}
+
+.ip__worm2 {
+    animation-name: worm2;
+}
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --bg: hsl(var(--hue), 90%, 5%);
+        --fg: hsl(var(--hue), 90%, 95%);
+    }
+
+    .ip__track {
+        stroke: hsl(var(--hue), 90%, 15%);
+    }
+}
+
+@keyframes worm1 {
+    from {
+        stroke-dashoffset: 0;
+    }
+
+    50% {
+        animation-timing-function: steps(1);
+        stroke-dashoffset: -358;
+    }
+
+    50.01% {
+        animation-timing-function: linear;
+        stroke-dashoffset: 358;
+    }
+
+    to {
+        stroke-dashoffset: 0;
+    }
+}
+
+@keyframes worm2 {
+    from {
+        stroke-dashoffset: 358;
+    }
+
+    50% {
+        stroke-dashoffset: 0;
+    }
+
+    to {
+        stroke-dashoffset: -358;
+    }
+}
 </style>
+
