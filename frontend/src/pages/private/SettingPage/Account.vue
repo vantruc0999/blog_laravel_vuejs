@@ -17,8 +17,9 @@
                     </span>
                 </div>
                 <div class="account__desc">
-                    <textarea v-model="title" ref="textarea" class="editor__input" placeholder="@Bio...">
-                    </textarea>
+                    <textarea v-model="bio" ref="textarea" class="editor__input" placeholder="@Bio..."
+                        @input="handleBioInput"></textarea>
+                    <p class="message">{{ bioLength }}/150</p>
                 </div>
             </div>
             <form class="account__name">
@@ -76,7 +77,7 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { watch, ref } from 'vue';
 import { useAuthStore } from '../../../stores/authStore';
 
 // store
@@ -98,7 +99,25 @@ const temporaryBanner = ref('');
 const temporaryAvatar = ref('');
 const birthValue = ref(null);
 const genderValue = ref();
+const bio = ref('')
 
+const maxBioLength = 150;
+
+const bioLength = ref(0);
+
+const handleBioInput = () => {
+    if (bio.value.length > maxBioLength) {
+        bio.value = intro.value.slice(0, maxBioLength);
+    }
+};
+
+
+watch(bio, (newBio) => {
+    bioLength.value = newBio.length;
+    if (newBio.length > maxBioLength) {
+        bio.value = newBio.slice(0, maxBioLength);
+    }
+});
 // handle udpdate information
 const updateName = (event) => {
     authStore.user.blogger_info.name = event.target.value;
@@ -123,30 +142,28 @@ const handleUpdateProfile = () => {
     console.log("🚀 ~ file: Account.vue:100 ~ handleUpdateProfile ~ birthValue.value:", birthValue.value)
     console.log(authStore.user.blogger_info.name);
     console.log("genderValue:", genderValue.value);
-
+    console.log("temporaryAvatar:", temporaryAvatar.value);
+    console.log("temporaryBanner:", temporaryBanner.value);
+    console.log("bio", bio.value);
 };
 
 //  handle image
 const handleBannerChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            temporaryBanner.value = reader.result;
-        };
-        reader.readAsDataURL(file);
-    }
+        temporaryBanner.value = URL.createObjectURL(file)
+        imagePath.value = file
+    };
+
 };
 
 const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
-        const reader = new FileReader();
-        reader.onload = () => {
-            temporaryAvatar.value = reader.result;
-        };
-        reader.readAsDataURL(file);
-    }
+        temporaryAvatar.value = URL.createObjectURL(file)
+        imagePath.value = file
+    };
+
 };
 
 // handle password
@@ -223,6 +240,7 @@ const handleSave = (e) => {
                     height: 100%;
                     opacity: 0;
                     cursor: pointer;
+                    z-index: 2;
                 }
 
                 .image-icon {
@@ -232,6 +250,7 @@ const handleSave = (e) => {
                     transform: translate(-50%, -50%);
                     font-size: 24px;
                     color: #000;
+                    z-index: 1;
                 }
             }
 
@@ -382,10 +401,7 @@ const handleSave = (e) => {
                 border-radius: 12px;
                 border: 1px solid var(--border-color);
             }
-
-
         }
-
 
     }
 
@@ -425,6 +441,10 @@ const handleSave = (e) => {
             }
         }
     }
+}
+
+.message {
+    color: red;
 }
 
 .ant-picker {
