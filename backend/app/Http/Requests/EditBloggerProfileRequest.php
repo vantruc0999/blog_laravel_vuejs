@@ -26,8 +26,10 @@ class EditBloggerProfileRequest extends FormRequest
         return [
             //
             'name' => 'required:max:255',
-            'password' => 'required',
-            'bio' => 'max:255'
+            // 'password' => 'required',
+            'bio' => 'max:255',
+            'address' => 'max:255',
+            'phone' => 'max:14'
         ];
     }
 }

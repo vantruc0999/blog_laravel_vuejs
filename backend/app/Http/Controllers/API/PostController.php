@@ -301,4 +301,14 @@ class PostController extends Controller
             ], 500);
         }
     }
+
+    public function getTagsCategories(){
+        $categories = Category::all();
+
+        foreach($categories as $item){
+            $item->tags = Category::find($item->id)->tags;
+        }
+        
+        return $categories;
+    }
 }
