@@ -3,6 +3,7 @@
 use App\Http\Controllers\API\BloggerAuthController;
 use App\Http\Controllers\API\BloggerProfileController;
 use App\Http\Controllers\API\CommentController;
+use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\PostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
@@ -27,6 +28,7 @@ Route::post('/login', [BloggerAuthController::class, 'login']);
 Route::get('/tags/get-all-tags', [PostController::class, 'getAllTags']);
 Route::get('/categories/get-all-categories', [PostController::class, 'getAllCategories']);
 Route::get('/bloggers', [BloggerProfileController::class, 'getAllBloggers']);
+Route::get('/categories-tags',[PostController::class, 'getTagsCategories']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
@@ -58,6 +60,12 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/{slug}', [CommentController::class, 'commentPost']);
         Route::post('/edit-comment/{id}', [CommentController::class, 'editComment']);
         Route::delete('/delete-comment/{id}', [CommentController::class, 'deleteComment']);
+    });
+
+    Route::prefix('/like')->group(function () {
+        Route::post('/{id}', [LikeController::class, 'likePost']);
+        Route::post('/check-like/{id}', [LikeController::class, 'checkLike']);
+        Route::get('/get-liked-post', [LikeController::class, 'getAllLikedPosts']);
     });
     
 });

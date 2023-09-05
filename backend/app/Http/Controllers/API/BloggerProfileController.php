@@ -8,14 +8,17 @@ use App\Models\Blogger;
 use App\Models\Follow;
 use App\Models\User;
 use Carbon\Carbon;
+use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 
 class BloggerProfileController extends Controller
 {
     //
-    public function getAllBloggers(){
+    public function getAllBloggers()
+    {
         return Blogger::all()->makeHidden(['password']);
     }
 
@@ -87,15 +90,31 @@ class BloggerProfileController extends Controller
 
     public function updateBloggerProfile(EditBloggerProfileRequest $request)
     {
+        // if (!preg_match('/^(03|05|07|08|09)[0-9]{8}$/', $request->phone))
+        //     return response([
+        //         'message' => 'Invalid number',
+        //     ]);
+
         try {
             $blogger = Blogger::where('id', Auth::user()['id'])->first();
+
+            $timestamp = strtotime(str_replace('/', '-', $request->input('birthday')));
+            $newDateString = date("Y/m/d", $timestamp);
 
             $data = [
                 'name' => $request->input('name'),
                 'bio' => $request->input('bio'),
+                'address' => $request->input('address'),
+                'phone' => $request->input('phone'),
+                'gender' => $request->input('gender'),
+                'birthday' => $newDateString,
             ];
 
             if ($request->input('password')) {
+                if (!Hash::check($request->input('old_password'), Auth::user()['password']))
+                    return response([
+                        'message' => 'Wrong password',
+                    ]);
                 $data['password'] = bcrypt($request->input('password'));
             }
 
@@ -180,12 +199,12 @@ class BloggerProfileController extends Controller
 
     public function isFollowed($blogger_id)
     {
-        $follow = Follow::where(function($query) use ($blogger_id) {
+        $follow = Follow::where(function ($query) use ($blogger_id) {
             $query->where('blogger_id', Auth::user()['id'])
-                  ->where('following_id', $blogger_id);
-        })->orWhere(function($query) use ($blogger_id) {
+                ->where('following_id', $blogger_id);
+        })->orWhere(function ($query) use ($blogger_id) {
             $query->where('blogger_id', $blogger_id)
-                  ->where('follower_id', Auth::user()['id']);
+                ->where('follower_id', Auth::user()['id']);
         })->first();
 
         if ($follow) {
@@ -193,8 +212,7 @@ class BloggerProfileController extends Controller
                 'message' => 'You\'ve already followed this blogger',
                 'is_followed' => 1,
             ]);
-        }
-        else{
+        } else {
             return response([
                 'message' => 'You have not followed this blogger before',
                 'is_followed' => 0,
