@@ -2,7 +2,9 @@
     <div class="sidebar__container">
         <div class="account__infor">
             <div class="image-select">
-                <img :src="temporaryBanner" alt="" class="temporary-image">
+                <img :src="'http://127.0.0.1:8000/images/banner/' + authStore.user.blogger_info?.banner" alt="avatar"
+                    class="temporary-image">
+                <img :src="temporaryBanner" alt="" class="temporary-image temporary-image--banner">
                 <input type="file" @change="handleBannerChange" accept="image/*" class="image-input">
                 <span class="image-icon">
                     <ion-icon name="camera-outline"></ion-icon>
@@ -10,14 +12,17 @@
             </div>
             <div class="account__detail">
                 <div class="account__avatar">
-                    <img :src="temporaryAvatar" alt="" class="temporary-image">
+                    <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore.user.blogger_info?.profile_image"
+                        alt="avatar" class="temporary-image">
+                    <img :src="temporaryAvatar" alt="" class="temporary-image temporary-image--avatar">
                     <input type="file" @change="handleAvatarChange" accept="image/*" class="image-input">
                     <span class="image-icon">
                         <ion-icon name="camera-outline"></ion-icon>
                     </span>
                 </div>
                 <div class="account__desc">
-                    <textarea v-model="bio" ref="textarea" class="editor__input" placeholder="@Bio..."
+                    <textarea v-model="bio" ref="textarea" class="editor__input"
+                        :placeholder="authStore.user.blogger_info?.bio ? authStore.user.blogger_info?.bio : 'Bio...'"
                         @input="handleBioInput"></textarea>
                     <p class="message">{{ bioLength }}/150</p>
                 </div>
@@ -95,10 +100,12 @@ const errorMessages = {
     confirmPassword: '',
 };
 // form information
+const bannerPath = ref(null);
+const avatarPath = ref(null);
 const temporaryBanner = ref('');
 const temporaryAvatar = ref('');
 const birthValue = ref(null);
-const genderValue = ref();
+const genderValue = ref(authStore.user?.blogger_info?.gender);
 const bio = ref('')
 
 const maxBioLength = 150;
@@ -129,7 +136,24 @@ const handleGenderChange = (value) => {
         genderValue.value = 0;
     }
 };
+//  handle image
+const handleBannerChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        temporaryBanner.value = URL.createObjectURL(file)
+        bannerPath.value = file
+    };
 
+};
+
+const handleAvatarChange = (event) => {
+    const file = event.target.files[0];
+    if (file) {
+        temporaryAvatar.value = URL.createObjectURL(file)
+        avatarPath.value = file
+    };
+
+};
 const handleUpdateProfile = () => {
     if (birthValue.value) {
         const date = new Date(birthValue.value);
@@ -139,32 +163,23 @@ const handleUpdateProfile = () => {
         const formattedDate = `${day}/${month}/${year}`;
         birthValue.value = formattedDate
     }
-    console.log("🚀 ~ file: Account.vue:100 ~ handleUpdateProfile ~ birthValue.value:", birthValue.value)
-    console.log(authStore.user.blogger_info.name);
-    console.log("genderValue:", genderValue.value);
-    console.log("temporaryAvatar:", temporaryAvatar.value);
-    console.log("temporaryBanner:", temporaryBanner.value);
-    console.log("bio", bio.value);
-};
-
-//  handle image
-const handleBannerChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        temporaryBanner.value = URL.createObjectURL(file)
-        imagePath.value = file
+    const formData = new FormData();
+    formData.append('name', authStore.user.blogger_info.name)
+    formData.append('bio', bio.value)
+    formData.append('profile_image', avatarPath.value)
+    formData.append('profile_banner', bannerPath.value)
+    formData.append('gender', genderValue.value)
+    formData.append('birthday', birthValue.value)
+    authStore.updateMyProfile(formData)
+    const updatedUser = {
+        ...authStore.user.blogger_info,
+        name: authStore.user.blogger_info.name,
+        profile_image: authStore.user?.blogger_info?.profile_image
     };
-
+    localStorage.setItem('user', JSON.stringify(updatedUser));
 };
 
-const handleAvatarChange = (event) => {
-    const file = event.target.files[0];
-    if (file) {
-        temporaryAvatar.value = URL.createObjectURL(file)
-        imagePath.value = file
-    };
 
-};
 
 // handle password
 const handleOpenForgotPassword = () => {
@@ -226,10 +241,11 @@ const handleSave = (e) => {
 
                 .temporary-image {
                     border-radius: 50%;
-
+                    z-index: 2;
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                    position: absolute;
                 }
 
                 .image-input {
@@ -264,7 +280,9 @@ const handleSave = (e) => {
 
         .temporary-image {
             width: 100%;
-            // z-index: 20;
+
+
+
         }
 
         .image-select {
@@ -280,6 +298,8 @@ const handleSave = (e) => {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            position: absolute;
+
         }
 
         .image-select .image-input {

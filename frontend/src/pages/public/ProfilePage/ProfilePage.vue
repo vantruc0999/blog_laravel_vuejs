@@ -44,8 +44,8 @@
                                 </button>
                             </router-link>
                             <div class="header__user__avatar" @click="handleOpenOptions">
-                                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt=""
-                                    v-if="userData.value?.profile_image">
+                                <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore?.user?.blogger_infor?.profile_image"
+                                    class="avatar__img" v-if="authStore?.user?.blogger_infor?.profile_image" />
                                 <img src="../../../assets/images/avatar-default.png" alt="" v-else>
                             </div>
                             <OptionUser :isOpen="isOpen" />
@@ -147,6 +147,7 @@ import { useAuthorStore } from "../../../stores/authorStore"
 
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
+authStore.getMyProfile()
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const route = useRoute();

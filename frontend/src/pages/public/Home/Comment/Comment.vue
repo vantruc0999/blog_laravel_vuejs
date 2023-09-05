@@ -1,50 +1,77 @@
-<template >
-    <div class="comment__container" v-if="isOpenComment" @click="handleOpenComment">
-        <!-- <div class="overlay"></div> -->
+<template>
+    <div class="comment__container" v-if="isOpenComment" @scroll.passive="handleScroll"
+        :style="{ overflow: isScrollEnabled ? 'auto' : 'hidden' }">
         <div class="comment__content">
             <div class="comment__top">
-                <span class="comment__top--number">3 bình luận</span>
+                <span class="comment__top--number">{{ postStore.post?.data?.comments.length }} bình luận</span>
                 <span class="comment__top--report">(Nếu thấy bình luận spam, các bạn bấm report giúp admin nhé)</span>
             </div>
             <div class="comment__user">
-                <img src="../../../../assets/images/banner.png" alt="">
-                <input type="text" placeholder="Viết bình luận của bạn...">
-                <ion-icon name="send-outline" class="comment__icon"></ion-icon>
+                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt="avatar"
+                    v-if="userData.value?.profile_image">
+                <img src="../../../../assets/images/banner.png" alt="" v-else>
+                <input type="text" placeholder="Viết bình luận của bạn..." v-model="commentDescription">
+                <ion-icon name="send-outline" class="comment__icon" @click="handlePostComment"></ion-icon>
             </div>
-            <div class="comment__list">
-                <span class="comment__close" @click="isOpenComment == false"><ion-icon
-                        name="close-outline"></ion-icon></span>
-                <img src="../../../../assets/images/banner.png" alt="">
-                <div class="comment__people">
-                    <div class="comment__list--user">
-                        <span class="comment__list--name">Nguyễn Thị Bin</span>
-                        <span class="comment__list--desc">Mỗi lần đọc bài viết này làm tôi đều nhớ lại những ngày còn thiếu
-                            nữ của mình.</span>
-                    </div>
-                    <div class="comment__reply">
-                        <span class="comment__reply--reaction">Thích</span>
-                        <span class="comment__reply--reaction">Trả lời</span>
-                        <span class="comment__reply--day">15 ngày trước</span>
-                    </div>
-                </div>
+            <span class="comment__close" @click="handleOpenComment">
+                <ion-icon name="close-outline"></ion-icon>
+            </span>
 
+            <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments">
+                <CommentUser :comment="comment" :handleOpenOption="handleOpenOption" :isOpen="isOpen" />
             </div>
         </div>
     </div>
 </template>
-<script setup>
-import { ref } from "vue"
 
+<script setup>
+import {
+    ref,
+    computed,
+    onMounted
+} from "vue";
+import {
+    usePostStore
+} from "../../../../stores/postStore";
+import CommentUser from "./CommentUser.vue"
 const props = defineProps({
     isOpenComment: Boolean,
-    handleOpenComment: Function
+    handleOpenComment: Function,
+    idPost: String
 });
+const postStore = usePostStore()
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+const commentDescription = ref('');
+const isScrollEnabled = ref(false);
 
-// const handleOpenComment = () => {
-//     isOpenComment.value = !isOpenComment.value
-// }
+// open option
+const isOpen = ref(false)
+const handleOpenOption = () => {
+    isOpen.value = !isOpen.value;
+};
+const handleCloseOption = () => {
+    isOpen.value = false
+}
+const formData = new FormData();
+formData.append('commentDescription', commentDescription.value)
+const handlePostComment = async () => {
+    const payload = {
+        description: commentDescription.value
+    }
+    postStore.postComment(props.idPost, payload)
+    await getDetailPost.value;
+    commentDescription.value = ''
+}
 
+const getDetailPost = computed(() => {
+    return postStore.getPostById(props.idPost)
+})
+
+onMounted(async () => {
+    await getDetailPost.value;
+});
 </script>
+
 <style lang="scss" scoped>
 .comment__container {
     width: 100%;
@@ -54,10 +81,8 @@ const props = defineProps({
     z-index: 901;
     bottom: 0;
     background-color: rgba(0, 0, 0, .2);
-    // animation: cubic-bezier(0.075, 0.82, 0.165, 1);
     animation-name: slideInRight;
     animation-duration: 0.8s;
-    /* Adjust the animation duration as needed */
     animation-fill-mode: forwards;
 
     .comment__content {
@@ -70,10 +95,8 @@ const props = defineProps({
         position: relative;
         animation-name: slideInRight;
         animation-duration: 0.8s;
-        /* Adjust the animation duration as needed */
+        overflow-y: scroll;
         animation-fill-mode: forwards;
-        // animation: cubic-bezier(0.175, 0.885, 0.32, 1.275);
-
 
         .comment__close {
             position: absolute;
@@ -132,53 +155,7 @@ const props = defineProps({
 
         .comment__list {
             display: flex;
-            gap: 20px;
-            margin-top: 30px;
-            margin-bottom: 20px;
-
-
-            .comment__people {
-                .comment__reply {
-                    cursor: pointer;
-                    display: flex;
-                    gap: 10px;
-                    font-size: 14px;
-                    margin-top: 5px;
-                    color: rgb(211, 65, 65);
-
-                    &--day {
-                        font-size: 13px;
-                        color: var(--text-color-4);
-                    }
-                }
-            }
-
-            img {
-                width: 40px;
-                height: 40px;
-                border-radius: 50%;
-                border: 1px solid var(--border-color);
-            }
-
-            &--user {
-                background-color: #f2f3f5;
-                padding: 15px;
-                border-radius: 15px;
-            }
-
-            &--name {
-                display: flex;
-                font-weight: 700;
-                font-size: 16px;
-
-            }
-
-            &--desc {
-                display: inline-block;
-                margin-top: 20px;
-                font-size: 14px;
-                font-weight: 400;
-            }
+            overflow-y: scroll;
         }
     }
 }

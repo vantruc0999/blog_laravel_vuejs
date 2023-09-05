@@ -13,18 +13,20 @@
                     {{ postStore.post?.data?.title }}
                 </p>
                 <div class="detail__view">
-                    <div class="detail__view--public">
+                    <!-- <div class="detail__view--public">
                         <div class="detail__user">
-                            <img src="../../../assets/images/banner.png" />
+                            <img :src="'http://127.0.0.1:8000/images/avatar/' + postStore.post?.data?.blogger_infor?.profile_image"
+                                alt="" v-if="postStore.post?.data?.blogger_infor?.profile_image">
+                            <img src="../../../assets/images/avatar-default.png" alt="" v-else>
                             <div class="detail__user__infor">
                                 <span class="detail__user__name">{{ postStore.post?.data?.blogger_infor.name }}</span>
                             </div>
                         </div>
                         <span class="detail__time">28/10</span>
-                    </div>
+                    </div> -->
                     <div class="detail_view--interact">
                         <span class="detail__viewer" @click="handleOpenComment">
-                            <ion-icon name="chatbubbles-outline"></ion-icon>220
+                            <ion-icon name="chatbubbles-outline"></ion-icon>{{ postStore.post?.data?.comments.length }}
                         </span>
                         <span class="detail__viewer">
                             <ion-icon name="eye-outline"></ion-icon> {{ postStore.post?.data?.view_count }} lượt xem
@@ -115,7 +117,7 @@
             </span>
         </div>
     </div>
-    <Comment :isOpenComment="isOpenComment" :handleOpenComment="handleOpenComment" />
+    <Comment :isOpenComment="isOpenComment" :handleOpenComment="handleOpenComment" :idPost="postId" />
 </template>
 
 <script setup>
@@ -128,8 +130,7 @@ import {
 import CardNew from "../../../components/CardNew.vue";
 import Comment from "../../public/Home/Comment/Comment.vue"
 import {
-    useRoute,
-    useRouter
+    useRoute
 } from 'vue-router';
 import {
     Swiper,
@@ -137,13 +138,14 @@ import {
 } from "swiper/vue";
 import "swiper/swiper-bundle.css";
 import "swiper/css";
-import { usePostStore } from "../../../stores/postStore";
 import Loading from "../../../components/Loading.vue"
+import { usePostStore } from "../../../stores/postStore";
 
 const postStore = usePostStore()
 
 const route = useRoute();
 const refDetail = ref(route.params.id)
+const postId = ref(refDetail)
 
 let isOpenComment = ref(false);
 
@@ -159,6 +161,7 @@ const getDetailPost = computed(() => {
 onMounted(async () => {
     await getDetailPost.value;
 });
+
 watchEffect(() => {
     window.scrollTo(0, 0);
 })
@@ -180,7 +183,6 @@ watchEffect(() => {
         height: 465px;
         border-radius: 12px;
         margin-right: 70px;
-        object-fit: cover;
     }
 
 }
@@ -198,9 +200,7 @@ watchEffect(() => {
         height: auto;
         max-height: 220px;
         max-width: 240px;
-        // height: 237px;
         border-radius: 12px;
-        object-fit: cover;
     }
 
     .detail__infor {
@@ -244,7 +244,7 @@ watchEffect(() => {
 .detail__view {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     color: var(--text-color-4);
     font-weight: 700;
 }
@@ -275,10 +275,14 @@ watchEffect(() => {
     font-size: 14px;
 
     .detail__viewer {
-        color: var(--text-color-4);
         cursor: pointer;
         display: flex;
         align-items: center;
+        font-size: 15px;
+
+        ion-icon {
+            font-size: 20px;
+        }
     }
 }
 

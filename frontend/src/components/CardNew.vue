@@ -11,7 +11,7 @@
                         <div class="card__options--edit">
                             <ion-icon name="create-outline"></ion-icon>Sửa
                         </div>
-                        <div class="card__options--delete">
+                        <div class="card__options--delete" @click="handleOpenModal">
                             <ion-icon name="trash-outline"></ion-icon>Xóa
                         </div>
                     </div>
@@ -67,7 +67,7 @@
                     <div class="card__options--edit">
                         <ion-icon name="create-outline"></ion-icon>Sửa
                     </div>
-                    <div class="card__options--delete">
+                    <div class="card__options--delete" @click="handleOpenModal">
                         <ion-icon name="trash-outline"></ion-icon>Xóa
                     </div>
                 </div>
@@ -109,7 +109,9 @@
                 </div>
             </router-link>
         </div>
-
+        <ModalController title="You want to delete this post?"
+            content="Do you really want to deleted this post This process cannot be undone" :closeModel="closeModel"
+            :isOpenModal="isOpenModal" :handleDeletePost="handleDeletePost" />
     </div>
 </template>
 
@@ -118,14 +120,26 @@ import {
     ref
 } from "vue"
 import { usePostStore } from "../stores/postStore";
-
+import ModalController from "../components/ModalController.vue"
 const postStore = usePostStore()
 // Định nghĩa prop "message"
 const props = defineProps({
     isCard: Boolean,
     post: Object
 })
+const tempID = ref(props.post?.id)
+const isOpenModal = ref(false)
+const handleOpenModal = () => {
+    isOpenModal.value = !isOpenModal.value
+}
+const closeModel = () => {
+    isOpenModal.value = false
+}
+const handleDeletePost = () => {
+    postStore.deletePost(tempID.value)
+}
 
+// open option
 const isOpen = ref(false)
 const handleOpenOption = () => {
     isOpen.value = !isOpen.value
@@ -419,7 +433,7 @@ const handleAddBookmark = () => { }
     background-color: var(--white-color);
     box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
     cursor: pointer;
-    border-radius: 12px;
+    border-radius: 5px;
     transition: cubic-bezier(0.165, 0.84, 0.44, 1);
 
     &--edit {
@@ -430,7 +444,7 @@ const handleAddBookmark = () => { }
         border-bottom: 1px solid var(--border-color);
         width: 100%;
         padding: 5px;
-        border-radius: 12px 12px 0px 0px;
+        border-radius: 5px 5px 0px 0px;
 
         &:hover {
             background-color: var(--secondary-color);
@@ -445,7 +459,7 @@ const handleAddBookmark = () => { }
         justify-content: center;
         width: 100%;
         padding: 0px 5px;
-        border-radius: 0px 0px 12px 12px;
+        border-radius: 0px 0px 5px 5px;
         padding: 5px;
 
         &:hover {
