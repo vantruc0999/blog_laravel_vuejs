@@ -110,6 +110,20 @@ class BloggerProfileController extends Controller
                 'birthday' => $newDateString,
             ];
 
+            if ($request->input('email')) {
+                $userEmail = User::where('email', $request->email)->first();
+                $bloggerEmail = Blogger::where('email', $request->email)->first();
+
+                if ($userEmail || $bloggerEmail) {
+                    return response([
+                        'status' => 400,
+                        'message' => 'Email exists or invalid please choose another email'
+                    ]);
+                }
+
+                $data['email'] = $request->input('email');
+            }
+
             if ($request->input('password')) {
                 if (!Hash::check($request->input('old_password'), Auth::user()['password']))
                     return response([
