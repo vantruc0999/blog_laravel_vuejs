@@ -13,7 +13,7 @@
             </div>
         </div>
         <div class="comment__options"><ion-icon name="ellipsis-horizontal-outline" @click="handleOpenOption"></ion-icon>
-            <div class="comment__option" v-if="!isOpen">
+            <div class="comment__option" v-if="isOpen">
                 <div class="comment__option--edit">
                     <ion-icon name="create-outline"></ion-icon>Sửa
                 </div>

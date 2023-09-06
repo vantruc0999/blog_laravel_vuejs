@@ -53,20 +53,23 @@ export const useAuthStore = defineStore("authStore", {
     },
     async logout() {
       try {
+        await AuthService.logout(); // Gọi hàm logout từ AuthService
         // Xóa token khỏi localStorage
         localStorage.removeItem("token");
         localStorage.removeItem("isLogin");
         localStorage.removeItem("user");
-
-        this.isLogin = false
+        this.isLogin = false;
         toast.success("Đăng xuất thành công", {
           position: "top-right",
           duration: 2500,
         });
         router.push("/auth/signin");
-
       } catch (error) {
         console.error(error);
+        toast.error("Đã xảy ra lỗi khi đăng xuất", {
+          position: "top-right",
+          duration: 2500,
+        });
       }
     },
 

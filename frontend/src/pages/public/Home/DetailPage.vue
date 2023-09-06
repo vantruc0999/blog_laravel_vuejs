@@ -25,11 +25,14 @@
                         <span class="detail__time">28/10</span>
                     </div> -->
                     <div class="detail_view--interact">
+                        <span class="detail__viewer">
+                            <ion-icon name="eye-outline"></ion-icon> {{ postStore.post?.data?.view_count }} lượt xem
+                        </span>
                         <span class="detail__viewer" @click="handleOpenComment">
                             <ion-icon name="chatbubbles-outline"></ion-icon>{{ postStore.post?.data?.comments.length }}
                         </span>
                         <span class="detail__viewer">
-                            <ion-icon name="eye-outline"></ion-icon> {{ postStore.post?.data?.view_count }} lượt xem
+                            <ion-icon name="triangle-outline"></ion-icon> 3000 lượt thích
                         </span>
                     </div>
                 </div>
@@ -38,7 +41,7 @@
         </div>
         <div class="detail__content">
             <div class="detail__wrapper">
-                <p class="detail__text" v-html="postStore.post?.data?.description" target="_blank"></p>
+                <p class="detail__text image-container" v-html="postStore.post?.data?.description" target="_blank"></p>
             </div>
         </div>
         <!-- Author -->
@@ -198,7 +201,7 @@ watchEffect(() => {
     img {
         width: 100%;
         height: auto;
-        max-height: 220px;
+        max-height: 180px;
         max-width: 240px;
         border-radius: 12px;
     }
@@ -271,6 +274,7 @@ watchEffect(() => {
 
 .detail_view--interact {
     display: flex;
+    flex-direction: column;
     gap: 20px;
     font-size: 14px;
 
@@ -295,16 +299,22 @@ watchEffect(() => {
 .detail__wrapper {
     margin: 0 auto;
     background-color: var(--white-color);
+    overflow: hidden;
 
     .detail__text {
         font-family: "Noto Serif", Regular, Times New Roman;
         white-space: pre-wrap;
         word-break: break-word;
         line-height: 1.4;
+
+
     }
 }
 
-
+.image-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
 
 .detail__related {
     display: flex;

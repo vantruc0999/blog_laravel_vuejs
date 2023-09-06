@@ -1,7 +1,9 @@
 export const API_SIGNIN = "/login";
 export const API_SIGNUP = "/register";
+export const API_LOGOUT = "/logout"
 export const API_POSTBLOG = "/posts/create-post"
 export const API_GETALLPOST = "/posts"
+export const API_UPDATEPOST = "/posts/update-post"
 export const API_DELETEPOST = "/posts/delete-post"
 export const API_GETALLBLOGGER = '/bloggers'
 export const API_GETAUTHOR = '/blogger'

@@ -7,7 +7,7 @@
             </p>
             <div class="modal__btn">
                 <button class="btn modal__btn--cancel" @click="closeModel">Cancel</button>
-                <button class="btn modal__btn--accept" @click="handleDeletePost">Sure</button>
+                <button class="btn modal__btn--accept" @click="handleDelete">Sure</button>
             </div>
         </div>
     </div>
@@ -28,7 +28,7 @@ const props = defineProps({
     closeModel: {
         type: Function
     },
-    handleDeletePost: {
+    handleDelete: {
         type: Function
     }
 })

@@ -2,6 +2,7 @@ import httpClient from "../api/httpClient";
 import {
   API_POSTBLOG,
   API_GETALLPOST,
+  API_UPDATEPOST,
   API_DELETEPOST,
   API_POSTCOMMENT,
   API_DELETECOMMENT,
@@ -23,6 +24,9 @@ export const PostService = {
   },
   postcomment(id, commentDescription) {
     return httpClient.post(`${API_POSTCOMMENT}/${id}`,commentDescription )
+  },
+  updatepost(id, updateData) {
+    return httpClient.post(`${API_UPDATEPOST}/${id}`, updateData)
   },
   deletecomment(id) {
     return httpClient.delete(`${API_DELETECOMMENT}/${id}`)

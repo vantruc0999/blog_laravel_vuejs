@@ -8,10 +8,10 @@
                     <ion-icon name="bookmark-outline" class="card__bookmark" @click="handleAddBookmark"></ion-icon>
                     <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"></ion-icon>
                     <div class="card__options" v-if="isOpen">
-                        <div class="card__options--edit">
+                        <router-link :to="`/updated-post/${post?.id}`" class="card__options--edit">
                             <ion-icon name="create-outline"></ion-icon>Sửa
-                        </div>
-                        <div class="card__options--delete" @click="handleOpenModal">
+                        </router-link>
+                        <div class="card__options--delete" @click="handleOpenModal()">
                             <ion-icon name="trash-outline"></ion-icon>Xóa
                         </div>
                     </div>
@@ -34,7 +34,7 @@
                                 <div class="card__user__top">
                                     <div class="card__user__name">{{ post?.blogger_infor?.name }}</div>
                                 </div>
-                                <div class="card__user__time">9 giờ trước</div>
+                                <div class="card__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}</div>
                             </div>
                         </router-link>
                     </div>
@@ -45,8 +45,10 @@
                                 <span>{{ post?.view_count }} lượt xem</span>
                             </div>
                             <div class="card__comment">
+                                <ion-icon name="triangle-outline"></ion-icon>
+                                <span>3000</span>
                                 <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                                <span>12</span>
+                                <span>1200</span>
                             </div>
                         </div>
                     </router-link>
@@ -64,10 +66,10 @@
                 <ion-icon name="ellipsis-vertical-outline" class="blog__menu"
                     v-if="post?.blogger_id == post?.blogger_infor?.id" @click="handleOpenOption"></ion-icon>
                 <div class="card__options" v-if="isOpen">
-                    <div class="card__options--edit">
+                    <router-link :to="`/updated-post/${post?.id}`" class="card__options--edit">
                         <ion-icon name="create-outline"></ion-icon>Sửa
-                    </div>
-                    <div class="card__options--delete" @click="handleOpenModal">
+                    </router-link>
+                    <div class="card__options--delete" @click="handleOpenModal()">
                         <ion-icon name="trash-outline"></ion-icon>Xóa
                     </div>
                 </div>
@@ -91,7 +93,8 @@
                             <div class="blog__user__top">
                                 <div class="blog__user__name">{{ post?.blogger_infor?.name }}</div>
                             </div>
-                            <div class="blog__user__time">9 giờ trước</div>
+                            <div class="blog__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}
+                            </div>
                         </div>
                     </router-link>
                 </div>
@@ -103,15 +106,17 @@
                         <span>{{ post?.view_count }} lượt xem</span>
                     </div>
                     <div class="blog__comment">
+                        <ion-icon name="triangle-outline"></ion-icon>
+                        <span>3000</span>
                         <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                        <span>12</span>
+                        <span>1200</span>
                     </div>
                 </div>
             </router-link>
         </div>
         <ModalController title="You want to delete this post?"
             content="Do you really want to deleted this post This process cannot be undone" :closeModel="closeModel"
-            :isOpenModal="isOpenModal" :handleDeletePost="handleDeletePost" />
+            :isOpenModal="isOpenModal" :handleDelete="handleDeletePost" />
     </div>
 </template>
 
@@ -127,7 +132,7 @@ const props = defineProps({
     isCard: Boolean,
     post: Object
 })
-const tempID = ref(props.post?.id)
+const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
@@ -136,13 +141,32 @@ const closeModel = () => {
     isOpenModal.value = false
 }
 const handleDeletePost = () => {
-    postStore.deletePost(tempID.value)
+    postStore.deletePost(idTemp.value)
 }
 
 // open option
 const isOpen = ref(false)
 const handleOpenOption = () => {
     isOpen.value = !isOpen.value
+}
+const calculateTimeAgo = (created_at) => {
+    const currentTime = new Date();
+    const commentTime = new Date(created_at);
+    const timeDiff = currentTime - commentTime;
+
+    // Chuyển đổi khoảng thời gian sang giây, phút, giờ, ngày
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+        return `${days} ngày trước`;
+    } else if (hours > 0) {
+        return `${hours} giờ trước`;
+    } else {
+        return `${minutes} phút trước`;
+    }
 }
 const handleAddBookmark = () => { }
 </script>
@@ -277,6 +301,7 @@ const handleAddBookmark = () => { }
         display: flex;
         gap: 15px;
     }
+
 }
 
 // Blog
@@ -414,7 +439,7 @@ const handleAddBookmark = () => { }
             gap: 2px;
 
             span {
-                font-size: 14px;
+                font-size: 12px;
             }
         }
     }
