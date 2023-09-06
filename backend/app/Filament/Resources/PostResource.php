@@ -20,8 +20,11 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\BadgeColumn;
+use Filament\Tables\Columns\CheckboxColumn;
 use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ToggleColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
@@ -103,14 +106,31 @@ class PostResource extends Resource
                     ->sortable(),
                 TextColumn::make('title')
                     ->limit(30)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        if (strlen($state) <= $column->getLimit()) {
+                            return null;
+                        }
+                        return $state;
+                    })
                     ->searchable()
                     ->sortable(),
                 TextColumn::make('blogger.name')
                     ->searchable()
                     ->sortable(),
-                TextColumn::make('slug')->limit(20),
+                TextColumn::make('slug')
+                    ->limit(30)
+                    ->tooltip(function (TextColumn $column): ?string {
+                        $state = $column->getState();
+                        if (strlen($state) <= $column->getLimit()) {
+                            return null;
+                        }
+                        return $state;
+                    }),
                 // TextColumn::make('new_post'),
                 // TextColumn::make('highlight'),
+                // ToggleColumn::make('highlight'),
+                // CheckboxColumn::make('highlight'),
                 TextColumn::make('created_at'),
             ])
             ->filters([
