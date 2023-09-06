@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Blogger;
 use App\Models\Like;
+use App\Models\Notification;
 use App\Models\Post;
 use GrahamCampbell\ResultType\Success;
 use Illuminate\Http\Request;
@@ -14,6 +16,7 @@ class LikeController extends Controller
     //
     public function likePost($post_id)
     {
+        // return Post::find($post_id)->blogger;
         try {
             $isLike = Like::where(
                 [
@@ -29,12 +32,20 @@ class LikeController extends Controller
                 ]);
             }
 
-            Like::create(
+            $like = Like::create(
                 [
                     'blogger_id' => Auth::user()['id'],
                     'post_id' => $post_id,
                 ]
             );
+
+            if($like){
+                Notification::create([
+                    'blogger_id' => Post::find($post_id)->blogger->id,
+                    'description' => Auth::user()['name'] . ' liked your post',
+                    'is_seen' => 0,
+                ]);
+            }
 
             return response([
                 'message' => 'Like successfully',
@@ -72,28 +83,28 @@ class LikeController extends Controller
     public function getAllLikedPosts()
     {
         $blogger_id = Auth::user()['id'];
+
         $likes = Like::where(
             [
                 'blogger_id' => $blogger_id
             ]
         )->get();
 
-        $posts = array();
-
         foreach ($likes as $item) {
-            $likes_count = $item->post->likes->count();
-            $category_name = $item->post->category->name;
             $post = $item->post;
-            $item->blogger_infor = $post->blogger;
-            $item->likes_count =  $likes_count;
-            $item->category_name=  $category_name;
-
-            unset($post->category->created_at, $post->category->updated_at, $post->blogger->created_at, $post->blogger->updated_at, $post->blogger->password);
-
-            $post->makeHidden(['description', 'blogger_id', 'category_id', 'likes', 'category']);
+            $post->likes_count = $post->likes->count();
+            $post->comments_count = $post->comments->count();
+            $post->category = $post->category->makeHidden('created_at', 'updated_at');
+            $post->category_name = $post->category->name;
+            $post->blogger_infor = $post->blogger->makeHidden('password', 'phone', 'created_at', 'updated_at', 
+            'address', 'phone', 'birthday', 'gender', 'banner');
+            $post->makeHidden(['description', 'category_id', 'blogger_id', 'likes', 'comments', 'blogger', 'category']);
             $posts[] = $post;
         }
 
-        return $posts;
+        return response([
+            'message' => 'success',
+            'posts' => $posts
+        ]);
     }
 }
