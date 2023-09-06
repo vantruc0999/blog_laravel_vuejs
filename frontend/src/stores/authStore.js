@@ -53,20 +53,23 @@ export const useAuthStore = defineStore("authStore", {
     },
     async logout() {
       try {
+        await AuthService.logout(); // Gọi hàm logout từ AuthService
         // Xóa token khỏi localStorage
         localStorage.removeItem("token");
         localStorage.removeItem("isLogin");
         localStorage.removeItem("user");
-
-        this.isLogin = false
+        this.isLogin = false;
         toast.success("Đăng xuất thành công", {
           position: "top-right",
           duration: 2500,
         });
         router.push("/auth/signin");
-
       } catch (error) {
         console.error(error);
+        toast.error("Đã xảy ra lỗi khi đăng xuất", {
+          position: "top-right",
+          duration: 2500,
+        });
       }
     },
 
@@ -101,6 +104,27 @@ export const useAuthStore = defineStore("authStore", {
         this.isLoading = false;
       }catch (error) {
         toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+      }
+    },
+    async updateMyProfile(data) {
+      try {
+        this.isLoading = true;
+        const response = await AuthService.updatemyprofile(data);
+        console.log("🚀 ~ Updated user profile:", response.data);
+        this.user = response?.data;
+        this.getMyProfile()
+        this.isLoading = false;
+        toast.success("Cập nhật thông tin thành công", {
+          position: "top-right",
+          duration: 2500,
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Cập nhật thông tin thất bại", {
+          position: "top-right",
+          duration: 2500,
+        });
+        this.isLoading = false;
       }
     }
   },

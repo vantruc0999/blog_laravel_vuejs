@@ -112,13 +112,14 @@ const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
 
 <style lang="scss" scoped>
 .home__container {
-    max-width: 1528px;
+
     margin: 0 auto;
 }
 
 .home__banner {
-    padding: 40px 125px;
-    min-height: 520px;
+    padding: 195px 125px;
+    width: 100%;
+    max-height: 520px;
     background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
     display: flex;
     align-items: center;
@@ -159,7 +160,9 @@ const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
 }
 
 .home__body {
+    margin: 0 auto;
     padding: 60px 120px;
+    max-width: 1528px;
 
     .home__ads {
         margin-top: 40px;

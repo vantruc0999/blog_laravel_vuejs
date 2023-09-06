@@ -2,7 +2,9 @@
     <div class="sidebar__container">
         <div class="account__infor">
             <div class="image-select">
-                <img :src="temporaryBanner" alt="" class="temporary-image">
+                <img :src="'http://127.0.0.1:8000/images/banner/' + authStore.user.blogger_info?.banner" alt="avatar"
+                    class="temporary-image">
+                <img :src="temporaryBanner" alt="" class="temporary-image temporary-image--banner">
                 <input type="file" @change="handleBannerChange" accept="image/*" class="image-input">
                 <span class="image-icon">
                     <ion-icon name="camera-outline"></ion-icon>
@@ -10,14 +12,17 @@
             </div>
             <div class="account__detail">
                 <div class="account__avatar">
-                    <img :src="temporaryAvatar" alt="" class="temporary-image">
+                    <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore.user.blogger_info?.profile_image"
+                        alt="avatar" class="temporary-image">
+                    <img :src="temporaryAvatar" alt="" class="temporary-image temporary-image--avatar">
                     <input type="file" @change="handleAvatarChange" accept="image/*" class="image-input">
                     <span class="image-icon">
                         <ion-icon name="camera-outline"></ion-icon>
                     </span>
                 </div>
                 <div class="account__desc">
-                    <textarea v-model="bio" ref="textarea" class="editor__input" placeholder="@Bio..."
+                    <textarea v-model="bio" ref="textarea" class="editor__input"
+                        :placeholder="authStore.user.blogger_info?.bio ? authStore.user.blogger_info?.bio : 'Bio...'"
                         @input="handleBioInput"></textarea>
                     <p class="message">{{ bioLength }}/150</p>
                 </div>
@@ -30,13 +35,18 @@
                 </div>
                 <div class="account__col">
                     <div class="account__name--text">Email</div>
-                    <button class="account__name--input">{{ authStore.user.blogger_info?.email }}</button>
-                    <ion-icon name="pencil-outline"></ion-icon>
+                    <div class="account__name--input">{{ authStore.user.blogger_info?.email }}</div>
+                    <!-- <ion-icon name="pencil-outline"></ion-icon> -->
                 </div>
-                <a-space direction="vertical" :size="12">
-                    <div class="account__name--text">Ngày sinh</div>
+                <form class="account__col">
+                    <label for="birthday" class="account__name--text">Birthday:</label>
+                    <input type="date" id="birthday" name="birthday" class="account__name--input" v-model="birthValue"
+                        @input="handleBirthInput">
+                </form>
+                <!-- <a-space direction="vertical" :size="12">
+                    <div>Ngày sinh</div>
                     <a-date-picker v-model:value="birthValue" />
-                </a-space>
+                </a-space> -->
 
                 <div class="account__col">
                     <div class="account__name--text">Giới tính</div>
@@ -70,19 +80,19 @@
             </form>
         </div>
         <div class="account__controller">
-            <button class="account__btn">Hủy</button>
+            <button class="account__btn" @click="handleCancel">Hủy</button>
             <button class="account__btn account__btn--save" @click="handleUpdateProfile">Lưu</button>
         </div>
     </div>
 </template>
 
 <script setup>
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
 import { useAuthStore } from '../../../stores/authStore';
 
 // store
 const authStore = useAuthStore()
-authStore.getMyProfile()
+
 // form password
 const passwordMatchError = ref('');
 const isOpenForgotPassword = ref(false);
@@ -95,12 +105,21 @@ const errorMessages = {
     confirmPassword: '',
 };
 // form information
+const bannerPath = ref(null);
+const avatarPath = ref(null);
 const temporaryBanner = ref('');
 const temporaryAvatar = ref('');
 const birthValue = ref(null);
-const genderValue = ref();
+const genderValue = ref(null);
+
 const bio = ref('')
 
+console.log(birthValue.value);
+onMounted(async () => {
+    await authStore.getMyProfile()
+    genderValue.value = authStore.user?.blogger_info?.gender
+    birthValue.value = authStore.user?.blogger_info?.birthday
+})
 const maxBioLength = 150;
 
 const bioLength = ref(0);
@@ -129,30 +148,12 @@ const handleGenderChange = (value) => {
         genderValue.value = 0;
     }
 };
-
-const handleUpdateProfile = () => {
-    if (birthValue.value) {
-        const date = new Date(birthValue.value);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear().toString();
-        const formattedDate = `${day}/${month}/${year}`;
-        birthValue.value = formattedDate
-    }
-    console.log("🚀 ~ file: Account.vue:100 ~ handleUpdateProfile ~ birthValue.value:", birthValue.value)
-    console.log(authStore.user.blogger_info.name);
-    console.log("genderValue:", genderValue.value);
-    console.log("temporaryAvatar:", temporaryAvatar.value);
-    console.log("temporaryBanner:", temporaryBanner.value);
-    console.log("bio", bio.value);
-};
-
 //  handle image
 const handleBannerChange = (event) => {
     const file = event.target.files[0];
     if (file) {
         temporaryBanner.value = URL.createObjectURL(file)
-        imagePath.value = file
+        bannerPath.value = file
     };
 
 };
@@ -161,9 +162,32 @@ const handleAvatarChange = (event) => {
     const file = event.target.files[0];
     if (file) {
         temporaryAvatar.value = URL.createObjectURL(file)
-        imagePath.value = file
+        avatarPath.value = file
     };
 
+};
+const handleBirthInput = (event) => {
+    birthValue.value = event.target.value;
+};
+const handleUpdateProfile = () => {
+    if (birthValue.value) {
+        const date = new Date(birthValue.value);
+        const day = date.getDate().toString().padStart(2, '0');
+        const month = (date.getMonth() + 1).toString().padStart(2, '0');
+        const year = date.getFullYear().toString();
+        const formattedDate = `${day}/${month}/${year}`;
+        authStore.user.blogger_info.birthday = formattedDate;
+    }
+    const formData = new FormData();
+    formData.append('name', authStore.user?.blogger_info?.name)
+    formData.append('bio', bio.value)
+    formData.append('profile_image', avatarPath.value)
+    formData.append('profile_banner', bannerPath.value)
+    formData.append('gender', genderValue.value)
+    formData.append('birthday', birthValue.value)
+    authStore.updateMyProfile(formData)
+
+    localStorage.setItem('user', JSON.stringify(updatedUser));
 };
 
 // handle password
@@ -207,6 +231,11 @@ const handleSave = (e) => {
     //     console.log(newPassword.value, confirmPassword.value);
     // }
 };
+const handleCancel = () => {
+    // Đặt lại các giá trị ban đầu ở đây
+    bio.value = authStore.user?.blogger_info?.bio ? authStore.user.blogger_info?.bio : '';
+    // Đặt lại các giá trị khác tương tự ở đây
+};
 </script>
 
 <style lang="scss" scoped>
@@ -226,10 +255,11 @@ const handleSave = (e) => {
 
                 .temporary-image {
                     border-radius: 50%;
-
+                    z-index: 2;
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
+                    position: absolute;
                 }
 
                 .image-input {
@@ -264,7 +294,9 @@ const handleSave = (e) => {
 
         .temporary-image {
             width: 100%;
-            // z-index: 20;
+
+
+
         }
 
         .image-select {
@@ -280,6 +312,8 @@ const handleSave = (e) => {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            position: absolute;
+
         }
 
         .image-select .image-input {
@@ -375,14 +409,13 @@ const handleSave = (e) => {
             gap: 20px;
             position: relative;
 
-            ion-icon {
-                position: absolute;
-                top: 51px;
-                font-size: 18px;
-                right: 15px;
-                cursor: pointer;
-            }
-
+            // ion-icon {
+            //     position: absolute;
+            //     top: 51px;
+            //     font-size: 18px;
+            //     right: 15px;
+            //     cursor: pointer;
+            // }
             .account__name--text {
                 text-transform: uppercase;
                 color: #B0A99F;

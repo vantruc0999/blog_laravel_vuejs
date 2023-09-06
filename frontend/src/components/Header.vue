@@ -22,7 +22,7 @@
             <!-- <div class="header__right"> -->
             <div class="header__right" v-if="!isAuth">
                 <div class="header__search">
-                    <input type="text" class="search__input" placeholder="Search post..." />
+                    <input type="text" class="search__input" placeholder="Tìm kiếm theo tiêu đề tác giả hoặc tags" />
                     <span class="search__icon">
                         <ion-icon name="search-outline"></ion-icon>
                     </span>
@@ -36,7 +36,7 @@
             </div>
             <div class="header__user" v-else>
                 <div class="header__search" v-if="$route.path !== '/blog-post'">
-                    <input type="text" class="search__input" placeholder="Search post..." />
+                    <input type="text" class="search__input" placeholder="Tìm kiếm theo tiêu đề tác giả hoặc tags" />
                     <span class="search__icon">
                         <ion-icon name="search-outline"></ion-icon>
                     </span>
@@ -49,8 +49,8 @@
                     </button>
                 </router-link>
                 <div class="header__avatar" @click="handleOpenOptions">
-                    <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt="avatar"
-                        v-if="userData.value?.profile_image">
+                    <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore.user.blogger_info?.profile_image"
+                        alt="avatar" v-if="authStore.user.blogger_info?.profile_image">
                     <img src="../assets/images/avatar-default.png" alt="" v-else>
                 </div>
                 <OptionUser :isOpen="isOpen" />
@@ -69,6 +69,7 @@ import OptionUser from "../components/OptionUser.vue"
 import { useAuthStore } from '../stores/authStore';
 
 const authStore = useAuthStore()
+authStore.getMyProfile()
 
 const isAuth = ref(localStorage.getItem("isLogin"));
 
@@ -140,18 +141,24 @@ const handleOpenOptions = () => {
 
 .header__search {
     margin-left: auto;
-    padding: 13px;
+    padding: 12px;
     border: 1px solid var(--border-color);
     border-radius: 8px;
     width: 100%;
     max-width: 320px;
     position: relative;
-    background-color: var(--white-color);
+    background-color: #f6f8fc;
 }
 
 .search__input {
     width: 100%;
     padding-right: 35px;
+    background-color: #f6f8fc;
+
+    &::placeholder {
+        font-size: 12px;
+    }
+
 }
 
 .search__icon {
@@ -199,6 +206,7 @@ const handleOpenOptions = () => {
 .header__avatar {
     width: 40px;
     height: 40px;
+    border-radius: 1px solid var(--border-color);
 
     img {
         cursor: pointer;

@@ -44,8 +44,8 @@
                                 </button>
                             </router-link>
                             <div class="header__user__avatar" @click="handleOpenOptions">
-                                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt=""
-                                    v-if="userData.value?.profile_image">
+                                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData?.profile_image"
+                                    class="avatar__img" v-if="userData?.profile_image" />
                                 <img src="../../../assets/images/avatar-default.png" alt="" v-else>
                             </div>
                             <OptionUser :isOpen="isOpen" />
@@ -147,6 +147,7 @@ import { useAuthorStore } from "../../../stores/authorStore"
 
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
+authStore.getMyProfile()
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const route = useRoute();
@@ -228,7 +229,7 @@ watchEffect(() => {
 
                 .search__input {
                     width: 100%;
-                    padding-right: 35px;
+                    padding-right: 25px;
                 }
 
                 .search__icon {
@@ -328,7 +329,7 @@ watchEffect(() => {
 
                     .header__user__avatar {
                         img {
-                            width: 50px;
+                            width: 40px;
                             border-radius: 50%;
                             cursor: pointer;
                         }

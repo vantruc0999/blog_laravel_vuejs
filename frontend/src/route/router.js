@@ -9,6 +9,7 @@
   import DetailPage from "../pages/public/Home/DetailPage.vue";
   import ProfilePage from "../pages/public/ProfilePage/ProfilePage.vue";
   import PostBlog from "../pages/private/Blog/PostBlog.vue";
+  import updatedBlog from "../pages/private/Blog/updatedBlog.vue";
   import SettingPage from "../pages/private/SettingPage/SettingPage.vue";
   import Account from "../pages/private/SettingPage/Account.vue";
   import BanUser from "../pages/private/SettingPage/BanUser.vue";
@@ -42,6 +43,11 @@ import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
           path: "/blog-post",
           name: "postblog",
           component: PostBlog,
+        },
+        {
+          path: "/updated-post/:id",
+          name: "updatedBlog",
+          component: updatedBlog,
         },
         {
           path: "/search",

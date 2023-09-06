@@ -1,5 +1,5 @@
 <template lang="">
-    <div class="modal__container" v-if="isDelete" @click="closeModel">
+    <div class="modal__container" v-if="isOpenModal" @click="closeModel">
         <div class="modal" >
             <h2 class="modal__header">{{title}}</h2>
             <p class="modal__notifi">
@@ -12,38 +12,32 @@
         </div>
     </div>
 </template>
-<script>
-export default {
-    props: {
-        title: {
-            type: String,
-            required: true,
-        },
-        content: {
-            type: String,
-            required: true,
-        },
-        isDelete: {
-            type: Boolean
-        },
-        closeModel: {
-            type: Function
-        },
-        handleDelete: {
-            type: Function
-        }
+<script setup>
+const props = defineProps({
+    title: {
+        type: String,
+        required: true,
     },
-    data() {
-        return {
-            showModal: true,
-        }
+    content: {
+        type: String,
+        required: true,
     },
-}
+    isOpenModal: {
+        type: Boolean
+    },
+    closeModel: {
+        type: Function
+    },
+    handleDelete: {
+        type: Function
+    }
+})
+
 </script>
 <style lang="css">
 .modal__container {
     position: fixed;
-    z-index: 1;
+    z-index: 999;
     left: 0;
     top: 0;
     width: 100%;

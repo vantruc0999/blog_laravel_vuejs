@@ -13,21 +13,26 @@
                     {{ postStore.post?.data?.title }}
                 </p>
                 <div class="detail__view">
-                    <div class="detail__view--public">
+                    <!-- <div class="detail__view--public">
                         <div class="detail__user">
-                            <img src="../../../assets/images/banner.png" />
+                            <img :src="'http://127.0.0.1:8000/images/avatar/' + postStore.post?.data?.blogger_infor?.profile_image"
+                                alt="" v-if="postStore.post?.data?.blogger_infor?.profile_image">
+                            <img src="../../../assets/images/avatar-default.png" alt="" v-else>
                             <div class="detail__user__infor">
                                 <span class="detail__user__name">{{ postStore.post?.data?.blogger_infor.name }}</span>
                             </div>
                         </div>
                         <span class="detail__time">28/10</span>
-                    </div>
+                    </div> -->
                     <div class="detail_view--interact">
-                        <span class="detail__viewer" @click="handleOpenComment">
-                            <ion-icon name="chatbubbles-outline"></ion-icon>220
-                        </span>
                         <span class="detail__viewer">
                             <ion-icon name="eye-outline"></ion-icon> {{ postStore.post?.data?.view_count }} lượt xem
+                        </span>
+                        <span class="detail__viewer" @click="handleOpenComment">
+                            <ion-icon name="chatbubbles-outline"></ion-icon>{{ postStore.post?.data?.comments.length }}
+                        </span>
+                        <span class="detail__viewer">
+                            <ion-icon name="triangle-outline"></ion-icon> 3000 lượt thích
                         </span>
                     </div>
                 </div>
@@ -36,7 +41,7 @@
         </div>
         <div class="detail__content">
             <div class="detail__wrapper">
-                <p class="detail__text" v-html="postStore.post?.data?.description" target="_blank"></p>
+                <p class="detail__text image-container" v-html="postStore.post?.data?.description" target="_blank"></p>
             </div>
         </div>
         <!-- Author -->
@@ -115,7 +120,7 @@
             </span>
         </div>
     </div>
-    <Comment :isOpenComment="isOpenComment" :handleOpenComment="handleOpenComment" />
+    <Comment :isOpenComment="isOpenComment" :handleOpenComment="handleOpenComment" :idPost="postId" />
 </template>
 
 <script setup>
@@ -128,8 +133,7 @@ import {
 import CardNew from "../../../components/CardNew.vue";
 import Comment from "../../public/Home/Comment/Comment.vue"
 import {
-    useRoute,
-    useRouter
+    useRoute
 } from 'vue-router';
 import {
     Swiper,
@@ -137,13 +141,14 @@ import {
 } from "swiper/vue";
 import "swiper/swiper-bundle.css";
 import "swiper/css";
-import { usePostStore } from "../../../stores/postStore";
 import Loading from "../../../components/Loading.vue"
+import { usePostStore } from "../../../stores/postStore";
 
 const postStore = usePostStore()
 
 const route = useRoute();
 const refDetail = ref(route.params.id)
+const postId = ref(refDetail)
 
 let isOpenComment = ref(false);
 
@@ -159,6 +164,7 @@ const getDetailPost = computed(() => {
 onMounted(async () => {
     await getDetailPost.value;
 });
+
 watchEffect(() => {
     window.scrollTo(0, 0);
 })
@@ -180,7 +186,6 @@ watchEffect(() => {
         height: 465px;
         border-radius: 12px;
         margin-right: 70px;
-        object-fit: cover;
     }
 
 }
@@ -196,11 +201,9 @@ watchEffect(() => {
     img {
         width: 100%;
         height: auto;
-        max-height: 220px;
+        max-height: 180px;
         max-width: 240px;
-        // height: 237px;
         border-radius: 12px;
-        object-fit: cover;
     }
 
     .detail__infor {
@@ -244,7 +247,7 @@ watchEffect(() => {
 .detail__view {
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: flex-end;
     color: var(--text-color-4);
     font-weight: 700;
 }
@@ -271,14 +274,19 @@ watchEffect(() => {
 
 .detail_view--interact {
     display: flex;
+    flex-direction: column;
     gap: 20px;
     font-size: 14px;
 
     .detail__viewer {
-        color: var(--text-color-4);
         cursor: pointer;
         display: flex;
         align-items: center;
+        font-size: 15px;
+
+        ion-icon {
+            font-size: 20px;
+        }
     }
 }
 
@@ -291,16 +299,22 @@ watchEffect(() => {
 .detail__wrapper {
     margin: 0 auto;
     background-color: var(--white-color);
+    overflow: hidden;
 
     .detail__text {
         font-family: "Noto Serif", Regular, Times New Roman;
         white-space: pre-wrap;
         word-break: break-word;
         line-height: 1.4;
+
+
     }
 }
 
-
+.image-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
 
 .detail__related {
     display: flex;

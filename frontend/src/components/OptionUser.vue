@@ -88,6 +88,7 @@ const handleLogout = () => {
     gap: 5px;
     padding: 10px 2px;
     border-radius: 3px;
+    cursor: pointer;
 
     &:hover {
         background-color: #f0ebeb !important;

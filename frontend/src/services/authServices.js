@@ -5,7 +5,9 @@ import {
   API_GETALLBLOGGER,
   API_GETAUTHOR,
   API_GETMYPROFILE,
-  API_GETFOLLOWAUTHOR
+  API_GETFOLLOWAUTHOR,
+  API_UPDATEPROFILE,
+  API_LOGOUT
 } from "../config/apis";
 
 export const AuthService = {
@@ -14,6 +16,9 @@ export const AuthService = {
   },
   signup(user) {
     return httpClient.post(API_SIGNUP, user);
+  },
+  logout() {
+    return httpClient.delete(API_LOGOUT)
   },
   getallblogger() {
     return httpClient.get(API_GETALLBLOGGER)
@@ -26,6 +31,9 @@ export const AuthService = {
   },
   getfollowauthor(authorid) {
     return httpClient.get(`${API_GETFOLLOWAUTHOR}/${authorid}`)
-  } 
+  },
+  updatemyprofile(data) {
+      return httpClient.post(API_UPDATEPROFILE,data)
+  }
 };
 

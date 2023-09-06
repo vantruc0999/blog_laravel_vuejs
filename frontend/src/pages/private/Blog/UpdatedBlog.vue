@@ -47,7 +47,7 @@
     </div>
 </template>
 <script setup>
-import { watch, ref, computed } from 'vue';
+import { watch, ref, computed, watchEffect } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { usePostStore } from '../../../stores/postStore';
 // import CKEditor from '@ckeditor/ckeditor5-vue';
@@ -195,7 +195,10 @@ const handlePostBlog = () => {
     temporaryImage.value = '';
 };
 
+watchEffect(() => {
+    window.scrollTo(0, 0);
 
+})
 </script>
 <style lang="scss" scoped>
 .blog__container {
