@@ -11,7 +11,8 @@
                 <div class="editor__tool">
                     <span class="editor__title">Thể loại</span>
                     <div class="editor__category">
-                        <a-select v-model="selectedCategory" placeholder="Thể loại" @change="handleCategoryChange">
+                        <a-select v-model="selectedCategory" :placeholder="postStore.post?.data?.category_name"
+                            @change="handleCategoryChange">
                             <a-select-option v-for="tag in postStore.tags" :key="tag?.id" :value="tag?.name">
                                 {{ tag?.name }}
                             </a-select-option>
@@ -32,7 +33,11 @@
 
                     <span class="editor__title">Chọn ảnh cho tiêu đề</span>
                     <div class="image-select">
-                        <img :src="temporaryImage" alt="" class="temporary-image">
+
+                        <img :src="'http://127.0.0.1:8000/storage/' + postStore.post?.data?.banner" alt=""
+                            class="temporary-image">
+                        <img :src="temporaryImage" alt="" class="temporary-image temporary-image--sub">
+
                         <input type="file" @change="handleImageChange" accept="image/*" class="image-input">
                     </div>
                     <div class="editor__controller">
@@ -47,14 +52,21 @@
     </div>
 </template>
 <script setup>
-import { watch, ref, computed, watchEffect } from 'vue';
+import { onMounted, watch, ref, computed, watchEffect } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { usePostStore } from '../../../stores/postStore';
-// import CKEditor from '@ckeditor/ckeditor5-vue';
-// import { Select } from 'ant-design-vue';
+import {
+    useRoute,
+    useRouter
+} from 'vue-router';
 
+const route = useRoute();
+const refPost = ref(route.params.id)
 const postStore = usePostStore();
 postStore.getAllTags();
+const postUpdatedId = ref(postStore?.post?.data?.id)
+
+
 
 const selectedCategory = ref('');
 const selectedTag = ref('');
@@ -62,7 +74,7 @@ const selectedTag = ref('');
 const filteredTags = ref([]);
 
 watch(() => selectedCategory.value, () => {
-    const selectedTagData = postStore.tags.find(tag => tag.name === selectedCategory.value);
+    const selectedTagData = postStore?.tags.find(tag => tag?.name === selectedCategory?.value);
     if (selectedTagData) {
         filteredTags.value = selectedTagData.tags.map(tag => ({ value: tag.id, label: tag.name }));
     } else {
@@ -75,15 +87,15 @@ const temporaryImage = ref(null);
 const imagePath = ref(null);
 
 const editor = ref(ClassicEditor);
-const editorData = ref('');
+const editorData = ref(postStore?.post?.data?.description);
 
 const editorConfig = ref({
     placeholder: 'Nhập nội dung...'
 });
 
 const height = ref(35);
-const title = ref('');
-const intro = ref('');
+const title = ref(postStore?.post?.data?.title);
+const intro = ref(postStore.post?.data?.intro);
 const textarea = ref('');
 
 const maxIntroLength = 100;
@@ -126,9 +138,9 @@ const handleImageChange = (event) => {
     }
 };
 // Validate data
-const isFormValid = computed(() => {
-    return intro.value.trim() !== '' && title.value.trim() !== '' && editorData.value.trim() !== '' && selectedCategory.value !== '';
-});
+// const isFormValid = computed(() => {
+//     return intro.value.trim() !== '' && title.value.trim() !== '' && editorData.value.trim() !== '' && selectedCategory.value !== '';
+// });
 
 const handleCategoryChange = (value) => {
     selectedCategory.value = value;
@@ -140,25 +152,25 @@ const handleTagChange = (value) => {
 const handlePostBlog = () => {
     const errors = {};
 
-    if (title.value.trim() === '') {
-        errors.title = true;
-    }
-    if (intro.value.trim() === '') {
-        errors.title = true;
-    }
+    // if (title.value.trim() === '') {
+    //     errors.title = true;
+    // }
+    // if (intro.value.trim() === '') {
+    //     errors.title = true;
+    // }
 
-    if (editorData.value.trim() === '') {
-        errors.editorData = true;
-    }
+    // if (editorData.value.trim() === '') {
+    //     errors.editorData = true;
+    // }
 
-    if (selectedCategory.value === '') {
-        errors.selectedCategory = true;
-    }
+    // if (selectedCategory.value === '') {
+    //     errors.selectedCategory = true;
+    // }
 
-    if (Object.keys(errors).length > 0) {
-        alert("Vui lòng điền đầy đủ thông tin bài đăng, chúc bạn có một bài đăng tuyệt vời ❤️❤️❤️");
-        return;
-    }
+    // if (Object.keys(errors).length > 0) {
+    //     alert("Vui lòng điền đầy đủ thông tin bài đăng, chúc bạn có một bài đăng tuyệt vời ❤️❤️❤️");
+    //     return;
+    // }
     let selectedTagData = null;
     let selectedTagById = ref(null)
     if (selectedCategory.value !== '') {
@@ -186,15 +198,20 @@ const handlePostBlog = () => {
     formData.append('tags', selectedTagById.value)
 
     console.log("🚀 ~ file: BlogEditor.vue:134 ~ handlePostBlog ~ blogData:", formData)
-    postStore.actCreatePost(formData)
+    postStore.updatePost(postUpdatedId.value, formData)
 
-    title.value = '';
-    intro.value = '';
-    editorData.value = '';
-    selectedCategory.value = '';
-    temporaryImage.value = '';
+    // title.value = '';
+    // intro.value = '';
+    // editorData.value = '';
+    // selectedCategory.value = '';
+    // temporaryImage.value = '';
 };
-
+const getDetailPost = computed(() => {
+    return postStore.getPostById(refPost.value)
+})
+onMounted(async () => {
+    await getDetailPost.value;
+});
 watchEffect(() => {
     window.scrollTo(0, 0);
 
@@ -291,6 +308,11 @@ watchEffect(() => {
     .image-select .temporary-image {
         width: 100%;
         height: 100%;
+        position: absolute;
+    }
+
+    .temporary-image--sub {
+        position: absolute;
     }
 
     .image-select .image-input {
@@ -363,6 +385,11 @@ watchEffect(() => {
 
     .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
         border-color: red !important;
+    }
+
+    ::v-deep .ant-select-selection-placeholder {
+        font-weight: 400;
+        color: black;
     }
 }
 </style>

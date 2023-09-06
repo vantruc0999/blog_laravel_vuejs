@@ -1,5 +1,5 @@
-export const API_SIGNIN = "/login";
-export const API_SIGNUP = "/register";
+export const API_SIGNIN = "/login"
+export const API_SIGNUP = "/register"
 export const API_LOGOUT = "/logout"
 export const API_POSTBLOG = "/posts/create-post"
 export const API_GETALLPOST = "/posts"
@@ -14,3 +14,4 @@ export const API_GETAUTHORFOLLOWED = "/blogger/check-follow"
 export const API_POSTCOMMENT = '/comment'
 export const API_DELETECOMMENT = '/comment/delete-comment'
 export const API_GETALLTAGS = '/categories-tags'
+export const API_LIKEPOST = '/like'

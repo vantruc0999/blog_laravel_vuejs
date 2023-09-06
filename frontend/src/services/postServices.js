@@ -6,7 +6,8 @@ import {
   API_DELETEPOST,
   API_POSTCOMMENT,
   API_DELETECOMMENT,
-  API_GETALLTAGS
+  API_GETALLTAGS,
+    API_LIKEPOST
 } from "../config/apis";
 
 export const PostService = {
@@ -33,5 +34,8 @@ export const PostService = {
   },
   getalltags() {
     return httpClient.get(API_GETALLTAGS)
-  }
+  },
+  likepost(postid) {
+    return httpClient.post(`${API_LIKEPOST}/${postid}`)
+  } 
 };

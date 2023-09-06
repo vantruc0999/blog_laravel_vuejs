@@ -1,4 +1,7 @@
 <template>
+    <div v-if="authStore.isLoading">
+        <Loading />
+    </div>
     <div class="sidebar__container">
         <div class="account__infor">
             <div class="image-select">
@@ -89,7 +92,7 @@
 <script setup>
 import { watch, ref, onMounted } from 'vue';
 import { useAuthStore } from '../../../stores/authStore';
-
+import Loading from "../../../components/Loading.vue"
 // store
 const authStore = useAuthStore()
 
@@ -186,7 +189,11 @@ const handleUpdateProfile = () => {
     formData.append('gender', genderValue.value)
     formData.append('birthday', birthValue.value)
     authStore.updateMyProfile(formData)
-
+    const updatedUser = {
+        profile_image: authStore.user?.blogger_info?.profile_image,
+        name: authStore.user?.blogger_info?.name,
+        bio: bio.value
+    };
     localStorage.setItem('user', JSON.stringify(updatedUser));
 };
 
@@ -294,9 +301,6 @@ const handleCancel = () => {
 
         .temporary-image {
             width: 100%;
-
-
-
         }
 
         .image-select {
