@@ -3,7 +3,68 @@
         <Loading />
     </div>
     <div class="detail__container">
-        <div class="detail__heading">
+        <div class="detail__wrapper">
+            <div class="detail__left">
+                <!-- :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`" -->
+                <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`">
+                    <span class="detail__name">
+                        {{ postStore.post?.data?.blogger_infor.name }}
+                    </span>
+                    <p class="detail__desc" v-if="postStore.post?.data?.blogger_infor.bio">{{
+                        postStore.post?.data?.blogger_infor.bio }} </p>
+                    <p class="detail__desc" v-else>Một tác giả đến từ Monkey Blog với những bài đăng chia sẻ thú vị về kiến
+                        thức
+                    </p>
+                </router-link>
+                <div class="detail__interaction">
+                    <span class="detail__viewer">
+                        <ion-icon name="eye-outline"></ion-icon> <span class="detail__viewer--count">{{
+                            postStore.post?.data?.view_count }} </span>
+                    </span>
+                    <span class="detail__viewer" @click="handleOpenComment">
+                        <ion-icon name="chatbubbles-outline"></ion-icon>
+                        <span class="detail__viewer--count">{{ postStore.post?.data?.comments.length }}</span>
+                    </span>
+                    <span class="detail__viewer" @click="handleLikePost(postStore.post?.data?.id)">
+                        <ion-icon name="triangle-outline"></ion-icon> <span class="detail__viewer--count">{{
+                            postStore.post?.data?.likes_count }} </span>
+                    </span>
+                </div>
+            </div>
+            <div class="detail__middle">
+                <div class="detail__post">
+                    <p class="detail__title">
+                        {{ postStore.post?.data?.title }}
+                    </p>
+                    <div class="detail__user">
+                        <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`" class="detail__user__left">
+                            <img :src="'http://127.0.0.1:8000/images/avatar/' + postStore.post?.data?.blogger_infor?.profile_image"
+                                alt="" v-if="postStore.post?.data?.blogger_infor?.profile_image" class="detail__user__img">
+                            <img src="../../../assets/images/avatar-default.png" alt="" v-else class="detail__user__img">
+                            <div class="detail__user__infor">
+                                <span class="detail__user__name">{{ postStore.post?.data?.blogger_infor.name }}</span>
+                                <span class="detail__user__time">{{ postStore.post?.data?.created_at }}</span>
+                            </div>
+                        </router-link>
+                        <div class="detail__user__right">
+                            <span class="detail__user__icon">
+                                <ion-icon name="bookmark-outline"></ion-icon>
+                            </span>
+                            <span class="detail__user__icon">
+                                <ion-icon name="ellipsis-horizontal-outline"></ion-icon>
+                            </span>
+                        </div>
+                    </div>
+                    <p class="detail__text" v-html="postStore.post?.data?.description" target="_blank"></p>
+                </div>
+            </div>
+            <div class="detail__right">
+                <img :src="'http://127.0.0.1:8000/storage/' + postStore.post?.data?.banner" alt=""
+                    v-if="postStore.post?.data?.banner" class="detail__right__image">
+                <img src="../../../assets/images/books.jpg" v-else class="detail__right__image">
+            </div>
+        </div>
+        <!-- <div class="detail__heading">
             <img :src="'http://127.0.0.1:8000/storage/' + postStore.post?.data?.banner" alt="">
             <div class="detail__infor">
                 <div class="detail__category">
@@ -27,14 +88,14 @@
                 </div>
 
             </div>
-        </div>
-        <div class="detail__content">
+        </div> -->
+        <!-- <div class="detail__content">
             <div class="detail__wrapper">
                 <p class="detail__text image-container" v-html="postStore.post?.data?.description" target="_blank"></p>
             </div>
-        </div>
+        </div> -->
         <!-- Author -->
-        <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`" class="detail__author">
+        <!-- <router-link :to="`/profile/${postStore.post?.data?.blogger_infor?.id}`" class="detail__author">
             <img :src="'http://127.0.0.1:8000/images/avatar/' + postStore.post?.data?.blogger_infor?.profile_image" alt=""
                 v-if="postStore.post?.data?.blogger_infor?.profile_image">
             <img src="../../../assets/images/avatar-default.png" alt="" v-else>
@@ -45,7 +106,7 @@
                 <p class="detail__desc" v-else>Một tác giả đến từ Monkey Blog với những bài đăng chia sẻ thú vị về kiến thức
                 </p>
             </div>
-        </router-link>
+        </router-link> -->
 
         <h1 class="detail__related__title">Bài viết liên quan</h1>
         <div class="detail__related">
@@ -164,162 +225,289 @@ watchEffect(() => {
 
 <style lang="scss" scoped>
 .detail__container {
-    padding: 120px 130px;
+
+    padding: 120px 100px;
 }
 
-.detail__heading {
-    display: flex;
-    align-items: center;
-    position: relative;
-
-    img {
-        max-width: 600px;
-        width: 100%;
-        height: 465px;
-        border-radius: 12px;
-        margin-right: 70px;
-    }
-
-}
-
-.detail__author {
-    margin: 0 auto;
-    width: 100%;
-    border: 1px solid var(--border-color);
-    max-width: 780px;
-    display: flex;
-    border-radius: 12px;
-
-    img {
-        width: 100%;
-        height: auto;
-        max-height: 180px;
-        max-width: 240px;
-        border-radius: 12px;
-    }
-
-    .detail__infor {
-        padding: 20px;
-    }
-
-    .detail__name {
-        font-size: 22px;
-        color: var(--secondary-color);
-        font-weight: 600;
-        text-transform: uppercase;
-    }
-
-    .detail__desc {
-        margin-top: 10px;
-        color: var(--black-color);
-        font-size: 18px;
-    }
-
-}
-
-.detail__category {
-    width: 150px;
-    max-width: 100%;
-    padding: 10px;
-    border: 1px solid var(--border-color);
-    border-radius: 10px;
-    display: flex;
-    justify-content: center;
-}
-
-.detail__title {
-    font-size: 32px;
-    color: var(--btn-color);
-    font-weight: 700;
-    margin-top: 20px;
-    line-height: 1.3;
-    margin-bottom: 20px;
-}
-
-.detail__view {
-    display: flex;
-    align-items: center;
-    // justify-content: flex-end;
-    color: var(--text-color-4);
-    font-weight: 700;
-}
-
-.detail__view--public {
-    display: flex;
-    align-items: center;
-}
-
-.detail__user {
-    display: flex;
-    align-items: center;
-    margin-right: 20px;
-
-    img {
-        width: 40px;
-        height: 40px;
-        object-fit: cover;
-        border: 1px solid var(--border-color);
-        border-radius: 50%;
-        margin-right: 10px;
-    }
-}
-
-.detail_view--interact {
+.detail__wrapper {
     display: flex;
     gap: 20px;
-    font-size: 14px;
 
-    .detail__viewer {
-        cursor: pointer;
-        display: flex;
-        align-items: center;
-        font-size: 15px;
+    .detail__left {
+        width: 20%;
+        padding-right: 10px;
+        // position: fixed;
 
-        ion-icon {
-            font-size: 20px;
+        .detail__name {
+            font-size: 16px;
+            font-weight: 500;
+            color: var(--black-color);
+        }
+
+        .detail__desc {
+            color: var(--smoke-color);
+            font-size: 1.4rem;
+            margin-top: 10px;
+            line-height: 1.4;
+        }
+
+        .detail__interaction {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            border-top: 1px solid var(--border-color);
+            padding-top: 20px;
+
+            .detail__viewer {
+                display: flex;
+                align-items: center;
+                color: var(--smoke-color);
+                gap: 5px;
+
+                .detail__viewer--count {
+                    position: relative;
+                    top: 3px;
+                }
+
+                ion-icon {
+                    display: flex;
+                    font-size: 1.6rem;
+                }
+            }
+        }
+    }
+
+    .detail__middle {
+        flex: 1;
+        margin-right: 20px;
+        max-width: 60%;
+
+        .detail__post {
+            .detail__title {
+                color: #222;
+                font-size: 40px;
+                font-weight: 700;
+                line-height: 1.5;
+            }
+
+            .detail__user {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+
+                .detail__user__left {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+
+                    .detail__user__name {
+                        color: #292929;
+                        font-size: 1.6rem;
+                        font-weight: 600;
+                        margin: 0;
+                    }
+
+                    .detail__user__time {
+                        color: var(--smoke-color);
+                        font-size: 14px;
+                    }
+
+                    .detail__user__img {
+                        width: 50px;
+                        height: 50px;
+                        border-radius: 50%;
+                    }
+
+                    .detail__user__infor {
+                        display: flex;
+                        flex-direction: column;
+                        gap: 10px;
+                    }
+                }
+
+                .detail__user__right {
+                    display: flex;
+                    align-items: center;
+                    gap: 10px;
+                    cursor: pointer;
+                    font-size: 18px;
+                    color: var(--smoke-color);
+
+                }
+            }
+        }
+
+        .detail__text {
+            overflow: hidden;
+            width: 100%;
+            padding-bottom: 100px;
+            border-bottom: 3px solid var(--primary-color);
+        }
+    }
+
+    .detail__right {
+        width: 30%;
+
+        .detail__right__image {
+            width: 100%;
+            height: 200px;
         }
     }
 }
 
-.detail__content {
-    padding: 20px 250px;
-    background-color: var(--white-color);
-    margin: 70px 0px;
-}
+// .detail__heading {
+//     display: flex;
+//     align-items: center;
+//     position: relative;
 
-.detail__wrapper {
-    margin: 0 auto;
-    background-color: var(--white-color);
-    overflow: hidden;
+//     img {
+//         max-width: 600px;
+//         width: 100%;
+//         height: 465px;
+//         border-radius: 12px;
+//         margin-right: 70px;
+//     }
 
-    .detail__text {
-        font-family: "Noto Serif", Regular, Times New Roman;
-        white-space: pre-wrap;
-        word-break: break-word;
-        line-height: 1.4;
+// }
+
+// .detail__author {
+//     margin: 0 auto;
+//     width: 100%;
+//     border: 1px solid var(--border-color);
+//     max-width: 780px;
+//     display: flex;
+//     border-radius: 12px;
+
+//     img {
+//         width: 100%;
+//         height: auto;
+//         max-height: 180px;
+//         max-width: 240px;
+//         border-radius: 12px;
+//     }
+
+//     .detail__infor {
+//         padding: 20px;
+//     }
+
+//     .detail__name {
+//         font-size: 22px;
+//         color: var(--secondary-color);
+//         font-weight: 600;
+//         text-transform: uppercase;
+//     }
+
+//     .detail__desc {
+//         margin-top: 10px;
+//         color: var(--black-color);
+//         font-size: 18px;
+//     }
+
+// }
+
+// .detail__category {
+//     width: 150px;
+//     max-width: 100%;
+//     padding: 10px;
+//     border: 1px solid var(--border-color);
+//     border-radius: 10px;
+//     display: flex;
+//     justify-content: center;
+// }
+
+// .detail__title {
+//     font-size: 32px;
+//     color: var(--btn-color);
+//     font-weight: 700;
+//     margin-top: 20px;
+//     line-height: 1.3;
+//     margin-bottom: 20px;
+// }
+
+// .detail__view {
+//     display: flex;
+//     align-items: center;
+//     // justify-content: flex-end;
+//     color: var(--text-color-4);
+//     font-weight: 700;
+// }
+
+// .detail__view--public {
+//     display: flex;
+//     align-items: center;
+// }
+
+// .detail__user {
+//     display: flex;
+//     align-items: center;
+//     margin-right: 20px;
+
+//     img {
+//         width: 40px;
+//         height: 40px;
+//         object-fit: cover;
+//         border: 1px solid var(--border-color);
+//         border-radius: 50%;
+//         margin-right: 10px;
+//     }
+// }
+
+// .detail_view--interact {
+//     display: flex;
+//     gap: 20px;
+//     font-size: 14px;
+
+//     .detail__viewer {
+//         cursor: pointer;
+//         display: flex;
+//         align-items: center;
+//         font-size: 15px;
+
+//         ion-icon {
+//             font-size: 20px;
+//         }
+//     }
+// }
+
+// .detail__content {
+//     padding: 20px 250px;
+//     background-color: var(--white-color);
+//     margin: 70px 0px;
+// }
+
+// .detail__wrapper {
+//     margin: 0 auto;
+//     background-color: var(--white-color);
+//     overflow: hidden;
+
+//     .detail__text {
+//         font-family: "Noto Serif", Regular, Times New Roman;
+//         white-space: pre-wrap;
+//         word-break: break-word;
+//         line-height: 1.4;
 
 
-    }
-}
+//     }
+// }
 
-.image-container {
-    max-width: 700px;
-    margin: 0 auto;
-}
+// .image-container {
+//     max-width: 700px;
+//     margin: 0 auto;
+// }
 
-.detail__related {
-    display: flex;
-    margin-top: 30px;
-    gap: 10px;
-    align-items: center;
-}
+// .detail__related {
+//     display: flex;
+//     margin-top: 30px;
+//     gap: 10px;
+//     align-items: center;
+// }
 
-.detail__controller {
-    cursor: pointer;
-    padding: 7px;
-    border-radius: 50%;
-    border: 1px solid var(--border-color);
-}
+// .detail__controller {
+//     cursor: pointer;
+//     padding: 7px;
+//     border-radius: 50%;
+//     border: 1px solid var(--border-color);
+// }
 
 .detail__swiper {
     padding: 5px;

@@ -88,11 +88,11 @@
                     </h3>
                 </router-link>
                 <!-- v-if="isProfileRoute.value" -->
-                <div class="blog__user" v-if="!isProfile">
-                    <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
-                        class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
-                    <img src="../../../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
-                    <router-link :to="`/profile/${post?.blogger_infor?.id}`">
+                <router-link :to="`/profile/${post?.blogger_infor?.id}`">
+                    <div class="blog__user" v-if="!isProfile">
+                        <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
+                            class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
+                        <img src="../../../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
                         <div class="blog__user__infor">
                             <div class="blog__user__top">
                                 <div class="blog__user__name">{{ post?.blogger_infor?.name }}</div>
@@ -100,8 +100,8 @@
                             <div class="blog__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}
                             </div>
                         </div>
-                    </router-link>
-                </div>
+                    </div>
+                </router-link>
 
             </div>
             <router-link :to="`/detail/${post?.id}`">
