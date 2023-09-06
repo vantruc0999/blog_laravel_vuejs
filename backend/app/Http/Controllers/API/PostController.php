@@ -29,7 +29,8 @@ class PostController extends Controller
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
             $post->blogger_infor = $post->blogger;
-            unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description);
+            $post->comment_count = $post->comments->count();
+            unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description, $post->comments);
         }
 
         return response([
@@ -51,7 +52,8 @@ class PostController extends Controller
     private function getTagsInfor($tags)
     {
         foreach ($tags as $item) {
-            unset($item->created_at, $item->updated_at, $item->id, $item->pivot);
+            $item->category_name = $item->category->name;
+            unset($item->created_at, $item->updated_at, $item->pivot, $item->category);
         }
         return $tags;
     }
@@ -116,8 +118,18 @@ class PostController extends Controller
             $post->blogger_name = $post->blogger->name;
             $post->likes_count = $post->likes->count();
             $post->comments = $this->getCommentInfors($post->comments);
-            $post->tags = $this->getTagsInfor($post->category->tags);
-            $post->blogger_infor = $post->blogger;
+            $post->tags = $this->getTagsInfor($post->tags);
+            $post->blogger_infor = $post->blogger->makeHidden(
+                'password',
+                'phone',
+                'created_at',
+                'updated_at',
+                'address',
+                'phone',
+                'birthday',
+                'gender',
+                'banner'
+            );
 
             unset($post->blogger_infor->password);
 
@@ -130,7 +142,7 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
-            unset($post->blogger_name,$post->category, $post->blogger_id, $post->blogger, $post->likes);
+            unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger, $post->likes);
 
             return response([
                 "message" => "success",
@@ -302,13 +314,64 @@ class PostController extends Controller
         }
     }
 
-    public function getTagsCategories(){
+    public function getTagsCategories()
+    {
         $categories = Category::all();
 
-        foreach($categories as $item){
+        foreach ($categories as $item) {
             $item->tags = Category::find($item->id)->tags;
         }
-        
+
         return $categories;
+    }
+
+    public function getPostsByTagId($id)
+    {
+        try {
+            $tags = Tag::find($id);
+            if(!$tags){
+                return response([
+                    'message' => 'No tags available'
+                ]);
+            }
+            $posts = $tags->posts;
+
+            foreach ($posts as $item) {
+                $item->category_name = $item->category->name;
+                $item->likes_count = $item->likes->count();
+                $item->comments_count = $item->comments->count();
+                $item->blogger_infor = $item->blogger->makeHidden(
+                    'password',
+                    'phone',
+                    'address',
+                    'birthday',
+                    'gender',
+                    'created_at',
+                    'updated_at'
+                );;
+
+                unset(
+                    $item->description,
+                    $item->new_post,
+                    $item->highlight,
+                    $item->blogger_id,
+                    $item->comments,
+                    $item->likes,
+                    $item->category,
+                    $item->category_id,
+                    $item->pivot,
+                    $item->blogger,
+                );
+            }
+
+            return response([
+                'posts' => $posts
+            ]);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while getting post tags',
+                'error' => $err->getMessage()
+            ], 500);
+        }
     }
 }

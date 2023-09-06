@@ -32,6 +32,7 @@ Route::get('/categories-tags',[PostController::class, 'getTagsCategories']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
+    Route::get('/tags/{id}', [PostController::class, 'getPostsByTagId']);
     Route::get('/{slug}', [PostController::class, 'getDetailPostById']);
 });
 
@@ -47,6 +48,9 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/me/update-profile', [BloggerProfileController::class, 'updateBloggerProfile']);
         Route::post('/follow/{id}', [BloggerProfileController::class, 'follow']);
         Route::post('/check-follow/{id}', [BloggerProfileController::class, 'isFollowed']);
+        Route::get('/me/view-following', [BloggerProfileController::class, 'viewMyFollowing']);
+        Route::get('/me/view-follower', [BloggerProfileController::class, 'viewMyFollower']);
+        Route::get('/me/view-notification', [BloggerProfileController::class, 'viewMyNotification']);
         // Route::delete('/unfollow/{id}', [BloggerProfileController::class, 'unfollow']);
     });
     
@@ -60,6 +64,7 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/{slug}', [CommentController::class, 'commentPost']);
         Route::post('/edit-comment/{id}', [CommentController::class, 'editComment']);
         Route::delete('/delete-comment/{id}', [CommentController::class, 'deleteComment']);
+        Route::post('/reply-comment/{id}', [CommentController::class, 'replyComment']);
     });
 
     Route::prefix('/like')->group(function () {

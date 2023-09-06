@@ -4,7 +4,10 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
 use App\Filament\Resources\PostResource\RelationManagers;
+use App\Models\Category;
 use App\Models\Post;
+use App\Models\Tag;
+use Closure;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
@@ -21,6 +24,7 @@ use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Str;
 
 class PostResource extends Resource
 {
@@ -37,15 +41,32 @@ class PostResource extends Resource
                 Card::make()
                     ->schema([
                         Select::make('category_id')
-                            ->relationship('category', 'name'),
+                            ->relationship('category', 'name')->reactive(),
+                        // Select::make('tag_id')
+                        //     ->label('Tags')
+                        //     ->multiple()
+                        //     ->options(function (callable $get) {
+                        //         $category = Category::find($get('category_id'));
+                        //         if (!$category) {
+                        //             return Tag::all()->pluck('name', 'id');
+                        //         }
+                        //         return $category->tags->pluck('name', 'id');
+                        //     }),
                         TextInput::make('title')
-                            ->required()
-                            ->maxLength(255),
+                            ->afterStateUpdated(function (Closure $get, Closure $set, ?string $state) {
+                                if (!$get('is_slug_changed_manually') && filled($state)) {
+                                    $set('slug', Str::slug($state));
+                                }
+                            })
+                            ->reactive()
+                            ->required(),
+                        TextInput::make('slug')
+                            ->afterStateUpdated(function (Closure $set) {
+                                $set('is_slug_changed_manually', true);
+                            })
+                            ->required(),
                         FileUpload::make('banner')
                             ->label('Post banner'),
-                        TextInput::make('slug')
-                            ->required()
-                            ->maxLength(255),
                         RichEditor::make('description'),
                         Radio::make('new_post')
                             ->options([

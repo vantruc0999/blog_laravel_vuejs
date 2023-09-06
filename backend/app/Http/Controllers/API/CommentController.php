@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use App\Models\Comment;
+use App\Models\Notification;
 use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -31,19 +32,30 @@ class CommentController extends Controller
     {
         try {
             $post = $this->checkActivePost($id);
-            if(!$post){
+
+            if (!$post) {
                 return response()->json([
                     'message' => 'No post available',
                 ], 500);
             }
+
             $this->validate($request, [
                 'description' => 'required|max:255',
             ]);
+
             $comment = Comment::create([
                 'description' => $request->input('description'),
                 'post_id' => $post->id,
                 'blogger_id' => Auth::user()['id'],
             ]);
+
+            if ($comment) {
+                Notification::create([
+                    'blogger_id' => $post->blogger_id,
+                    'description' => Auth::user()['name'] . ' commented on your post',
+                    'is_seen' => 0,
+                ]);
+            }
             return response([
                 'message' => 'success',
                 'comment' => $comment
@@ -59,41 +71,38 @@ class CommentController extends Controller
 
     public function editComment(Request $request, $id)
     {
-        try{
+        try {
             $this->validate($request, [
                 'description' => 'required|max:255',
             ]);
-    
+
             $comment = Comment::where('id', $id)->first();
-    
+
             if (Auth::user()['id'] != $comment->blogger_id) {
                 return response([
                     'message' => 'You do not have permission to edit this comment',
                 ]);
             }
-    
+
             $comment->update([
                 'description' => $request->input('description')
             ]);
-    
+
             return response([
                 'message' => 'update comment successfully',
                 'comment' => $comment
             ]);
-    
-        }    
-        catch (\Exception $err) {
+        } catch (\Exception $err) {
             return response()->json([
                 'message' => 'An error occurred while editing comment',
                 'error' => $err->getMessage()
             ], 500);
         }
-        
     }
 
     public function deleteComment($id)
     {
-        try{
+        try {
             $comment = Comment::where('id', $id)->first();
 
             if (Auth::user()['id'] != $comment->blogger_id) {
@@ -101,18 +110,43 @@ class CommentController extends Controller
                     'message' => 'You do not have permission to delete this comment',
                 ]);
             }
-    
+
             $comment->delete();
-    
+
             return response([
                 'message' => 'delete comment successfully',
             ]);
-        }
-        catch (\Exception $err) {
+        } catch (\Exception $err) {
             return response()->json([
                 'message' => 'An error occurred while deleting comment',
                 'error' => $err->getMessage()
             ], 500);
-        }      
+        }
+    }
+
+    public function replyComment(Request $request, $parent_id)
+    {
+        try {
+            $this->validate($request, [
+                'description' => 'required|max:255',
+            ]);
+
+            $comment = Comment::create([
+                'description' => $request->input('description'),
+                'blogger_id' => Auth::user()['id'],
+                'post_id' => Comment::find($parent_id)->post->id,
+                'parent_id' => $parent_id,
+            ]);
+
+            return response()->json([
+                'message' => 'success',
+                'comment' =>  $comment,
+            ], 500);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while replying comment',
+                'error' => $err->getMessage()
+            ], 500);
+        }
     }
 }

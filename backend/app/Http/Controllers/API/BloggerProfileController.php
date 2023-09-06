@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\EditBloggerProfileRequest;
 use App\Models\Blogger;
 use App\Models\Follow;
+use App\Models\Notification;
+use App\Models\Post;
 use App\Models\User;
 use Carbon\Carbon;
 use DateTime;
@@ -41,7 +43,11 @@ class BloggerProfileController extends Controller
             unset($blogger->password, $blogger->created_at, $blogger->updated_at);
 
             foreach ($blogger->posts as $item) {
-                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id);
+                $item->category_name = $item->category->name;
+                $item->likes_count = $item->likes->count();
+                $item->comments_count = $item->comments->count();
+
+                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id, $item->comments, $item->likes, $item->category, $item->category_id);
             }
 
             return response([
@@ -186,19 +192,27 @@ class BloggerProfileController extends Controller
                 ]);
             }
 
-            Follow::create(
+            $follower = Follow::create(
                 [
                     'blogger_id' => $blogger_id,
                     'follower_id' => Auth::user()['id'],
                 ]
             );
 
-            Follow::create(
+            $following = Follow::create(
                 [
                     'blogger_id' => Auth::user()['id'],
                     'following_id' => $blogger_id,
                 ],
             );
+
+            if ($follower && $following) {
+                Notification::create([
+                    'blogger_id' => $blogger_id,
+                    'description' => Auth::user()['name'] . ' followed you',
+                    'is_seen' => 0,
+                ]);
+            }
 
             return response([
                 'message' => 'follow sucecssfully',
@@ -247,4 +261,55 @@ class BloggerProfileController extends Controller
     //         'message' => 'sucecss',
     //     ]);
     // }
+
+    public function viewMyFollowing()
+    {
+        $res = array();
+        $blogger_id = Auth::user()['id'];
+        $follow = Blogger::find($blogger_id)->follows;
+        foreach ($follow as $item) {
+            if ($item->following_id) {
+                $myFollower = Blogger::find($item->following_id);
+                $res[] = $myFollower->makeHidden('password', 'phone', 'address', 'birthday', 'gender', 'created_at', 'updated_at');
+            }
+        }
+        return response([
+            'status' => 'success',
+            'my_following' => $res,
+        ]);
+    }
+
+    public function viewMyFollower()
+    {
+        $res = array();
+        $blogger_id = Auth::user()['id'];
+        $follow = Blogger::find($blogger_id)->follows;
+        foreach ($follow as $item) {
+            if ($item->follower_id) {
+                $myFollower = Blogger::find($item->follower_id);
+                $res[] = $myFollower->makeHidden(
+                    'password',
+                    'phone',
+                    'address',
+                    'birthday',
+                    'gender',
+                    'created_at',
+                    'updated_at'
+                );
+            }
+        }
+        return response([
+            'status' => 'success',
+            'my_followers' => $res,
+        ]);
+    }
+
+    public function viewMyNotification()
+    {
+        $notfications = Notification::where('blogger_id', Auth::user()['id'])->get();
+        return response([
+            'status' => 'success',
+            'notifications' => $notfications,
+        ]);
+    }
 }
