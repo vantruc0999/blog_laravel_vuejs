@@ -39,7 +39,7 @@ class LikeController extends Controller
                 ]
             );
 
-            if($like){
+            if ($like) {
                 Notification::create([
                     'blogger_id' => Post::find($post_id)->blogger->id,
                     'description' => Auth::user()['name'] . ' liked your post',
@@ -90,16 +90,34 @@ class LikeController extends Controller
             ]
         )->get();
 
+        $posts = array();
+
         foreach ($likes as $item) {
             $post = $item->post;
             $post->likes_count = $post->likes->count();
             $post->comments_count = $post->comments->count();
             $post->category = $post->category->makeHidden('created_at', 'updated_at');
             $post->category_name = $post->category->name;
-            $post->blogger_infor = $post->blogger->makeHidden('password', 'phone', 'created_at', 'updated_at', 
-            'address', 'phone', 'birthday', 'gender', 'banner');
+            $post->blogger_infor = $post->blogger->makeHidden(
+                'password',
+                'phone',
+                'created_at',
+                'updated_at',
+                'address',
+                'phone',
+                'birthday',
+                'gender',
+                'banner'
+            );
             $post->makeHidden(['description', 'category_id', 'blogger_id', 'likes', 'comments', 'blogger', 'category']);
             $posts[] = $post;
+        }
+
+        if(empty($posts)){
+            return response([
+                'message' => 'You haven\'t liked any post',
+                'posts' => $posts
+            ]);
         }
 
         return response([

@@ -47,7 +47,17 @@ class BloggerProfileController extends Controller
                 $item->likes_count = $item->likes->count();
                 $item->comments_count = $item->comments->count();
 
-                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id, $item->comments, $item->likes, $item->category, $item->category_id);
+                $item->blogger_infor = $item->blogger->makeHidden(
+                    'password',
+                    'phone',
+                    'address',
+                    'birthday',
+                    'gender',
+                    'created_at',
+                    'updated_at'
+                );
+
+                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id, $item->comments, $item->likes, $item->category, $item->category_id, $item->blogger);
             }
 
             return response([
@@ -310,6 +320,43 @@ class BloggerProfileController extends Controller
         return response([
             'status' => 'success',
             'notifications' => $notfications,
+        ]);
+    }
+
+    public function viewCreatedPost()
+    {
+        $posts = Post::where('blogger_id', Auth::user()['id'])->get();
+
+        foreach ($posts as $item) {
+            $item->category_name = $item->category->name;
+            $item->likes_count = $item->likes->count();
+            $item->comments_count = $item->comments->count();
+            $item->blogger_infor = $item->blogger->makeHidden(
+                'password',
+                'phone',
+                'address',
+                'birthday',
+                'gender',
+                'created_at',
+                'updated_at'
+            );
+
+            unset(
+                $item->description,
+                $item->new_post,
+                $item->highlight,
+                $item->blogger_id,
+                $item->comments,
+                $item->likes,
+                $item->category,
+                $item->category_id,
+                $item->pivot,
+                $item->blogger,
+            );
+        }
+        return response([
+            'status' => 'success',
+            'posts' => $posts,
         ]);
     }
 }

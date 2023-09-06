@@ -58,6 +58,10 @@ class CommentPolicy
     public function update(User $user, Comment $comment)
     {
         //
+        if ($user->hasPermissionTo('update comment')) {
+            return true;
+        }
+        return false;
     }
 
     /**
