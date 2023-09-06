@@ -13,17 +13,6 @@
                     {{ postStore.post?.data?.title }}
                 </p>
                 <div class="detail__view">
-                    <!-- <div class="detail__view--public">
-                        <div class="detail__user">
-                            <img :src="'http://127.0.0.1:8000/images/avatar/' + postStore.post?.data?.blogger_infor?.profile_image"
-                                alt="" v-if="postStore.post?.data?.blogger_infor?.profile_image">
-                            <img src="../../../assets/images/avatar-default.png" alt="" v-else>
-                            <div class="detail__user__infor">
-                                <span class="detail__user__name">{{ postStore.post?.data?.blogger_infor.name }}</span>
-                            </div>
-                        </div>
-                        <span class="detail__time">28/10</span>
-                    </div> -->
                     <div class="detail_view--interact">
                         <span class="detail__viewer">
                             <ion-icon name="eye-outline"></ion-icon> {{ postStore.post?.data?.view_count }} lượt xem
@@ -31,8 +20,8 @@
                         <span class="detail__viewer" @click="handleOpenComment">
                             <ion-icon name="chatbubbles-outline"></ion-icon>{{ postStore.post?.data?.comments.length }}
                         </span>
-                        <span class="detail__viewer">
-                            <ion-icon name="triangle-outline"></ion-icon> 3000 lượt thích
+                        <span class="detail__viewer" @click="handleLikePost(postStore.post?.data?.id)">
+                            <ion-icon name="triangle-outline"></ion-icon> {{ postStore.post?.data?.likes_count }} lượt thích
                         </span>
                     </div>
                 </div>
@@ -154,6 +143,9 @@ let isOpenComment = ref(false);
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 
+const handleLikePost = (id) => {
+    postStore.likePost(id)
+}
 const handleOpenComment = () => {
     isOpenComment.value = !isOpenComment.value
 }
@@ -247,7 +239,7 @@ watchEffect(() => {
 .detail__view {
     display: flex;
     align-items: center;
-    justify-content: flex-end;
+    // justify-content: flex-end;
     color: var(--text-color-4);
     font-weight: 700;
 }
@@ -274,7 +266,6 @@ watchEffect(() => {
 
 .detail_view--interact {
     display: flex;
-    flex-direction: column;
     gap: 20px;
     font-size: 14px;
 

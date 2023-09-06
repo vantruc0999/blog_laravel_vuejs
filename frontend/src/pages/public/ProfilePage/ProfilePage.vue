@@ -121,7 +121,7 @@
                 <!-- Card -->
                 <div class="profile__card">
                     <CardNew :isCard="false" :post="post" v-for="(post, index) in authStore?.user?.blogger_infor?.posts"
-                        :key="index" />
+                        :key="index" :isProfile="true" :isMyProfile="checkMyProfile" />
 
                 </div>
             </div>
@@ -132,7 +132,7 @@
 </template>
 
 <script setup>
-import { onMounted, computed, ref, watchEffect } from "vue"
+import { onMounted, computed, ref, watchEffect, watch } from "vue"
 import Footer from "../../../components/Footer.vue"
 import DropDown from "../../../components/DropDown.vue"
 import CardNew from "../../../components/CardNew.vue"
@@ -147,9 +147,11 @@ import { useAuthorStore } from "../../../stores/authorStore"
 
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
-authStore.getMyProfile()
+
+// console.log("hello", authStore?.user?.blogger_infor?.posts);
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
+const checkMyProfile = ref(false)
 const route = useRoute();
 const refAuthor = ref(route.params.id)
 let isOpen = ref(false);
@@ -172,13 +174,29 @@ const handleGetFollow = (id) => {
     authorStore.getAuthorFollowed(id)
 }
 
+const handleCheckMyProfile = (id) => {
+    if (id?.toString() === refAuthor?.value?.toString()) {
+        checkMyProfile.value = true
+    } else {
+        checkMyProfile.value = false
+    }
+}
+
+// console.log(checkMyProfile.value);
+watch(() => route.params.id, (newId) => {
+    console.log("newid", newId);
+})
 
 const getProfileAuthor = computed(() => {
     return authStore.getAuthorById(refAuthor.value)
 })
+handleCheckMyProfile(userData?.value?.id)
+console.log("++++", checkMyProfile);
 onMounted(async () => {
+    await authStore.getMyProfile()
     await getProfileAuthor.value;
     await authorStore.getAuthorFollowed(refAuthor.value)
+    await handleCheckMyProfile(userData.value.id)
 });
 
 watchEffect(() => {

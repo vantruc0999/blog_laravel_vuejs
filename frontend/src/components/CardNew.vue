@@ -6,7 +6,8 @@
                 <div class="card__categori">{{ post?.category_name }}</div>
                 <div class="card__icon">
                     <ion-icon name="bookmark-outline" class="card__bookmark" @click="handleAddBookmark"></ion-icon>
-                    <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"></ion-icon>
+                    <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"
+                        v-if="props.post?.blogger_id === userData?.value?.id"></ion-icon>
                     <div class="card__options" v-if="isOpen">
                         <router-link :to="`/updated-post/${post?.id}`" class="card__options--edit">
                             <ion-icon name="create-outline"></ion-icon>Sửa
@@ -63,8 +64,8 @@
             <div class="blog__categori">{{ post?.category_name }}</div>
             <div class="blog__icon">
                 <ion-icon name="bookmark-outline" class="blog__bookmark"></ion-icon>
-                <ion-icon name="ellipsis-vertical-outline" class="blog__menu"
-                    v-if="post?.blogger_id == post?.blogger_infor?.id" @click="handleOpenOption"></ion-icon>
+                <ion-icon name="ellipsis-vertical-outline" class="blog__menu" v-if="isMyProfile"
+                    @click="handleOpenOption"></ion-icon>
                 <div class="card__options" v-if="isOpen">
                     <router-link :to="`/updated-post/${post?.id}`" class="card__options--edit">
                         <ion-icon name="create-outline"></ion-icon>Sửa
@@ -86,8 +87,11 @@
                         {{ post?.title }}
                     </h3>
                 </router-link>
-                <div class="blog__user">
-                    <img src="../assets/images/avatar-default.png" alt="" class="blog__user__avatar">
+                <!-- v-if="isProfileRoute.value" -->
+                <div class="blog__user" v-if="!isProfile">
+                    <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
+                        class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
+                    <img src="../../../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
                     <router-link :to="`/profile/${post?.blogger_infor?.id}`">
                         <div class="blog__user__infor">
                             <div class="blog__user__top">
@@ -98,6 +102,7 @@
                         </div>
                     </router-link>
                 </div>
+
             </div>
             <router-link :to="`/detail/${post?.id}`">
                 <div class="blog__bottom">
@@ -107,9 +112,9 @@
                     </div>
                     <div class="blog__comment">
                         <ion-icon name="triangle-outline"></ion-icon>
-                        <span>3000</span>
+                        <span>{{ post?.comment_count }}</span>
                         <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                        <span>1200</span>
+                        <span>{{ post?.comment_count }}</span>
                     </div>
                 </div>
             </router-link>
@@ -122,16 +127,26 @@
 
 <script setup>
 import {
+    computed,
     ref
 } from "vue"
 import { usePostStore } from "../stores/postStore";
 import ModalController from "../components/ModalController.vue"
+import { useRoute } from 'vue-router';
+
+const route = useRoute();
 const postStore = usePostStore()
 // Định nghĩa prop "message"
 const props = defineProps({
     isCard: Boolean,
-    post: Object
+    post: Object,
+    isProfile: Boolean,
+    isMyProfile: Boolean,
 })
+console.log(props.post);
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+// console.log("🚀 ~ file: CardNew.vue:147 ~ userData:", userData.value.id)
+// console.log("hello", props.post?.blogger_id);
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
 const handleOpenModal = () => {
@@ -168,6 +183,7 @@ const calculateTimeAgo = (created_at) => {
         return `${minutes} phút trước`;
     }
 }
+
 const handleAddBookmark = () => { }
 </script>
 

@@ -1,7 +1,8 @@
 import httpClient from "../api/httpClient";
 import {
   API_GETAUTHORFOLLOWED,
-  API_GETFOLLOWAUTHOR
+  API_GETFOLLOWAUTHOR,
+
 } from "../config/apis";
 
 export const AuthorService = {
@@ -10,6 +11,7 @@ export const AuthorService = {
   },
   getauthorfollowed(authorid) {
     return httpClient.post(`${API_GETAUTHORFOLLOWED}/${authorid}`)
-  } 
+  }
+  
 };
 

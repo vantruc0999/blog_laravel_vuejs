@@ -19,7 +19,7 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = true;
         const response = await PostService.getallpost();
         this.posts = response?.data?.data;
-        console.log("🚀 ~ file: postStore.js:19 ~ fetchAllPosts ~ this.posts:", this.posts)
+        // console.log("🚀 ~ file: postStore.js:19 ~ fetchAllPosts ~ this.posts:", this.posts)
         this.isLoading = false;
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi lấy danh sách bài viết. Vui lòng thử lại sau.");
@@ -31,7 +31,7 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.getalltags();
         console.log("🚀 ~ file: postStore.js:32 ~ getAllTags ~ response:", response)
         this.tags = response?.data;
-        console.log("🚀 ~ file: postStore.js:33 ~ getAllTags ~  this.tags:",  this.tags)
+        // console.log("🚀 ~ file: postStore.js:33 ~ getAllTags ~  this.tags:",  this.tags)
         this.isLoading = false;
       } catch (error) {
         toast.error("Đã xảy ra lỗi khi lấy danh sách bài viết. Vui lòng thử lại sau.");
@@ -65,12 +65,10 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = true;
         const response = await PostService.updatepost(postId, postData);
         const updatedPost = response?.data;
-        // Cập nhật bài viết trong danh sách posts
         const index = this.posts.findIndex(post => post.id === postId);
         if (index !== -1) {
           this.posts[index] = updatedPost;
         }
-        // Cập nhật bài viết đang được hiển thị chi tiết (nếu có)
         if (this.post.id === postId) {
           this.post = updatedPost;
         }
@@ -114,6 +112,20 @@ export const usePostStore = defineStore("postStore", {
           toast.error("Đã xảy ra lỗi khi xóa bài viết. Vui lòng thử lại sau.");
         }
       };
+    },
+    async likePost(postid) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.likepost(postid);
+        this.getPostById(postid)
+        toast.success("Like thành công", {
+          position: "top-right",
+          duration: 2500,
+        });
+        this.isLoading = false;
+      } catch (error) {
+        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+      }
     },
   },
 });

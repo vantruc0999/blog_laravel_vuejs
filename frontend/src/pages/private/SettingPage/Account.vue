@@ -294,9 +294,6 @@ const handleCancel = () => {
 
         .temporary-image {
             width: 100%;
-
-
-
         }
 
         .image-select {
