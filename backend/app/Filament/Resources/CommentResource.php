@@ -6,6 +6,8 @@ use App\Filament\Resources\CommentResource\Pages;
 use App\Filament\Resources\CommentResource\RelationManagers;
 use App\Models\Comment;
 use Filament\Forms;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
@@ -13,6 +15,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Symfony\Component\Console\Input\Input;
 
 class CommentResource extends Resource
 {
@@ -21,11 +24,33 @@ class CommentResource extends Resource
     protected static ?string $navigationIcon = 'heroicon-o-collection';
     protected static ?string $navigationGroup = 'Post Management';
 
+    protected static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
+    }
+
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
                 //
+
+                // TextInput::make('post_id')
+                //             ->relationship('post', 'title')->reactive(),
+
+                // TextInput::make('description'),
+
+                Forms\Components\Section::make('')
+                    ->schema([
+                        Forms\Components\Placeholder::make('created_at')
+                            ->label('Created at')
+                            ->content(fn (Comment $record): ?string => $record->created_at?->diffForHumans()),
+
+                        Forms\Components\Placeholder::make('updated_at')
+                            ->label('Last modified at')
+                            ->content(fn (Comment $record): ?string => $record->updated_at?->diffForHumans()),
+                    ])
+                    ->hidden(fn (?Comment $record) => $record === null),
 
             ]);
     }

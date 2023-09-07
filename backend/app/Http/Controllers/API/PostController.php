@@ -39,7 +39,7 @@ class PostController extends Controller
             );
             $post->comment_count = $post->comments->count();
             $post->likes_count = $post->likes->count();
-            unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description, $post->comments, $post->likes);
+            unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description, $post->comments);
         }
 
         return response([
@@ -151,7 +151,7 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
-            unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger, $post->likes);
+            unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger);
 
             return response([
                 "message" => "success",
@@ -365,7 +365,6 @@ class PostController extends Controller
                     $item->highlight,
                     $item->blogger_id,
                     $item->comments,
-                    $item->likes,
                     $item->category,
                     $item->category_id,
                     $item->pivot,
@@ -462,30 +461,7 @@ class PostController extends Controller
                 $query->where('name', 'like', "%$keyword%");
             })
             ->get();
-
-        // foreach ($posts as $post) {
-        //     $post->category_name = $post->category->name;
-        //     $post->blogger_infor = $post->blogger->makeHidden(
-        //         'address',
-        //         'phone',
-        //         'gender',
-        //         'birthday',
-        //         'created_at',
-        //         'updated_at',
-        //         'banner'
-        //     );
-        //     $post->comment_count = $post->comments->count();
-        //     unset(
-        //         $post->blogger,
-        //         $post->category,
-        //         $post->blogger_infor->password,
-        //         $post->description,
-        //         $post->comments,
-        //         $post->blogger_id,
-        //         $post->category_id,
-        //     );
-        // }
-
+            
         return response([
             "message" => "success",
             "data" => $posts

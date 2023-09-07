@@ -5,6 +5,7 @@ use App\Http\Controllers\API\BloggerProfileController;
 use App\Http\Controllers\API\CommentController;
 use App\Http\Controllers\API\LikeController;
 use App\Http\Controllers\API\PostController;
+use App\Http\Controllers\API\SavePostController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -55,6 +56,9 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::get('/me/view-follower', [BloggerProfileController::class, 'viewMyFollower']);
         Route::get('/me/view-notification', [BloggerProfileController::class, 'viewMyNotification']);
         Route::get('/me/created-post', [BloggerProfileController::class, 'viewCreatedPost']);
+        Route::post('/me/change-password', [BloggerProfileController::class, 'changePassword']);
+        Route::post('/me/change-email', [BloggerProfileController::class, 'changeEmail']);
+
         // Route::delete('/unfollow/{id}', [BloggerProfileController::class, 'unfollow']);
     });
 
@@ -76,4 +80,12 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/check-like/{id}', [LikeController::class, 'checkLike']);
         Route::get('/get-liked-post', [LikeController::class, 'getAllLikedPosts']);
     });
+
+    Route::prefix('/save')->group(function () {
+        Route::post('/{id}', [SavePostController::class, 'savePost']);
+        Route::post('/check-save/{id}', [SavePostController::class, 'checkSave']);
+        Route::get('/get-saved-post', [SavePostController::class, 'getAllSavedPosts']);
+    });
+
+    
 });
