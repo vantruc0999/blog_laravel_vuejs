@@ -94,6 +94,7 @@ watchEffect(() => {
             justify-content: center;
             padding: 10px;
             border-radius: 10px;
+            height: 36px;
             width: 150px;
             gap: 5px;
             cursor: pointer;

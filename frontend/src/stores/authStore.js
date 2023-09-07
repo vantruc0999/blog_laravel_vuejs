@@ -59,17 +59,9 @@ export const useAuthStore = defineStore("authStore", {
         localStorage.removeItem("isLogin");
         localStorage.removeItem("user");
         this.isLogin = false;
-        toast.success("Đăng xuất thành công", {
-          position: "top-right",
-          duration: 2500,
-        });
         router.push("/auth/signin");
       } catch (error) {
         console.error(error);
-        toast.error("Đã xảy ra lỗi khi đăng xuất", {
-          position: "top-right",
-          duration: 2500,
-        });
       }
     },
 
@@ -81,7 +73,7 @@ export const useAuthStore = defineStore("authStore", {
         console.log("🚀 ~ file: authStore.js:78 ~ fetchAllBlogger ~ this.users:", this.users)
         this.isLoading = false;
       } catch (error) {
-        toast.error("Đã xảy ra lỗi khi lấy danh sách bài viết. Vui lòng thử lại sau.");
+        console.error(error);
       }
     },
     async getAuthorById(authorId) {
@@ -92,7 +84,7 @@ export const useAuthStore = defineStore("authStore", {
         console.log("🚀 ~ file: authStore.js:90 ~ getAuthorById ~ this.user:", this.user)
         this.isLoading = false;
       } catch (error) {
-        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+        console.error(error);
       }
     },
     async getMyProfile() {
@@ -103,7 +95,7 @@ export const useAuthStore = defineStore("authStore", {
         this.user = response?.data;
         this.isLoading = false;
       }catch (error) {
-        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+        console.error(error);
       }
     },
     async updateMyProfile(data) {

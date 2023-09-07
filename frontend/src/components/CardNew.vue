@@ -40,16 +40,16 @@
                         </router-link>
                     </div>
                     <router-link :to="`/detail/${post?.id}`">
-                        <div class="card__footer">
+                        <div class="card__bottom">
                             <div class="card__watch">
                                 <ion-icon name="eye-outline"></ion-icon>
                                 <span>{{ post?.view_count }} lượt xem</span>
                             </div>
                             <div class="card__comment">
                                 <ion-icon name="triangle-outline"></ion-icon>
-                                <span>3000</span>
+                                <span>{{ post?.comment_count }}</span>
                                 <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
-                                <span>1200</span>
+                                <span>{{ post?.comment_count }}</span>
                             </div>
                         </div>
                     </router-link>
@@ -88,17 +88,15 @@
                     </h3>
                 </router-link>
                 <!-- v-if="isProfileRoute.value" -->
-                <router-link :to="`/profile/${post?.blogger_infor?.id}`">
-                    <div class="blog__user" v-if="!isProfile">
-                        <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
-                            class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
-                        <img src="../../../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
-                        <div class="blog__user__infor">
-                            <div class="blog__user__top">
-                                <div class="blog__user__name">{{ post?.blogger_infor?.name }}</div>
-                            </div>
-                            <div class="blog__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}
-                            </div>
+                <router-link :to="`/profile/${post?.blogger_infor?.id}`" class="blog__user" v-if="!isProfile">
+                    <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
+                        class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
+                    <img src="../../../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
+                    <div class="blog__user__infor">
+                        <div class="blog__user__top">
+                            <div class="blog__user__name">{{ post?.blogger_infor?.name }}</div>
+                        </div>
+                        <div class="blog__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}
                         </div>
                     </div>
                 </router-link>
@@ -250,6 +248,13 @@ const handleAddBookmark = () => { }
     .card__bottom {
         display: flex;
         justify-content: space-between;
+        gap: 10px;
+
+        .card__comment {
+            display: flex;
+            align-items: center;
+            gap: 3px;
+        }
     }
 
     .card__title {

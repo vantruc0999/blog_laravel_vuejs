@@ -6,11 +6,21 @@
                 <span class="comment__list--name">{{ comment.blogger_name }}</span>
                 <span class="comment__list--desc">{{ comment.description }}</span>
             </div>
-            <div class="comment__reply">
-                <span class="comment__reply--reaction">Thích</span>
-                <span class="comment__reply--reaction">Trả lời</span>
-                <span class="comment__reply--day">{{ calculateTimeAgo(comment.created_at) }}</span>
+            <div class="comment__reaction">
+                <div class="comment__reply">
+                    <span class="comment__reply--reaction">Thích</span>
+                    <span class="comment__reply--reaction" @click="handleOpenAnswer">Trả lời</span>
+                    <span class="comment__reply--day">{{ calculateTimeAgo(comment.created_at) }}</span>
+                </div>
+                <div class="comment__reply__user" v-if="isAnswer">
+                    <div class="comment__reply__avatar">
+                        <img src="../../../../assets/images/avatar-default.png" alt="">
+                    </div>
+                    <textarea type="text" placeholder="Nhập câu trả lời của bạn..."
+                        class="comment__reply__input"></textarea>
+                </div>
             </div>
+
         </div>
         <div class="comment__options"><ion-icon name="ellipsis-horizontal-outline" @click="handleOpenOption"></ion-icon>
             <div class="comment__option" v-if="isOpen">
@@ -23,9 +33,10 @@
             </div>
         </div>
     </div>
-    <ModalController title="You want to delete this post?"
-        content="Do you really want to deleted this post This process cannot be undone" :closeModel="closeModel"
-        :isOpenModal="isOpenModal" :handleDeletePost="handleDeletePost" />
+
+    <ModalController title="You want to delete this comment?"
+        content="Do you really want to deleted this comment This process cannot be undone" :closeModel="closeModel"
+        :isOpenModal="isOpenModal" :handleDelete="handleDeleteComment" />
 </template>
 <script setup>
 import {
@@ -38,7 +49,9 @@ const props = defineProps({
     handleOpenOption: Function,
     isOpen: Boolean
 });
+const tempCommentId = ref(props.comment?.id)
 const postStore = usePostStore()
+const isAnswer = ref(false)
 const isOpenModal = ref(false)
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
@@ -47,7 +60,10 @@ const closeModel = () => {
     isOpenModal.value = false
 }
 const handleDeleteComment = () => {
-    postStore.deleteComment(props.comment.id)
+    postStore.deleteComment(tempCommentId.value)
+}
+const handleOpenAnswer = () => {
+    isAnswer.value = !isAnswer.value
 }
 const calculateTimeAgo = (created_at) => {
     const currentTime = new Date();
@@ -68,6 +84,7 @@ const calculateTimeAgo = (created_at) => {
         return `${minutes} phút trước`;
     }
 }
+
 </script>
 <style lang="scss" scoped>
 .container {
@@ -84,6 +101,23 @@ const calculateTimeAgo = (created_at) => {
 
 
     .comment__people {
+        .comment__reaction {}
+
+        .comment__reply__user {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            z-index: 555;
+            margin: 10px;
+
+            .comment__reply__input {
+                border-radius: 12px;
+                padding: 10px;
+                background-color: #fafafa;
+                height: 50px;
+            }
+        }
+
         .comment__reply {
             cursor: pointer;
             display: flex;
@@ -92,11 +126,15 @@ const calculateTimeAgo = (created_at) => {
             margin-top: 5px;
             color: rgb(211, 65, 65);
 
+
+
             &--day {
                 font-size: 13px;
                 color: var(--text-color-4);
             }
         }
+
+
     }
 
     .comment__options {
