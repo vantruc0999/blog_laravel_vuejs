@@ -38,8 +38,9 @@
                 </div>
                 <div class="account__col">
                     <div class="account__name--text">Email</div>
-                    <div class="account__name--input">{{ authStore.user.blogger_info?.email }}</div>
-                    <!-- <ion-icon name="pencil-outline"></ion-icon> -->
+                    <div class="account__name--input" @click="handleOpenEmailChange">{{ authStore.user.blogger_info?.email
+                    }}</div>
+                    <ion-icon name="pencil-outline" @click="handleOpenEmailChange"></ion-icon>
                 </div>
                 <form class="account__col">
                     <label for="birthday" class="account__name--text">Birthday:</label>
@@ -87,6 +88,17 @@
             <button class="account__btn account__btn--save" @click="handleUpdateProfile">Lưu</button>
         </div>
     </div>
+    <div class="modal__edit" v-if="idOpenChangeEmail">
+        <form class="modal__form">
+            <label class="modal__label">*Email*</label>
+            <input v-model="emailValue" type="email" placeholder="Nhập gmail bạn muốn đổi..." class="modal__input">
+            <div class="modal__edit__error" v-if="isError">Email không hợp lệ !!</div>
+            <div class="modal__controller">
+                <button class="modal__btn modal__btn__cancel" @click="handleCloseEmailChange">Hủy</button>
+                <button class="modal__btn modal__btn__submit" @click="handleSaveEmail">Lưu</button>
+            </div>
+        </form>
+    </div>
 </template>
 
 <script setup>
@@ -114,10 +126,10 @@ const temporaryBanner = ref('');
 const temporaryAvatar = ref('');
 const birthValue = ref(null);
 const genderValue = ref(null);
-
+const idOpenChangeEmail = ref(false)
+const isError = ref(false)
 const bio = ref('')
-
-console.log(birthValue.value);
+const emailValue = ref('')
 onMounted(async () => {
     await authStore.getMyProfile()
     genderValue.value = authStore.user?.blogger_info?.gender
@@ -133,7 +145,30 @@ const handleBioInput = () => {
     }
 };
 
-
+const handleOpenEmailChange = () => {
+    idOpenChangeEmail.value = !idOpenChangeEmail.value
+}
+const handleCloseEmailChange = (e) => {
+    e.preventDefault()
+    idOpenChangeEmail.value = false
+}
+const isValidEmail = (value) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(value);
+};
+const handleSaveEmail = (e) => {
+    e.preventDefault()
+    const formData = new FormData();
+    formData.append('email', emailValue.value)
+    console.log(isValidEmail(emailValue.value));
+    if (isValidEmail(emailValue.value) == false) {
+        isError.value = true
+    }
+    else {
+        authStore.changeEmail(formData)
+        isError.value = false
+    }
+}
 watch(bio, (newBio) => {
     bioLength.value = newBio.length;
     if (newBio.length > maxBioLength) {
@@ -212,7 +247,6 @@ const checkPasswordMatch = () => {
 
 const handleSave = (e) => {
     e.preventDefault();
-
     // Reset error messages
     errorMessages.oldPassword = '';
     errorMessages.newPassword = '';
@@ -221,10 +255,10 @@ const handleSave = (e) => {
         passwordMatchError.value = "Mật khẩu mới và xác nhận không khớp.";
     }
     if (newPassword.value === confirmPassword.value) {
-        console.log(oldPassword.value);
-        console.log(newPassword.value);
-        console.log(confirmPassword.value);
-
+        const formData = new FormData();
+        formData.append('old_password', oldPassword.value)
+        formData.append('password', newPassword.value)
+        authStore.changePassword(formData)
     }
     // Perform validation
     // if (oldPassword.value === '') {
@@ -246,6 +280,70 @@ const handleCancel = () => {
 </script>
 
 <style lang="scss" scoped>
+.modal__edit {
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+    background-color: hsla(0, 0%, 100%, 0.5);
+    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(15px);
+    z-index: 999px;
+
+    .modal__edit__error {
+        color: red;
+        font-size: 12px;
+    }
+
+    .modal__form {
+        margin: 200px auto;
+        // background-color: var(--black-color);
+        max-width: 500px;
+        max-height: 500px;
+        display: flex;
+        // align-items: center;
+        flex-direction: column;
+        justify-content: center;
+        gap: 10px;
+
+        .modal__label {
+            font-size: 22px;
+        }
+
+        .modal__input {
+            width: 100%;
+            background-color: var(--border-color);
+            height: 45px;
+            border-radius: 12px;
+            padding: 5px;
+        }
+    }
+
+    .modal__controller {
+        display: flex;
+        justify-content: flex-end;
+        gap: 10px;
+
+        .modal__btn {
+            width: 70px;
+            height: 40px;
+            border-radius: 12px;
+            padding: 8px;
+            color: var(--black-color);
+
+            &__cancel {
+                background-color: var(--white-color);
+
+            }
+
+            &__submit {
+                background-color: var(--primary-color);
+            }
+        }
+    }
+}
+
 .sidebar__container {
     .account__infor {
         .account__detail {
@@ -262,7 +360,6 @@ const handleCancel = () => {
 
                 .temporary-image {
                     border-radius: 50%;
-                    z-index: 2;
                     width: 100%;
                     height: 100%;
                     object-fit: cover;
@@ -277,7 +374,7 @@ const handleCancel = () => {
                     height: 100%;
                     opacity: 0;
                     cursor: pointer;
-                    z-index: 2;
+                    z-index: 1;
                 }
 
                 .image-icon {
@@ -287,7 +384,7 @@ const handleCancel = () => {
                     transform: translate(-50%, -50%);
                     font-size: 24px;
                     color: #000;
-                    z-index: 1;
+                    z-index: -1;
                 }
             }
 
@@ -413,13 +510,14 @@ const handleCancel = () => {
             gap: 20px;
             position: relative;
 
-            // ion-icon {
-            //     position: absolute;
-            //     top: 51px;
-            //     font-size: 18px;
-            //     right: 15px;
-            //     cursor: pointer;
-            // }
+            ion-icon {
+                position: absolute;
+                top: 51px;
+                font-size: 18px;
+                right: 15px;
+                cursor: pointer;
+            }
+
             .account__name--text {
                 text-transform: uppercase;
                 color: #B0A99F;

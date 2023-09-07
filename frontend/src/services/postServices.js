@@ -7,6 +7,7 @@ import {
   API_POSTCOMMENT,
   API_DELETECOMMENT,
   API_GETALLTAGS,
+  API_EDITCOMMENT,
     API_LIKEPOST
 } from "../config/apis";
 
@@ -28,6 +29,9 @@ export const PostService = {
   },
   updatepost(id, updateData) {
     return httpClient.post(`${API_UPDATEPOST}/${id}`, updateData)
+  },
+  editcomment(id, updateData) {
+    return httpClient.post(`${API_EDITCOMMENT}/${id}`, updateData)
   },
   deletecomment(id) {
     return httpClient.delete(`${API_DELETECOMMENT}/${id}`)

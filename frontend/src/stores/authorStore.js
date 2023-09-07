@@ -7,6 +7,8 @@ export const useAuthorStore = defineStore("authorStore", {
   state: () => ({
     authors: [],
     author: {},
+    authorsFollowed: [],
+    authorsFollowing: [],
     isLoading: false,
     isFollow: false,
   }),
@@ -21,7 +23,27 @@ export const useAuthorStore = defineStore("authorStore", {
         });
         this.isLoading = false;
       } catch (error) {
-        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+        console.log(error)
+      }
+    },
+    async getFollowered() {
+      try {
+        this.isLoading = true;
+        const response = await AuthorService.getfollowered();
+        this.authorsFollowed = response?.data?.my_followers
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getFollowing() {
+      try {
+        this.isLoading = true;
+        const response = await AuthorService.getfollowing();
+        this.authorsFollowing = response?.data?.my_following
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error)
       }
     },
     async getAuthorFollowed(authorId) {
@@ -29,10 +51,9 @@ export const useAuthorStore = defineStore("authorStore", {
         this.isLoading = true;
         const response = await AuthorService.getauthorfollowed(authorId);
         this.isFollow = response.data.is_followed === 1 ? true : false;
-        console.log("🚀 ~ file: authorStore.js:33 ~ getAuthorFollowed ~ this.isTerm:", this.isFollow)
         this.isLoading = false;
       } catch (error) {
-        toast.error("Đã xảy ra lỗi khi lấy người dùng. Vui lòng thử lại sau.");
+        console.log(error)
       }
     },
     

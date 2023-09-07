@@ -14,7 +14,7 @@
             </router-link>
             <div class="signature__user__right">
                 <button class="signature__user__btn signature__user__btn--follow " @click="handleGetFollow(author?.id)"
-                    v-if="authorStore?.isFollow">Theo dõi
+                    v-if="!authorStore?.isFollow">Theo dõi
                     <ion-icon name="person-add-outline"></ion-icon>
                 </button>
                 <button class="signature__user__btn signature__user__btn--followed" @click="handleGetFollow(author?.id)"
@@ -94,6 +94,7 @@ watchEffect(() => {
             justify-content: center;
             padding: 10px;
             border-radius: 10px;
+            height: 36px;
             width: 150px;
             gap: 5px;
             cursor: pointer;

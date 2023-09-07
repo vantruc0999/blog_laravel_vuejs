@@ -16,8 +16,8 @@
   import AuthorPage from "../pages/public/Author/AuthorPage.vue"
   import RelatedPost from "../pages/public/Home/RelatedPage/RelatedPost.vue"
   import ForYouPage from "../pages/public/Home/RelatedPage/PageContent/ForYouPage.vue"
-import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
-
+  import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
+  import FavoritesPage from "../pages/public/FavoritesPage/FavoritesPage.vue"
   const routes = [
     {
       path: "/",
@@ -83,6 +83,12 @@ import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
             },
           ]
         },
+        {
+          path: "/favorites",
+          name: "favorites",
+          component: FavoritesPage,
+        },
+
       ],
     },
     {

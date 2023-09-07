@@ -16,9 +16,18 @@
             <span class="comment__close" @click="handleOpenComment">
                 <ion-icon name="close-outline"></ion-icon>
             </span>
-
-            <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments">
-                <CommentUser :comment="comment" :handleOpenOption="handleOpenOption" :isOpen="isOpen" />
+            <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments" :key="index">
+                <CommentUser :comment="comment" :isOpen="isOpen" />
+                <div class="comment__more">
+                    <div class="comment__answer" @click="handleOpenCommentSub">
+                        Xem 1 câu trả lời
+                        <ion-icon name="chevron-down-outline" v-if="!isOpenCommentDetail"></ion-icon>
+                        <ion-icon name="chevron-up-outline" v-else></ion-icon>
+                    </div>
+                    <div class="comment__answers">
+                        <CommentUser :comment="comment" :isOpen="isOpen" v-if="isOpenCommentDetail" />
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -33,6 +42,7 @@ import {
 import {
     usePostStore
 } from "../../../../stores/postStore";
+import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommentUser from "./CommentUser.vue"
 const props = defineProps({
     isOpenComment: Boolean,
@@ -43,15 +53,17 @@ const postStore = usePostStore()
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const commentDescription = ref('');
 const isScrollEnabled = ref(false);
-
+const isOpenCommentDetail = ref(false)
+const editorConfig = ref({
+    placeholder: 'Nhập nội dung...'
+});
+const editorData = ref('');
 // open option
-const isOpen = ref(false)
-const handleOpenOption = () => {
-    isOpen.value = !isOpen.value;
-};
-const handleCloseOption = () => {
-    isOpen.value = false
+
+const handleOpenCommentSub = () => {
+    isOpenCommentDetail.value = !isOpenCommentDetail.value;
 }
+
 const formData = new FormData();
 formData.append('commentDescription', commentDescription.value)
 const handlePostComment = async () => {
@@ -75,9 +87,10 @@ onMounted(async () => {
 <style lang="scss" scoped>
 .comment__container {
     width: 100%;
-    position: absolute;
+    position: fixed;
     top: 0;
     left: 0;
+    right: 0;
     z-index: 901;
     bottom: 0;
     background-color: rgba(0, 0, 0, .2);
@@ -99,7 +112,7 @@ onMounted(async () => {
         animation-fill-mode: forwards;
 
         .comment__close {
-            position: absolute;
+            position: fixed;
             top: 0;
             right: 0;
             cursor: pointer;
@@ -156,6 +169,27 @@ onMounted(async () => {
         .comment__list {
             display: flex;
             overflow-y: scroll;
+            flex-direction: column;
+
+            .comment__more {
+                margin-left: 40px;
+
+                .comment__answer {
+                    display: flex;
+                    align-items: center;
+                    gap: 5px;
+                    color: var(--black-color);
+                    font-size: 15px;
+                    font-weight: 600;
+                    cursor: pointer;
+                }
+
+                .comment__answers {
+                    border-left: 1px solid var(--green-color);
+                    padding-left: 10px;
+
+                }
+            }
         }
     }
 }

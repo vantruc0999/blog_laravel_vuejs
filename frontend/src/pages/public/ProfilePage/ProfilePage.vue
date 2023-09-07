@@ -66,36 +66,49 @@
             <div class="profile__detail">
                 <div class="user__infor">
                     <span class="user__name">{{ authStore?.user?.blogger_infor?.name }}</span>
-                    <span class="user__follow">{{ authStore?.user?.blogger_infor?.number_of_followers }} <span
+                    <span class="user__nickname">@{{ authStore?.user?.blogger_infor?.slug }}</span>
+                    <span class="user__follow" @click="handleOpenFollowed">{{
+                        authStore?.user?.blogger_infor?.number_of_followers }} <span
                             class="user__follow--text">followers</span></span>
-                    <span class="user__social">
-                        <ion-icon name="logo-facebook"></ion-icon>
-                    </span>
                 </div>
-
-                <div class="profile__options">
+                <div class="profile__options" v-if="!checkMyProfile">
                     <button class="profile__btn" @click="handleGetFollow(authStore?.user?.blogger_infor?.id)"
-                        v-if="authorStore?.isFollow">Theo
-                        dõi<ion-icon name="person-add-outline"></ion-icon></button>
+                        v-if="!authorStore?.isFollow"><ion-icon name="person-add-outline"></ion-icon> Theo
+                        dõi</button>
                     <button class="profile__btn profile__btn--follow"
                         @click="handleGetFollow(authStore?.user?.blogger_infor?.id)" v-else>Đang theo dõi
                         <ion-icon name="checkmark-circle-outline"></ion-icon></button>
                     <span class="profile__delete">
-                        <ion-icon name="ellipsis-vertical-outline"></ion-icon>
+                        <ion-icon name="ellipsis-vertical-outline" @click="handleOpenBanned"></ion-icon>
+                        <div class="profile__ban" v-if="isBanned" @click="handleOpenModalBan">
+                            <ion-icon name="ban-outline"></ion-icon>
+                            Chặn người dùng
+                        </div>
+                        <ModalController title="Bạn có chắc muốn chặn người dùng này?"
+                            content="Nếu người dùng này gây ảnh hưởng tới bạn hãy chặn họ để tránh việc giảm trải nghiệm của bạn khi sử dụng MONKEY BLOG"
+                            :closeModel="handleCloseModalBan" :isOpenModal="isOpenModal" :handleDelete="handleDeletePost" />
                     </span>
                 </div>
 
                 <div class="profile__interaction">
-                    <div class="profile__followers">
-                        {{ authStore?.user?.blogger_infor?.number_of_following }}
+                    <div class="profile__followers" @click="handleOpenFollowing">
+                        <div class="profile__interaction--amount">
+                            {{ authStore?.user?.blogger_infor?.number_of_following }}
+                        </div>
                         <span class="profile__interaction--text">following</span>
                     </div>
 
                     <div class="profile__followers">
-                        {{ authStore?.user?.blogger_infor?.posts?.view_count }}
+                        <div class="profile__interaction--amount">
+                            {{ authStore?.user?.blogger_infor?.posts?.total_view }}3
+                        </div>
                         <span class="profile__interaction--text">views</span>
                     </div>
                 </div>
+                <ModalFollowed :isOpenModalFollowed="isOpenModalFollowed" :handleClose="handleClose"
+                    :checkMyProfile="checkMyProfile" />
+                <ModalFollowing :isOpenModalFollowing="isOpenModalFollowing" :handleCloseFollowing="handleCloseFollowing"
+                    :checkMyProfile="checkMyProfile" />
                 <p class="profile__about">{{ authStore?.user?.blogger_infor?.bio }}</p>
             </div>
             <div class="profile__action">
@@ -120,12 +133,10 @@
                 </div>
                 <!-- Card -->
                 <div class="profile__card">
-                    <CardNew :isCard="false" :post="post" v-for="(post, index) in authStore?.user?.blogger_infor?.posts"
+                    <CardNew :isCard="false" :post="post" v-for="( post, index ) in  authStore?.user?.blogger_infor?.posts "
                         :key="index" :isProfile="true" :isMyProfile="checkMyProfile" />
-
                 </div>
             </div>
-
         </div>
     </div>
     <Footer />
@@ -144,6 +155,9 @@ import {
 } from 'vue-router';
 import Loading from "../../../components/Loading.vue"
 import { useAuthorStore } from "../../../stores/authorStore"
+import ModalFollowed from "../../../components/ModalFollowed.vue"
+import ModalFollowing from "../../../components/ModalFollowing.vue"
+import ModalController from "../../../components/ModalController.vue"
 
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
@@ -154,8 +168,11 @@ const userData = ref(JSON.parse(localStorage.getItem("user")));
 const checkMyProfile = ref(false)
 const route = useRoute();
 const refAuthor = ref(route.params.id)
-let isOpen = ref(false);
-
+const isOpen = ref(false);
+const isOpenModalFollowed = ref(false)
+const isOpenModalFollowing = ref(false)
+const isBanned = ref(false)
+const isOpenModal = ref(false)
 const handleOpenOptions = () => {
     isOpen.value = !isOpen.value;
 };
@@ -169,6 +186,15 @@ const filterData = [{
 },
 ]
 
+const handleOpenBanned = () => {
+    isBanned.value = !isBanned.value;
+}
+const handleOpenModalBan = () => {
+    isOpenModal.value = !isOpenModal.value;
+}
+const handleCloseModalBan = () => {
+    isOpenModal.value = false
+}
 const handleGetFollow = (id) => {
     authorStore.getFollowAuthor(id);
     authorStore.getAuthorFollowed(id)
@@ -181,7 +207,18 @@ const handleCheckMyProfile = (id) => {
         checkMyProfile.value = false
     }
 }
-
+const handleOpenFollowed = () => {
+    isOpenModalFollowed.value = !isOpenModalFollowed.value
+}
+const handleClose = () => {
+    isOpenModalFollowed.value = false
+}
+const handleOpenFollowing = () => {
+    isOpenModalFollowing.value = !isOpenModalFollowing.value
+}
+const handleCloseFollowing = () => {
+    isOpenModalFollowing.value = false
+}
 // console.log(checkMyProfile.value);
 watch(() => route.params.id, (newId) => {
     console.log("newid", newId);
@@ -191,7 +228,6 @@ const getProfileAuthor = computed(() => {
     return authStore.getAuthorById(refAuthor.value)
 })
 handleCheckMyProfile(userData?.value?.id)
-console.log("++++", checkMyProfile);
 onMounted(async () => {
     await authStore.getMyProfile()
     await getProfileAuthor.value;
@@ -348,6 +384,7 @@ watchEffect(() => {
                     .header__user__avatar {
                         img {
                             width: 40px;
+                            height: 40px;
                             border-radius: 50%;
                             cursor: pointer;
                         }
@@ -410,27 +447,21 @@ watchEffect(() => {
                 font-weight: 600;
             }
 
-            .user__follow {
+            .user__nickname {
                 font-size: 16px;
                 color: var(--text-color-4);
+                font-weight: 600;
+                margin-bottom: 5px;
+            }
+
+            .user__follow {
+                font-size: 16px;
                 font-weight: 600;
             }
 
             .user__follow--text {
                 font-weight: 400;
-            }
-
-            .user__social {
-                display: inline-block;
-                padding: 5px;
-                border-radius: 50%;
-                border: 1px solid var(--border-color);
-                height: 40px;
-                width: 40px;
-                font-size: 22px;
-                display: flex;
-                align-items: center;
-                justify-content: center;
+                color: var(--text-color-4);
             }
         }
     }
@@ -446,6 +477,7 @@ watchEffect(() => {
             justify-content: center;
             padding: 10px;
             border-radius: 10px;
+            gap: 5px;
             width: 150px;
             cursor: pointer;
             background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
@@ -460,6 +492,31 @@ watchEffect(() => {
             font-weight: 700;
             background-image: var(--white-color) !important;
         }
+
+        .profile__delete {
+            cursor: pointer;
+            position: relative;
+
+            .profile__ban {
+                position: absolute;
+                right: 5px;
+                top: 30px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 5px;
+                border-radius: 10px;
+                width: 170px;
+                height: 50px;
+                background-color: var(--white-color);
+                box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+
+                &:hover {
+                    background-color: var(--border-color);
+                    color: var(--white-color);
+                }
+            }
+        }
     }
 
     .profile__interaction {
@@ -473,14 +530,20 @@ watchEffect(() => {
             color: var(--black-color);
             font-weight: 700;
             display: flex;
+            align-items: center;
             flex-direction: column;
             justify-content: center;
             width: 100%;
 
+            .profile__interaction--amount {
+                display: flex;
+                justify-content: center;
+            }
+
             .profile__interaction--text {
                 font-weight: 400;
+                color: var(--text-color-4);
                 font-size: 18px;
-
             }
         }
     }
@@ -492,7 +555,8 @@ watchEffect(() => {
         font-weight: 400;
         font-size: 16px;
         margin-top: 30px;
-
+        border-top: 2px solid var(--border-color);
+        padding-top: 20px;
     }
 
     .profile__action {

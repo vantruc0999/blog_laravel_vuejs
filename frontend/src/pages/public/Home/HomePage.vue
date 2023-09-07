@@ -97,6 +97,8 @@ import { useAuthStore } from "../../../stores/authStore";
 
 const postStore = usePostStore()
 const authStore = useAuthStore()
+
+
 postStore.fetchAllPosts()
 authStore.fetchAllBlogger()
 const onSwiper = (swiper) => {
