@@ -95,7 +95,6 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.postcomment(id, commentDescription);
-        this.getPostById(id)
         this.isLoading = false;
       } catch (error) {
         console.log(error);
@@ -122,17 +121,14 @@ export const usePostStore = defineStore("postStore", {
     async deleteComment(commentId) {
       try {
         this.isLoading = true;
-        const response = await PostService.deletecomment(commentId);
-        const postId = this.post.id; // Lấy id của bài viết hiện tại
-        this.post.comments = this.post.comments.filter(comment => comment.id !== commentId); // Lọc bỏ comment có id bằng commentId khỏi danh sách comments của bài viết
-
-        // Gọi lại API để cập nhật dữ liệu bài viết và comments
-        await this.getPostById(postId);
-
-        toast.success("Xóa comment thành công.");
-        this.isLoading = false;
+        PostService.deletecomment(commentId).then((res) => {
+          toast.success("Xóa comment thành công.");
+          console.log("====", res);
+          this.isLoading = false;
+        })    
       } catch (error) {
         console.log(error);
+         this.isLoading = false;
       }
     },
     async likePost(postid) {

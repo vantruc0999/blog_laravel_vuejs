@@ -20,6 +20,7 @@
     "pinia": "^2.1.6",
     "pinia-plugin-persist": "^1.0.0",
     "swiper": "^10.2.0",
+    "uuid": "^9.0.0",
     "vue": "^3.3.4",
     "vue-awesome-swiper": "^5.0.1",
     "vue-router": "^4.2.4",

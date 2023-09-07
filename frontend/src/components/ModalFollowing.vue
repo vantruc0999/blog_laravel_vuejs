@@ -2,7 +2,6 @@
     <div class="container" v-if="isOpenModalFollowing && checkMyProfile">
         <div class="form">
             <div class="form__header">
-                cac
                 <span class="form__all">Tất cả</span>
                 <span class="form__close" @click="handleCloseFollowing">
                     <ion-icon name="close-outline"></ion-icon>

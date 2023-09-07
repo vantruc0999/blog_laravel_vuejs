@@ -51,6 +51,45 @@ export const useAuthStore = defineStore("authStore", {
         this.isLoading = false;
       }
     },
+    async changePassword(data) {
+      try {
+        console.log(data);
+        this.isLoading = true;
+        await AuthService.changepassword(data);
+        const user = JSON.parse(localStorage.getItem("user"));
+        user.email = formData.get("email");
+        localStorage.setItem("user", JSON.stringify(user));
+        this.getMyProfile()
+        this.isLoading = false;
+        toast.success("Thay đổi mật khẩu thành công", {
+          position: "top-right",
+          duration: 2500,
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Thay đổi mật khẩu thất bại", {
+          position: "top-right",
+          duration: 2500,
+        });
+        this.isLoading = false;
+      }
+    },
+    async changeEmail(data) {
+      try {
+        await AuthService.changeemail(data);
+        this.getMyProfile()
+        toast.success("Thay đổi email khẩu thành công", {
+          position: "top-right",
+          duration: 2500,
+        });
+      } catch (error) {
+        console.error(error);
+        toast.error("Thay đổi email khẩu thất bại", {
+          position: "top-right",
+          duration: 2500,
+        });
+      }
+    },
     async logout() {
       try {
         await AuthService.logout(); // Gọi hàm logout từ AuthService
@@ -70,7 +109,7 @@ export const useAuthStore = defineStore("authStore", {
         this.isLoading = true;
         const response = await AuthService.getallblogger();
         this.users = response?.data;
-        console.log("🚀 ~ file: authStore.js:78 ~ fetchAllBlogger ~ this.users:", this.users)
+        // console.log("🚀 ~ file: authStore.js:78 ~ fetchAllBlogger ~ this.users:", this.users)
         this.isLoading = false;
       } catch (error) {
         console.error(error);

@@ -46,19 +46,26 @@ import { usePostStore } from "../../../../stores/postStore"
 import ModalController from "../../../../components/ModalController.vue"
 const props = defineProps({
     comment: Object,
-    handleOpenOption: Function,
-    isOpen: Boolean
+    handleOpenOption: Function
 });
 const tempCommentId = ref(props.comment?.id)
 const postStore = usePostStore()
 const isAnswer = ref(false)
 const isOpenModal = ref(false)
+const isOpen = ref(false)
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
 }
 const closeModel = () => {
     isOpenModal.value = false
 }
+
+const handleCloseOption = () => {
+    isOpen.value = false
+}
+const handleOpenOption = () => {
+    isOpen.value = !isOpen.value;
+};
 const handleDeleteComment = () => {
     postStore.deleteComment(tempCommentId.value)
 }

@@ -17,7 +17,7 @@
                 <ion-icon name="close-outline"></ion-icon>
             </span>
             <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments" :key="index">
-                <CommentUser :comment="comment" :handleOpenOption="handleOpenOption" :isOpen="isOpen" />
+                <CommentUser :comment="comment" :isOpen="isOpen" />
                 <div class="comment__more">
                     <div class="comment__answer" @click="handleOpenCommentSub">
                         Xem 1 câu trả lời
@@ -25,8 +25,7 @@
                         <ion-icon name="chevron-up-outline" v-else></ion-icon>
                     </div>
                     <div class="comment__answers">
-                        <CommentUser :comment="comment" :handleOpenOption="handleOpenOption" :isOpen="isOpen"
-                            v-if="isOpenCommentDetail" />
+                        <CommentUser :comment="comment" :isOpen="isOpen" v-if="isOpenCommentDetail" />
                     </div>
                 </div>
             </div>
@@ -60,17 +59,11 @@ const editorConfig = ref({
 });
 const editorData = ref('');
 // open option
-const isOpen = ref(false)
-const handleOpenOption = () => {
-    isOpen.value = !isOpen.value;
-};
-const handleCloseOption = () => {
-    isOpen.value = false
-}
 
 const handleOpenCommentSub = () => {
     isOpenCommentDetail.value = !isOpenCommentDetail.value;
 }
+
 const formData = new FormData();
 formData.append('commentDescription', commentDescription.value)
 const handlePostComment = async () => {

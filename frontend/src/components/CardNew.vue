@@ -29,13 +29,15 @@
                 </div>
                 <div class="card__bottom">
                     <div class="card__user">
-                        <img src="../assets/images/avatar-default.png" alt="" class="card__user__avatar">
+                        <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
+                            class="card__user__avatar" v-if="post?.blogger_infor?.profile_image" />
+                        <img src="../assets/images/avatar-default.png" class="card__user__avatar" alt="" v-else />
                         <router-link :to="`/profile/${post?.blogger_infor?.id}`">
                             <div class="card__user__infor">
                                 <div class="card__user__top">
                                     <div class="card__user__name">{{ post?.blogger_infor?.name }}</div>
                                 </div>
-                                <div class="card__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}</div>
+                                <div class="card__user__time">{{ calculateTimeAgo(post?.created_at) }}</div>
                             </div>
                         </router-link>
                     </div>
@@ -91,12 +93,12 @@
                 <router-link :to="`/profile/${post?.blogger_infor?.id}`" class="blog__user" v-if="!isProfile">
                     <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
                         class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
-                    <img src="../../../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
+                    <img src="../assets/images/avatar-default.png" class="blog__user__avatar" alt="" v-else />
                     <div class="blog__user__infor">
                         <div class="blog__user__top">
                             <div class="blog__user__name">{{ post?.blogger_infor?.name }}</div>
                         </div>
-                        <div class="blog__user__time">{{ calculateTimeAgo(post?.blogger_infor?.created_at) }}
+                        <div class="blog__user__time">{{ calculateTimeAgo(post?.created_at) }}
                         </div>
                     </div>
                 </router-link>
@@ -141,10 +143,8 @@ const props = defineProps({
     isProfile: Boolean,
     isMyProfile: Boolean,
 })
-console.log(props.post);
+console.log(props.post?.created_at);
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-// console.log("🚀 ~ file: CardNew.vue:147 ~ userData:", userData.value.id)
-// console.log("hello", props.post?.blogger_id);
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
 const handleOpenModal = () => {
@@ -249,6 +249,15 @@ const handleAddBookmark = () => { }
         display: flex;
         justify-content: space-between;
         gap: 10px;
+        align-items: center;
+
+        .card__watch {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            padding-right: 5px;
+            border-right: 1px solid var(--border-color);
+        }
 
         .card__comment {
             display: flex;
@@ -289,7 +298,6 @@ const handleAddBookmark = () => { }
 
         .card__user__infor {
             padding-left: 10px;
-            flex: 1;
         }
 
         .card__user__top {

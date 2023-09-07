@@ -2,6 +2,8 @@
 export const API_SIGNIN = "/login"
 export const API_SIGNUP = "/register"
 export const API_LOGOUT = "/logout"
+export const API_CHANGEPASSWORD = '/blogger/me/change-password'
+export const API_CHANGEEMAIL = '/blogger/me/change-email'
 // POST
 export const API_POSTBLOG = "/posts/create-post"
 export const API_GETALLPOST = "/posts"
