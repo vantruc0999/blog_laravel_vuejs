@@ -2,30 +2,34 @@
 
 namespace Database\Seeders;
 
+use App\Models\Role;
 use App\Models\User;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 
-class DatabaseSeeder extends Seeder
+class UserTableSeeder extends Seeder
 {
     /**
-     * Seed the application's database.
+     * Run the database seeds.
      *
      * @return void
      */
     public function run()
     {
-        // \App\Models\User::factory(10)->create();
-        $user1 = User::factory()->create([
+        //
+        $user1 = User::create([
             'name' => 'Super Admin',
-            'email' => 'superadmin@example.com'
+            'email' => 'superadmin@example.com',
+            'password' => Hash::make('123123'),
         ]);
 
-        $user2 = User::factory()->create([
+        $user2 = User::create([
             'name' => 'Moderator',
-            'email' => 'moderator@example.com'
+            'email' => 'moderator@example.com',
+            'password' => Hash::make('123123'),
         ]);
+
         $role1 = Role::create(['name' => 'super admin']);
         $role2 = Role::create(['name' => 'moderator']);
         

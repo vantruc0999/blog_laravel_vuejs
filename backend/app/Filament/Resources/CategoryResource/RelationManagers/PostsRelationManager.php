@@ -1,69 +1,39 @@
 <?php
 
-namespace App\Filament\Resources;
+namespace App\Filament\Resources\CategoryResource\RelationManagers;
 
-use App\Filament\Resources\PostResource\Pages;
-use App\Filament\Resources\PostResource\RelationManagers;
-use App\Models\Category;
-use App\Models\Post;
-use App\Models\Tag;
 use Closure;
-use Filament\Tables\Filters\Filter;
 use Filament\Forms;
 use Filament\Forms\Components\Card;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Radio;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Form;
-use Filament\Resources\Resource;
+use Filament\Resources\RelationManagers\RelationManager;
 use Filament\Resources\Table;
 use Filament\Tables;
-use Filament\Tables\Columns\BadgeColumn;
-use Filament\Tables\Columns\CheckboxColumn;
-use Filament\Tables\Columns\SelectColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ToggleColumn;
-use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Str;
 
-class PostResource extends Resource
+
+class PostsRelationManager extends RelationManager
 {
-    protected static ?string $model = Post::class;
+    protected static string $relationship = 'posts';
 
-    protected static ?string $navigationIcon = 'heroicon-o-newspaper';
-    protected static ?string $navigationGroup = 'Post Management';
-
-    protected static ?int $navigationSort = 3;
-
-    protected static function getNavigationBadge(): ?string
-    {
-        return static::getModel()::count();
-    }
+    protected static ?string $recordTitleAttribute = 'title';
 
     public static function form(Form $form): Form
     {
         return $form
             ->schema([
-                //
                 Card::make()
                     ->schema([
                         Select::make('category_id')
                             ->relationship('category', 'name')->reactive(),
-                        // Select::make('tag_id')
-                        //     ->label('Tags')
-                        //     ->multiple()
-                        //     ->options(function (callable $get) {
-                        //         $category = Category::find($get('category_id'));
-                        //         if (!$category) {
-                        //             return Tag::all()->pluck('name', 'id');
-                        //         }
-                        //         return $category->tags->pluck('name', 'id');
-                        //     }),
                         TextInput::make('title')
                             ->afterStateUpdated(function (Closure $get, Closure $set, ?string $state) {
                                 if (!$get('is_slug_changed_manually') && filled($state)) {
@@ -97,7 +67,7 @@ class PostResource extends Resource
                                 '2' => 'Declined',
                             ]),
                         TextInput::make('view_count')
-                            ->default(0),
+                        ->default(0),
                         Select::make('blogger_id')
                             ->relationship('blogger', 'name'),
                     ])
@@ -109,7 +79,6 @@ class PostResource extends Resource
     {
         return $table
             ->columns([
-                //
                 TextColumn::make('id')->label('Post ID'),
                 TextColumn::make('category.name')
                     ->searchable()
@@ -125,7 +94,6 @@ class PostResource extends Resource
                     })
                     ->searchable()
                     ->sortable(),
-                    
                 TextColumn::make('blogger.name')
                     ->searchable()
                     ->sortable(),
@@ -138,58 +106,21 @@ class PostResource extends Resource
                         }
                         return $state;
                     }),
-                TextColumn::make('view_count'),
                 TextColumn::make('created_at'),
                 TextColumn::make('updated_at'),
             ])
             ->filters([
                 //
-                Filter::make('view_count')
-                    ->label('View greater than 30')
-                    ->query(fn (Builder $query): Builder => $query->where('view_count', '>', 30)),
-                Filter::make('highlight')
-                    ->query(fn (Builder $query): Builder => $query->where('highlight', 1)),
-                SelectFilter::make('status')
-                    ->options([
-                        0 => 'pending',
-                        1 => 'accepted',
-                        2 => 'declined',
-                    ]),
-                SelectFilter::make('All bloggers')
-                    ->relationship('blogger', 'name'),
-                SelectFilter::make('All categories')
-                    ->relationship('category', 'name'),
-                SelectFilter::make('All tags')
-                    ->multiple()
-                    ->relationship('tags', 'name'),
+            ])
+            ->headerActions([
+                Tables\Actions\CreateAction::make(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
+                Tables\Actions\DeleteAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\DeleteBulkAction::make(),
             ]);
     }
-
-    public static function getRelations(): array
-    {
-        return [
-            //
-
-        ];
-    }
-
-    public static function getPages(): array
-    {
-        return [
-            'index' => Pages\ListPosts::route('/'),
-            'create' => Pages\CreatePost::route('/create'),
-            'edit' => Pages\EditPost::route('/{record}/edit'),
-        ];
-    }
-
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     return parent::getEloquentQuery()->where('status', 0);
-    // }
 }
