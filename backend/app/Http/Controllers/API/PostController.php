@@ -24,12 +24,21 @@ class PostController extends Controller
     //
     public function getAllActivePost()
     {
-        $posts = Post::where('status', 1)->get();
+        $posts = Post::where('status', 1)->orderBy('id', 'desc')->get();
 
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
-            $post->blogger_infor = $post->blogger;
+            $post->blogger_infor = $post->blogger->makeHidden(
+                'address',
+                'phone',
+                'gender',
+                'birthday',
+                'created_at',
+                'updated_at',
+                'banner'
+            );
             $post->comment_count = $post->comments->count();
+            $post->likes_count = $post->likes->count();
             unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description, $post->comments);
         }
 
@@ -142,7 +151,7 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
-            unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger, $post->likes);
+            unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger);
 
             return response([
                 "message" => "success",
@@ -329,7 +338,7 @@ class PostController extends Controller
     {
         try {
             $tags = Tag::find($id);
-            if(!$tags){
+            if (!$tags) {
                 return response([
                     'message' => 'No tags available'
                 ]);
@@ -348,7 +357,7 @@ class PostController extends Controller
                     'gender',
                     'created_at',
                     'updated_at'
-                );;
+                );
 
                 unset(
                     $item->description,
@@ -356,7 +365,6 @@ class PostController extends Controller
                     $item->highlight,
                     $item->blogger_id,
                     $item->comments,
-                    $item->likes,
                     $item->category,
                     $item->category_id,
                     $item->pivot,
@@ -373,5 +381,90 @@ class PostController extends Controller
                 'error' => $err->getMessage()
             ], 500);
         }
+    }
+
+    public function getMostLikePosts()
+    {
+        $postsWithLikeCount = Post::where('status', 1)
+            ->withCount('likes')
+            ->orderBy('likes_count', 'desc')
+            ->get();
+
+        foreach ($postsWithLikeCount as $post) {
+            $post->category_name = $post->category->name;
+            $post->blogger_infor = $post->blogger->makeHidden(
+                'address',
+                'phone',
+                'gender',
+                'birthday',
+                'created_at',
+                'updated_at',
+                'banner'
+            );
+            $post->comment_count = $post->comments->count();
+            unset(
+                $post->blogger,
+                $post->category,
+                $post->blogger_infor->password,
+                $post->description,
+                $post->comments,
+                $post->blogger_id,
+                $post->category_id,
+            );
+        }
+
+        return  $postsWithLikeCount;
+    }
+
+    public function getMostViewPosts()
+    {
+        $posts = Post::where('status', 1)
+            ->orderBy('view_count', 'desc')
+            ->get();
+        foreach ($posts as $post) {
+            $post->category_name = $post->category->name;
+            $post->blogger_infor = $post->blogger->makeHidden(
+                'address',
+                'phone',
+                'gender',
+                'birthday',
+                'created_at',
+                'updated_at',
+                'banner'
+            );
+            $post->comment_count = $post->comments->count();
+            unset(
+                $post->blogger,
+                $post->category,
+                $post->blogger_infor->password,
+                $post->description,
+                $post->comments,
+                $post->blogger_id,
+                $post->category_id,
+            );
+        }
+
+        return response([
+            "message" => "success",
+            "data" => $posts
+        ]);
+    }
+
+    public function searchPost($keyword)
+    {
+        $posts = Post::query()
+            ->where('title', 'like', "%$keyword%")
+            ->orWhereHas('tags', function ($query) use ($keyword) {
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->orWhereHas('blogger', function ($query) use ($keyword) {
+                $query->where('name', 'like', "%$keyword%");
+            })
+            ->get();
+            
+        return response([
+            "message" => "success",
+            "data" => $posts
+        ]);
     }
 }

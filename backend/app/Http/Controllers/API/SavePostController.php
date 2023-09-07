@@ -3,37 +3,34 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
-use App\Models\Blogger;
-use App\Models\Like;
-use App\Models\Notification;
 use App\Models\Post;
-use GrahamCampbell\ResultType\Success;
+use App\Models\Save;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
-class LikeController extends Controller
+class SavePostController extends Controller
 {
     //
-    public function likePost($post_id)
+    public function savePost($id)
     {
         try {
-            $isLike = Like::where(
+            $isSave = Save::where(
                 [
                     'blogger_id' => Auth::user()['id'],
-                    'post_id' => $post_id,
+                    'post_id' => $id,
                 ]
             )->first();
 
-            if ($isLike) {
-                $isLike->delete();
+            if ($isSave) {
+                $isSave->delete();
                 return response([
-                    'message' => 'Unlike successfully',
+                    'message' => 'Unsave successfully',
                 ]);
             }
 
             $post = Post::where(
                 [
-                    'id' => $post_id,
+                    'id' => $id,
                     'status' => 1,
                 ]
             )->first();
@@ -44,24 +41,18 @@ class LikeController extends Controller
                 ]);
             }
 
-            $like = Like::create(
+            $save = Save::create(
                 [
                     'blogger_id' => Auth::user()['id'],
-                    'post_id' => $post_id,
+                    'post_id' => $id,
                 ]
             );
 
-            if ($like) {
-                Notification::create([
-                    'blogger_id' => Post::find($post_id)->blogger->id,
-                    'description' => Auth::user()['name'] . ' liked your post',
-                    'is_seen' => 0,
+            if ($save) {
+                return response([
+                    'message' => 'Save successfully',
                 ]);
             }
-
-            return response([
-                'message' => 'Like successfully',
-            ]);
         } catch (\Exception $err) {
             return response()->json([
                 'message' => 'An error occurred while like a post',
@@ -70,33 +61,33 @@ class LikeController extends Controller
         }
     }
 
-    public function checkLike($post_id)
+    public function checkSave($id)
     {
-        $isLike = Like::where(
+        $isLike = Save::where(
             [
                 'blogger_id' => Auth::user()['id'],
-                'post_id' => $post_id,
+                'post_id' => $id,
             ]
         )->first();
 
         if ($isLike) {
             return response([
-                'message' => 'you have already liked this post',
-                'is_like' => 1,
+                'message' => 'you have already saved this post',
+                'is_save' => 1,
             ]);
         } else {
             return response([
-                'message' => 'you have not liked this post before',
-                'is_like' => 0,
+                'message' => 'you have not saved this post before',
+                'is_save' => 0,
             ]);
         }
     }
 
-    public function getAllLikedPosts()
+    public function getAllSavedPosts()
     {
         $blogger_id = Auth::user()['id'];
 
-        $likes = Like::where(
+        $saves = Save::where(
             [
                 'blogger_id' => $blogger_id
             ]
@@ -104,7 +95,7 @@ class LikeController extends Controller
 
         $posts = array();
 
-        foreach ($likes as $item) {
+        foreach ($saves as $item) {
             $post = $item->post;
             $post->likes_count = $post->likes->count();
             $post->comments_count = $post->comments->count();
@@ -127,7 +118,7 @@ class LikeController extends Controller
 
         if (empty($posts)) {
             return response([
-                'message' => 'You haven\'t liked any post',
+                'message' => 'You haven\'t saved any post',
                 'posts' => $posts
             ]);
         }

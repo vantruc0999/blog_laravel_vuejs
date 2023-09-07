@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class BloggerProfileController extends Controller
 {
@@ -31,9 +32,16 @@ class BloggerProfileController extends Controller
 
             $numberOfFollowing = Follow::where('blogger_id', $blogger->id)->count('following_id');
             $numberOfFollowers = Follow::where('blogger_id', $blogger->id)->count('follower_id');
+            $total_view = Post::where(
+                [
+                    'blogger_id' => $id,
+                    'status' => 1
+                ]
+            )->sum('view_count');
 
             $blogger->number_of_following = $numberOfFollowing;
             $blogger->number_of_followers = $numberOfFollowers;
+            $blogger->total_view_count = (int)$total_view;
 
             $blogger->posts = $blogger
                 ->posts()
@@ -47,7 +55,17 @@ class BloggerProfileController extends Controller
                 $item->likes_count = $item->likes->count();
                 $item->comments_count = $item->comments->count();
 
-                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id, $item->comments, $item->likes, $item->category, $item->category_id);
+                $item->blogger_infor = $item->blogger->makeHidden(
+                    'password',
+                    'phone',
+                    'address',
+                    'birthday',
+                    'gender',
+                    'created_at',
+                    'updated_at'
+                );
+
+                unset($item->description, $item->new_post, $item->highlight, $item->blogger_id, $item->comments, $item->category, $item->category_id, $item->blogger);
             }
 
             return response([
@@ -67,8 +85,15 @@ class BloggerProfileController extends Controller
         try {
             $blogger = Auth::user() ?? "";
 
+
             $numberOfFollowing = Follow::where('blogger_id', $blogger->id)->count('following_id');
             $numberOfFollowers = Follow::where('blogger_id', $blogger->id)->count('follower_id');
+            $total_view = Post::where(
+                [
+                    'blogger_id' => Auth::user()['id'],
+                    'status' => 1
+                ]
+            )->sum('view_count');
 
             $tmp_created_date = new Carbon($blogger->created_at);
             $dt['created'] = $tmp_created_date->format('Y-m-d H:i:s');
@@ -79,6 +104,7 @@ class BloggerProfileController extends Controller
             $blogger->date_joined = $dt['created'];
             $blogger->number_of_following = $numberOfFollowing;
             $blogger->number_of_followers = $numberOfFollowers;
+            $blogger->total_view_count = (int)$total_view;
 
             unset($blogger->created_at,  $blogger->updated_at);
 
@@ -115,28 +141,6 @@ class BloggerProfileController extends Controller
                 'gender' => $request->input('gender'),
                 'birthday' => $newDateString,
             ];
-
-            if ($request->input('email')) {
-                $userEmail = User::where('email', $request->email)->first();
-                $bloggerEmail = Blogger::where('email', $request->email)->first();
-
-                if ($userEmail || $bloggerEmail) {
-                    return response([
-                        'status' => 400,
-                        'message' => 'Email exists or invalid please choose another email'
-                    ]);
-                }
-
-                $data['email'] = $request->input('email');
-            }
-
-            if ($request->input('password')) {
-                if (!Hash::check($request->input('old_password'), Auth::user()['password']))
-                    return response([
-                        'message' => 'Wrong password',
-                    ]);
-                $data['password'] = bcrypt($request->input('password'));
-            }
 
             if ($request->has('profile_image')) {
                 $image = $request->profile_image;
@@ -311,5 +315,113 @@ class BloggerProfileController extends Controller
             'status' => 'success',
             'notifications' => $notfications,
         ]);
+    }
+
+    public function viewCreatedPost()
+    {
+        $posts = Post::where('blogger_id', Auth::user()['id'])->get();
+
+        foreach ($posts as $item) {
+            $item->category_name = $item->category->name;
+            $item->likes_count = $item->likes->count();
+            $item->comments_count = $item->comments->count();
+            $item->blogger_infor = $item->blogger->makeHidden(
+                'password',
+                'phone',
+                'address',
+                'birthday',
+                'gender',
+                'created_at',
+                'updated_at'
+            );
+
+            unset(
+                $item->description,
+                $item->new_post,
+                $item->highlight,
+                $item->blogger_id,
+                $item->comments,
+                $item->category,
+                $item->category_id,
+                $item->pivot,
+                $item->blogger,
+            );
+        }
+        return response([
+            'status' => 'success',
+            'posts' => $posts,
+        ]);
+    }
+
+    public function changeEMail(Request $request)
+    {
+        try {
+            $blogger = Blogger::where('id', Auth::user()['id'])->first();
+            $data = [];
+            $this->validate($request, [
+                'email' => 'required|email',
+            ]);
+            if ($request->input('email')) {
+                $userEmail = User::where('email', $request->email)->first();
+                $bloggerEmail = Blogger::where('email', $request->email)->first();
+
+                if ($userEmail || $bloggerEmail) {
+                    return response([
+                        'status' => 400,
+                        'message' => 'Email exists or invalid please choose another email'
+                    ]);
+                }
+
+                $slug = Str::slug(explode('@', $request->email)[0], '-');
+
+                $data['email'] = $request->input('email');
+                $data['slug'] = $slug;
+
+                $blogger->update($data);
+
+                return response([
+                    'message' => 'Success',
+                    'blogger_infor' => $blogger
+                ], 500);
+            }
+        } catch (\Exception $err) {
+            return response([
+                'message' => 'An error occurred while changing email',
+                'error' => $err->getMessage()
+            ], 500);
+        }
+    }
+
+    public function changePassword(Request $request)
+    {
+        try {
+            $blogger = Blogger::where('id', Auth::user()['id'])->first();
+            $data = [];
+
+            $this->validate($request, [
+                'old_password' => 'required',
+                'password' => 'required',
+            ]);
+
+            if ($request->input('password')) {
+                if (!Hash::check($request->input('old_password'), Auth::user()['password']))
+                    return response([
+                        'message' => 'Wrong password',
+                    ]);
+                $data['password'] = bcrypt($request->input('password'));
+            }
+
+            $blogger->update($data);
+
+            return response([
+                'message' => 'Success',
+                'blogger_infor' => $blogger
+            ], 500);
+        } catch (\Exception $err) {
+            return response([
+                'message' => 'An error occurred while changing email',
+                'error' => $err->getMessage()
+            ], 500);
+        }
     }
 }
