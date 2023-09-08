@@ -191,8 +191,6 @@ const handlePostBlog = () => {
 
     const submittedSelectedCategoryId = selectedCategoryData.category.id;
 
-    console.log("Selected Category Type IDs:", selectedCategoryTypeIdList);
-    console.log("Submitted Category ID:", submittedSelectedCategoryId);
 
     const submittedTitle = title.value;
     const submittedEditorData = editorData.value;
@@ -207,7 +205,6 @@ const handlePostBlog = () => {
     formData.append('category_id', 1)
     formData.append('tags', [1, 2])
 
-    console.log("🚀 ~ file: BlogEditor.vue:134 ~ handlePostBlog ~ blogData:", formData)
     // postStore.actCreatePost(formData)
 
     title.value = '';

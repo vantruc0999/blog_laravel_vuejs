@@ -2,7 +2,8 @@
     <div class="related__wrapper">
         <a-tabs v-model:activeKey="activeKey" :style="{ color: 'black' }" contenteditable="false">
             <a-tab-pane key="1" tab="Dành cho bạn">
-                <ForYouPage />
+                <!-- <ForYouPage /> -->
+                <CardNew :isCard="true" :post="post" v-for="(post, index) in paginatedItems " :key="index" />
             </a-tab-pane>
             <a-tab-pane key="2" tab="Theo tác giả" force-render>
                 <ForYouPage />
@@ -10,19 +11,55 @@
             <a-tab-pane key="3" tab="Đánh giá cao">
                 <ForYouPage />
             </a-tab-pane>
-
         </a-tabs>
-        <div class="pagination">
-            <PageChange />
+        <div class="pagination__wrapper">
+            <div class="pagination__page " @click="handleGoPrevPage()"><ion-icon name="arrow-back-outline"></ion-icon>
+            </div>
+            <span v-for="page in totalPages" :key="page" class="pagination__page "
+                :class="{ ' pagination__active': page === currentPage }" @click="handleGoNewPage(page)">
+                {{ page }}
+            </span>
+            <div class="pagination__page " @click="handleGoNextPage()"><ion-icon name="arrow-forward-outline"></ion-icon>
+            </div>
         </div>
     </div>
 </template>
 <script setup>
+import CardNew from "../../../../components/CardNew.vue";
+import { usePostStore } from "../../../../stores/postStore";
 import ForYouPage from "./PageContent/foryoupage.vue"
-import PageChange from "../../../../components/PageChange.vue"
-
-import { ref } from 'vue';
+// import PageChange from "../../../../components/PageChange.vue"
+import { ref, computed } from 'vue';
 const activeKey = ref('1');
+const postStore = usePostStore()
+postStore.fetchAllPosts()
+const currentPage = ref(1);
+const itemsPerPage = 2;
+
+const totalItems = computed(() => postStore?.posts?.length);
+const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
+const paginatedItems = computed(() => {
+    const startIndex = (currentPage.value - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return postStore?.posts.slice(startIndex, endIndex);
+});
+const handleGetFilterPage = (data) => {
+    plantStore.plants = data;
+    currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
+};
+const handleGoNewPage = (page) => {
+    currentPage.value = page
+}
+const handleGoNextPage = () => {
+    if (currentPage.value < totalPages.value) {
+        currentPage.value++;
+    }
+};
+const handleGoPrevPage = () => {
+    if (currentPage.value > 1) {
+        currentPage.value--;
+    }
+};
 </script>
 <style lang="scss" scoped>
 .related__wrapper {
@@ -38,10 +75,25 @@ const activeKey = ref('1');
         padding: 10px;
     }
 
+    .pagination__wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 20px;
+
+        .pagination__page {
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 10px;
+            box-shadow: rgba(0, 0, 0, 0.16) 0px 3px 6px, rgba(0, 0, 0, 0.23) 0px 3px 6px;
+        }
+
+        .pagination__active {
+            background-color: var(--green-color);
+            color: var(--white-color);
+        }
+    }
 
 }
-
-// .ant-tabs-tab-btn {
-//     color: black !important;
-// }
 </style>

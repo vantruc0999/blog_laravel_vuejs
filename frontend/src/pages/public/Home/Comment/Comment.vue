@@ -17,7 +17,7 @@
                 <ion-icon name="close-outline"></ion-icon>
             </span>
             <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments" :key="index">
-                <CommentUser :comment="comment" :isOpen="isOpen" />
+                <CommentUser :comment="comment" :idPost="postStore.post?.data?.id" :isOpen="isOpen" />
                 <div class="comment__more">
                     <div class="comment__answer" @click="handleOpenCommentSub">
                         Xem 1 câu trả lời
@@ -42,7 +42,6 @@ import {
 import {
     usePostStore
 } from "../../../../stores/postStore";
-import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import CommentUser from "./CommentUser.vue"
 const props = defineProps({
     isOpenComment: Boolean,
@@ -59,7 +58,6 @@ const editorConfig = ref({
 });
 const editorData = ref('');
 // open option
-
 const handleOpenCommentSub = () => {
     isOpenCommentDetail.value = !isOpenCommentDetail.value;
 }
@@ -81,6 +79,7 @@ const getDetailPost = computed(() => {
 
 onMounted(async () => {
     await getDetailPost.value;
+    await handlePostComment
 });
 </script>
 

@@ -31,7 +31,6 @@ import { useAuthorStore } from "../../../../stores/authorStore";
 import { useAuthStore } from "../../../../stores/authStore";
 
 const authStore = useAuthStore()
-console.log("hello", authStore?.user?.blogger_infor?.id);
 const authorStore = useAuthorStore()
 const props = defineProps({
     author: Object
@@ -95,7 +94,7 @@ watchEffect(() => {
             padding: 10px;
             border-radius: 10px;
             height: 36px;
-            width: 150px;
+            max-width: 150px;
             gap: 5px;
             cursor: pointer;
             background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);

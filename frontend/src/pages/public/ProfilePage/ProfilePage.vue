@@ -162,7 +162,6 @@ import ModalController from "../../../components/ModalController.vue"
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
 
-// console.log("hello", authStore?.user?.blogger_infor?.posts);
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const checkMyProfile = ref(false)

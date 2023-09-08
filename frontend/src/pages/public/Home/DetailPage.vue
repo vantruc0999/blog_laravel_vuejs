@@ -153,7 +153,6 @@ import Loading from "../../../components/Loading.vue"
 import { usePostStore } from "../../../stores/postStore";
 
 const postStore = usePostStore()
-console.log("🚀 ~ file: DetailPage.vue:156 ~ postStore:", postStore.post.data)
 const route = useRoute();
 const refDetail = ref(route.params.id)
 const postId = ref(refDetail)

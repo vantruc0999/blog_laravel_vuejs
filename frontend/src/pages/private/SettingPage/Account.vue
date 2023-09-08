@@ -167,6 +167,7 @@ const handleSaveEmail = (e) => {
     else {
         authStore.changeEmail(formData)
         isError.value = false
+        idOpenChangeEmail.value = false
     }
 }
 watch(bio, (newBio) => {
@@ -224,12 +225,12 @@ const handleUpdateProfile = () => {
     formData.append('gender', genderValue.value)
     formData.append('birthday', birthValue.value)
     authStore.updateMyProfile(formData)
-    const updatedUser = {
-        profile_image: authStore.user?.blogger_info?.profile_image,
-        name: authStore.user?.blogger_info?.name,
-        bio: bio.value
-    };
-    localStorage.setItem('user', JSON.stringify(updatedUser));
+    // const updatedUser = {
+    //     profile_image: authStore.user?.blogger_info?.profile_image,
+    //     name: authStore.user?.blogger_info?.name,
+    //     bio: bio.value
+    // };
+    // localStorage.setItem('user', JSON.stringify(updatedUser));
 };
 
 // handle password

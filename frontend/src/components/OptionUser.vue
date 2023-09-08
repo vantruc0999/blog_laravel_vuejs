@@ -16,7 +16,7 @@
             </ul>
 
             <ul class='option-list'>
-                <router-link class='option-item-link' to="/">
+                <router-link class='option-item-link' to="/favorites">
                     <span class="option-icon"><ion-icon name="bookmark-outline"></ion-icon></span>
                     <li class='option-item'>Đã lưu</li>
                 </router-link>

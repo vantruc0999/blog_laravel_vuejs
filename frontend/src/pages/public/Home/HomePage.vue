@@ -78,6 +78,7 @@
 </template>
 
 <script setup>
+import { ref, computed } from "vue"
 import CardFeature from "../../../components/CardFeature.vue"
 import CardNew from "../../../components/CardNew.vue"
 import RelatedPage from "./RelatedPage/RelatedPage.vue";
@@ -96,11 +97,27 @@ import { useAuthStore } from "../../../stores/authStore";
 
 
 const postStore = usePostStore()
-const authStore = useAuthStore()
-
-
 postStore.fetchAllPosts()
+const authStore = useAuthStore()
 authStore.fetchAllBlogger()
+
+const currentPage = ref(1);
+const itemsPerPage = 2;
+
+const totalItems = computed(() => postStore?.posts?.length);
+const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
+const paginatedItems = computed(() => {
+    const startIndex = (currentPage.value - 1) * itemsPerPage;
+    const endIndex = startIndex + itemsPerPage;
+    return postStore?.posts.slice(startIndex, endIndex);
+});
+const handleGetFilterPage = (data) => {
+    plantStore.plants = data;
+    currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
+};
+const handleGoNewPage = (page) => {
+    currentPage.value = page
+}
 const onSwiper = (swiper) => {
     // console.log(swiper);
 };

@@ -8,7 +8,9 @@ import {
   API_DELETECOMMENT,
   API_GETALLTAGS,
   API_EDITCOMMENT,
-    API_LIKEPOST
+    API_LIKEPOST,
+    API_SAVEPOST,
+    API_GETALLSAVEPOST
 } from "../config/apis";
 
 export const PostService = {
@@ -41,5 +43,11 @@ export const PostService = {
   },
   likepost(postid) {
     return httpClient.post(`${API_LIKEPOST}/${postid}`)
-  } 
+  },
+  savepost(id) {
+    return httpClient.post(`${API_SAVEPOST}/${id}`)
+  },
+  getallsavepost(){
+    return httpClient.get(API_GETALLSAVEPOST)
+  }
 };

@@ -4,7 +4,15 @@
         <div class="comment__people">
             <div class="comment__list--user">
                 <span class="comment__list--name">{{ comment.blogger_name }}</span>
-                <span class="comment__list--desc">{{ comment.description }}</span>
+                <span class="comment__list--desc" v-if="isOpenEdit">{{ comment.description }}</span>
+                <div class="comment__list--input" v-else>
+                    <input class="comment__list__text" type="text" placeholder="Viết bình luận của bạn..."
+                        v-model="editCommentValue">
+                    <div class="comment__list--controller">
+                        <div class="comment__list__btn comment__list--calcel" @click="handleOpenEditComment">Hủy</div>
+                        <div class="comment__list__btn comment__list--submit" @click="handleEditComment">Lưu</div>
+                    </div>
+                </div>
             </div>
             <div class="comment__reaction">
                 <div class="comment__reply">
@@ -20,11 +28,10 @@
                         class="comment__reply__input"></textarea>
                 </div>
             </div>
-
         </div>
         <div class="comment__options"><ion-icon name="ellipsis-horizontal-outline" @click="handleOpenOption"></ion-icon>
             <div class="comment__option" v-if="isOpen">
-                <div class="comment__option--edit">
+                <div class="comment__option--edit" @click="handleOpenEditComment">
                     <ion-icon name="create-outline"></ion-icon>Sửa
                 </div>
                 <div class="comment__option--delete" @click="handleOpenModal">
@@ -44,22 +51,38 @@ import {
 } from "vue";
 import { usePostStore } from "../../../../stores/postStore"
 import ModalController from "../../../../components/ModalController.vue"
+
 const props = defineProps({
     comment: Object,
-    handleOpenOption: Function
+    handleOpenOption: Function,
+    idPost: String,
 });
+
 const tempCommentId = ref(props.comment?.id)
 const postStore = usePostStore()
 const isAnswer = ref(false)
 const isOpenModal = ref(false)
 const isOpen = ref(false)
+const isOpenEdit = ref(true)
+const editCommentValue = ref('')
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
 }
 const closeModel = () => {
     isOpenModal.value = false
 }
+const handleOpenEditComment = () => {
+    isOpenEdit.value = !isOpenEdit.value
+    isOpen.value = false
+}
 
+const handleEditComment = () => {
+    const formData = new FormData();
+    formData.append('description', editCommentValue.value)
+    postStore.editComment(props.idPost, tempCommentId.value, formData)
+    isOpenEdit.value = !isOpenEdit.value
+
+}
 const handleCloseOption = () => {
     isOpen.value = false
 }
@@ -67,7 +90,7 @@ const handleOpenOption = () => {
     isOpen.value = !isOpen.value;
 };
 const handleDeleteComment = () => {
-    postStore.deleteComment(tempCommentId.value)
+    postStore.deleteComment(props.idPost, tempCommentId.value)
 }
 const handleOpenAnswer = () => {
     isAnswer.value = !isAnswer.value
@@ -122,6 +145,38 @@ const calculateTimeAgo = (created_at) => {
                 padding: 10px;
                 background-color: #fafafa;
                 height: 50px;
+            }
+        }
+
+        .comment__list--input {
+            width: 100%;
+
+            .comment__list__text {
+                height: 40px;
+                width: 100%;
+                padding: 5px;
+                border-radius: 12px;
+            }
+
+            .comment__list--controller {
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                gap: 10px;
+                margin-top: 10px;
+
+                .comment__list__btn {
+                    cursor: pointer;
+                    padding: 10px;
+                    background-color: var(--white-color);
+                    border-radius: 12px;
+
+                }
+
+                .comment__list--submit {
+                    background-color: var(--btn-color) !important;
+                    color: var(--white-color);
+                }
             }
         }
 

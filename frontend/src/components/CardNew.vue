@@ -5,7 +5,7 @@
             <div class="card__favorite">
                 <div class="card__categori">{{ post?.category_name }}</div>
                 <div class="card__icon">
-                    <ion-icon name="bookmark-outline" class="card__bookmark" @click="handleAddBookmark"></ion-icon>
+                    <ion-icon name="bookmark-outline" class="card__bookmark" @click="handleSavePost(post?.id)"></ion-icon>
                     <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"
                         v-if="props.post?.blogger_id === userData?.value?.id"></ion-icon>
                     <div class="card__options" v-if="isOpen">
@@ -65,7 +65,7 @@
         <div class="blog__favorite">
             <div class="blog__categori">{{ post?.category_name }}</div>
             <div class="blog__icon">
-                <ion-icon name="bookmark-outline" class="blog__bookmark"></ion-icon>
+                <ion-icon name="bookmark-outline" class="blog__bookmark" @click="handleSavePost(post?.id)"></ion-icon>
                 <ion-icon name="ellipsis-vertical-outline" class="blog__menu" v-if="isMyProfile"
                     @click="handleOpenOption"></ion-icon>
                 <div class="card__options" v-if="isOpen">
@@ -133,9 +133,11 @@ import {
 import { usePostStore } from "../stores/postStore";
 import ModalController from "../components/ModalController.vue"
 import { useRoute } from 'vue-router';
+import { useAuthStore } from "../stores/authStore";
 
 const route = useRoute();
 const postStore = usePostStore()
+const authStore = useAuthStore()
 // Định nghĩa prop "message"
 const props = defineProps({
     isCard: Boolean,
@@ -143,7 +145,6 @@ const props = defineProps({
     isProfile: Boolean,
     isMyProfile: Boolean,
 })
-console.log(props.post?.created_at);
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
@@ -154,7 +155,7 @@ const closeModel = () => {
     isOpenModal.value = false
 }
 const handleDeletePost = () => {
-    postStore.deletePost(idTemp.value)
+    authStore.deletePost(idTemp.value)
 }
 
 // open option
@@ -182,13 +183,16 @@ const calculateTimeAgo = (created_at) => {
     }
 }
 
-const handleAddBookmark = () => { }
+const handleSavePost = (id) => {
+    postStore.savePost(id)
+}
 </script>
 
 <style lang="scss" scoped>
 //  Card 
 .card {
     display: flex;
+    margin-bottom: 20px;
 
     .card__right {
         width: 100%;
