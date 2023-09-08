@@ -2,8 +2,11 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Resources\CategoryResource\RelationManagers\PostsRelationManager;
 use App\Filament\Resources\CommentResource\Pages;
 use App\Filament\Resources\CommentResource\RelationManagers;
+use App\Filament\Resources\CommentResource\RelationManagers\CommentsRelationManager;
+use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager as RelationManagersCommentsRelationManager;
 use App\Models\Comment;
 use Filament\Forms;
 use Filament\Forms\Components\Select;
@@ -34,11 +37,9 @@ class CommentResource extends Resource
         return $form
             ->schema([
                 //
-
-                // TextInput::make('post_id')
-                //             ->relationship('post', 'title')->reactive(),
-
-                // TextInput::make('description'),
+                Select::make('blogger_id')
+                    ->relationship('blogger', 'name'),
+                TextInput::make('description'),
 
                 Forms\Components\Section::make('')
                     ->schema([
@@ -69,7 +70,7 @@ class CommentResource extends Resource
                     ->limit(30)
                     ->searchable()
                     ->sortable(),
-                
+
                 TextColumn::make('blogger.name')
                     ->label('Blogger comment on post')
                     ->limit(30)

@@ -3,7 +3,8 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\PostResource\Pages;
-use App\Filament\Resources\PostResource\RelationManagers;
+use App\Filament\Resources\PostResource\RelationManagers\CommentsRelationManager;
+use App\Filament\Resources\PostResource\Widgets\PostStatsOverview;
 use App\Models\Category;
 use App\Models\Post;
 use App\Models\Tag;
@@ -100,6 +101,17 @@ class PostResource extends Resource
                             ->default(0),
                         Select::make('blogger_id')
                             ->relationship('blogger', 'name'),
+                        Forms\Components\Section::make('')
+                            ->schema([
+                                Forms\Components\Placeholder::make('created_at')
+                                    ->label('Created at')
+                                    ->content(fn (Post $record): ?string => $record->created_at?->diffForHumans()),
+
+                                Forms\Components\Placeholder::make('updated_at')
+                                    ->label('Last modified at')
+                                    ->content(fn (Post $record): ?string => $record->updated_at?->diffForHumans()),
+                            ])
+                            ->hidden(fn (?Post $record) => $record === null),
                     ])
 
             ]);
@@ -110,7 +122,9 @@ class PostResource extends Resource
         return $table
             ->columns([
                 //
-                TextColumn::make('id')->label('Post ID'),
+                TextColumn::make('id')
+                    ->label('Post ID')
+                    ->sortable(),
                 TextColumn::make('category.name')
                     ->searchable()
                     ->sortable(),
@@ -125,9 +139,16 @@ class PostResource extends Resource
                     })
                     ->searchable()
                     ->sortable(),
-                    
+
                 TextColumn::make('blogger.name')
                     ->searchable()
+                    ->sortable(),
+                TextColumn::make('status')
+                    ->enum([
+                        0 => 'Pending',
+                        1 => 'Accepted',
+                        2 => 'Declined',
+                    ])
                     ->sortable(),
                 TextColumn::make('slug')
                     ->limit(30)
@@ -175,7 +196,14 @@ class PostResource extends Resource
     {
         return [
             //
+            CommentsRelationManager::class,
+        ];
+    }
 
+    public static function getWidgets(): array
+    {
+        return [
+            PostStatsOverview::class,
         ];
     }
 

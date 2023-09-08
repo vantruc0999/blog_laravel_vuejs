@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\BloggerResource\Pages;
 use App\Filament\Resources\BloggerResource\RelationManagers;
+use App\Filament\Resources\BloggerResource\RelationManagers\PostsRelationManager;
 use App\Filament\Resources\UserResource\Pages\CreateUser;
 use App\Models\Blogger;
 use Filament\Forms;
@@ -88,6 +89,7 @@ class BloggerResource extends Resource
     {
         return [
             //
+            PostsRelationManager::class,
         ];
     }
 
