@@ -367,7 +367,6 @@ class BloggerProfileController extends Controller
 
                 if ($userEmail || $bloggerEmail) {
                     return response([
-                        'status' => 400,
                         'message' => 'Email exists or invalid please choose another email'
                     ]);
                 }
@@ -382,13 +381,13 @@ class BloggerProfileController extends Controller
                 return response([
                     'message' => 'Success',
                     'blogger_infor' => $blogger
-                ], 500);
+                ]);
             }
         } catch (\Exception $err) {
             return response([
                 'message' => 'An error occurred while changing email',
                 'error' => $err->getMessage()
-            ], 500);
+            ]);
         }
     }
 
@@ -416,12 +415,12 @@ class BloggerProfileController extends Controller
             return response([
                 'message' => 'Success',
                 'blogger_infor' => $blogger
-            ], 500);
+            ]);
         } catch (\Exception $err) {
             return response([
-                'message' => 'An error occurred while changing email',
+                'message' => 'An error occurred while changing password',
                 'error' => $err->getMessage()
-            ], 500);
+            ]);
         }
     }
 }
