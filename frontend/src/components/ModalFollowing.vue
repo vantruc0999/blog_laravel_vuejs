@@ -21,7 +21,6 @@ import { useAuthorStore } from '../stores/authorStore';
 
 const authorStore = useAuthorStore()
 
-console.log("following", authorStore.authorsFollowing);
 onMounted(async () => {
     await authorStore.getFollowing();
 });

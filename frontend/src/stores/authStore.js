@@ -137,6 +137,18 @@ export const useAuthStore = defineStore("authStore", {
         console.error(error);
       }
     },
+    async deletePost(id) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.deletepost(id);
+        this.getMyProfile()
+        // this.posts = this.posts.filter(post => post.id !== id);
+        toast.success("Xóa bài viết thành công.");
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async updateMyProfile(data) {
       try {
         this.isLoading = true;

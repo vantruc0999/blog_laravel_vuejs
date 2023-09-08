@@ -53,6 +53,7 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getpostbyid(postId);
+        console.log("🚀 ~ file: postStore.js:57 ~ getPostById ~ response?.data:", response?.data)
         this.post = response?.data;
         // console.log("🚀 ~ file: postStore.js:44 ~ getPostById ~ this.post:", this.post)
         this.isLoading = false;
@@ -82,8 +83,7 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.deletepost(id);
-        console.log(id);
-        await this.fetchAllPosts(); // Đợi cho danh sách bài viết được cập nhật trước khi xóa bài viết và hiển thị toast
+        await this.fetchAllPosts(); 
         this.posts = this.posts.filter(post => post.id !== id);
         toast.success("Xóa bài viết thành công.");
         this.isLoading = false;
@@ -91,20 +91,29 @@ export const usePostStore = defineStore("postStore", {
         console.log(error);
       }
     },
-    async postComment( id, commentDescription ) {
+    async postComment(id, commentDescription) {
       try {
         this.isLoading = true;
         const response = await PostService.postcomment(id, commentDescription);
+        this.getPostById(id)
+        const { comment } = response.data;
+        const postIndex = this.posts.findIndex(post => post.id === id);
+        if (postIndex !== -1) {
+          this.posts[postIndex].comments.push(comment);
+        }
+        toast.success("Bình luận của bạn đã được đăng.");
         this.isLoading = false;
       } catch (error) {
         console.log(error);
+        this.isLoading = false;
       }
     },
-   async editComment(postId, postData) {
+   async editComment(postId,idComment, postData) {
       try {
         this.isLoading = true;
-        const response = await PostService.editcomment(postId, postData);
+        const response = await PostService.editcomment(idComment, postData);
         const updatedPost = response?.data;
+        this.getPostById(postId)
         const index = this.posts.findIndex(post => post.id === postId);
         if (index !== -1) {
           this.posts[index] = updatedPost;
@@ -118,17 +127,19 @@ export const usePostStore = defineStore("postStore", {
         console.log(error);
       }
     },
-    async deleteComment(commentId) {
+    async deleteComment(postId,commentId) {
       try {
         this.isLoading = true;
-        PostService.deletecomment(commentId).then((res) => {
-          toast.success("Xóa comment thành công.");
-          console.log("====", res);
-          this.isLoading = false;
-        })    
+        const response = await PostService.deletecomment(commentId);
+        this.getPostById(postId)
+        this.posts.forEach(post => {
+          post.comments = post.comments.filter(comment => comment.id !== commentId);
+        });
+        toast.success("Xóa comment thành công.");
+        this.isLoading = false;
       } catch (error) {
         console.log(error);
-         this.isLoading = false;
+        this.isLoading = false;
       }
     },
     async likePost(postid) {
@@ -137,6 +148,32 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.likepost(postid);
         this.getPostById(postid)
         
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async savePost(id) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.savepost(id);
+        const savedPost = response?.data;
+        const index = this.posts.findIndex(post => post.id === savedPost.id);
+        if (index !== -1) {
+          this.posts[index] = savedPost;
+        }
+        toast.success("Lưu bài viết thành công.");
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+        this.isLoading = false;
+      }
+    },
+    async getAllSavePosts() {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getallsavepost();
+        this.posts = response.data?.posts;
         this.isLoading = false;
       } catch (error) {
         console.log(error);

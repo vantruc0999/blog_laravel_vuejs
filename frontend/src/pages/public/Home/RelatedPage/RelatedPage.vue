@@ -49,6 +49,7 @@ authStore.fetchAllBlogger()
         height: 100%;
         max-height: 251px;
         overflow: hidden;
+        width: 100%;
 
         .signature__header {
             display: flex;
