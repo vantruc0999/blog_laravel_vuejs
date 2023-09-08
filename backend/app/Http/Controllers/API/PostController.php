@@ -53,7 +53,7 @@ class PostController extends Controller
         foreach ($comments as $item) {
             $item->blogger_name = $item->blogger->name;
             $item->blogger_image = $item->blogger->profile_image;
-            unset($item->blogger, $item->post_id, $item->updated_at, $item->blogger_id);
+            unset($item->blogger, $item->post_id, $item->updated_at);
         }
         return $comments;
     }

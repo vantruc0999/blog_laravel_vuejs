@@ -39,6 +39,7 @@ class PostStatsOverview extends BaseWidget
         ->get();
 
         // dd($countPostPerDayCollection);
+        //die();
 
         $countPostPerDay = [];
 
