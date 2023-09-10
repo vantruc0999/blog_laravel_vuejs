@@ -68,4 +68,20 @@ authStore.fetchAllBlogger()
         }
     }
 }
+
+@media only screen and (max-width: 1060px) {
+    .related__container {
+        display: block;
+
+        .related__left {
+            width: 100%;
+            margin-bottom: 50px;
+        }
+
+        .related__right {
+            width: 100%;
+        }
+    }
+
+}
 </style>

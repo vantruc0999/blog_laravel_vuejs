@@ -7,7 +7,11 @@
                     <ion-icon name="close-outline"></ion-icon>
                 </span>
             </div>
-            <span class="form__followed">Đây là số người hâm mộ bạn</span>
+            <span class="form__followed" v-if="authorStore.authorsFollowed?.length > 1">Bạn viết dở quá, chả có ai theo dõi
+                cả</span>
+            <span class="form__followed" v-else>Có {{
+                authorStore.authorsFollowed?.length }} người theo dõi bạn</span>
+
             <div class="follower">
                 <SignatureAuthor :author="author" v-for="(author, index) in authorStore.authorsFollowed" :key="index" />
             </div>

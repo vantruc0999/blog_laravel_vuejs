@@ -27,7 +27,7 @@
                         <p class="card__intro">{{ post?.intro }}</p>
                     </router-link>
                 </div>
-                <div class="card__bottom">
+                <div class="card__bot">
                     <div class="card__user">
                         <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
                             class="card__user__avatar" v-if="post?.blogger_infor?.profile_image" />
@@ -49,7 +49,7 @@
                             </div>
                             <div class="card__comment">
                                 <ion-icon name="triangle-outline"></ion-icon>
-                                <span>{{ post?.comment_count }}</span>
+                                <span>{{ post?.likes_count }}</span>
                                 <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
                                 <span>{{ post?.comment_count }}</span>
                             </div>
@@ -200,7 +200,7 @@ const handleSavePost = (id) => {
 
     .card__image {
         width: 100%;
-        max-width: 230px;
+        max-width: 200px;
         height: auto;
         object-fit: cover;
         margin-right: 10px;
@@ -249,7 +249,7 @@ const handleSavePost = (id) => {
         }
     }
 
-    .card__bottom {
+    .card__bot {
         display: flex;
         justify-content: space-between;
         gap: 10px;
@@ -267,6 +267,13 @@ const handleSavePost = (id) => {
             display: flex;
             align-items: center;
             gap: 3px;
+        }
+
+        .card__bottom {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 10px;
         }
     }
 
@@ -529,5 +536,94 @@ const handleSavePost = (id) => {
 
 .card__bookmark--active {
     color: var(--primary-color);
+}
+
+@media only screen and (max-width: 638px) {
+    .card {
+        display: flex;
+        flex-direction: column;
+
+        .card__right {
+            width: 100%;
+        }
+
+        .card__image {
+            width: 100%;
+            max-width: 230px;
+            height: auto;
+            object-fit: cover;
+            margin-right: 10px;
+            border: 1px solid var(--border-color);
+        }
+
+        .card__favorite {
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .card__categori {
+            color: var(--text-color-4);
+            padding: 5px 15px;
+            border-radius: 10px;
+            border: 1px solid var(--border-color);
+            font-size: 14px;
+            display: flex;
+            justify-content: center;
+            font-weight: 600;
+            display: flex;
+            justify-content: center;
+            background-color: var(--white-color);
+            display: -webkit-box;
+            -webkit-line-clamp: 1;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card__icon {
+            position: relative;
+
+            .card__bookmark {
+                cursor: pointer;
+                font-size: 20px;
+            }
+
+            .card__menu {
+                cursor: pointer;
+            }
+        }
+
+        .card__content {
+            &:hover {
+                color: var(--black-color);
+            }
+        }
+
+        .card__bot {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            .card__watch {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                padding-right: 5px;
+                border-right: 1px solid var(--border-color);
+            }
+
+            .card__comment {
+                display: flex;
+                align-items: center;
+                gap: 3px;
+            }
+
+            .card__bottom {
+                display: flex;
+                justify-content: space-between;
+            }
+        }
+
+
+    }
 }
 </style>
