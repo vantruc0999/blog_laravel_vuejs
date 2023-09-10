@@ -31,7 +31,6 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.getalltags();
         console.log("🚀 ~ file: postStore.js:32 ~ getAllTags ~ response:", response)
         this.tags = response?.data;
-        // console.log("🚀 ~ file: postStore.js:33 ~ getAllTags ~  this.tags:",  this.tags)
         this.isLoading = false;
       } catch (error) {
         console.log(error);
@@ -153,6 +152,17 @@ export const usePostStore = defineStore("postStore", {
         console.log(error);
       }
     },
+    async getAllSavePosts() {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getallsavepost();
+        console.log("🚀 ~ file: postStore.js:177 ~ getAllSavePosts ~ response.data?.posts:", response.data?.posts)
+        this.posts = response.data?.posts;
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
     async savePost(id) {
       try {
         this.isLoading = true;
@@ -162,6 +172,7 @@ export const usePostStore = defineStore("postStore", {
         if (index !== -1) {
           this.posts[index] = savedPost;
         }
+        this.getAllSavePosts()
         toast.success("Lưu bài viết thành công.");
         this.isLoading = false;
       } catch (error) {
@@ -169,16 +180,7 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = false;
       }
     },
-    async getAllSavePosts() {
-      try {
-        this.isLoading = true;
-        const response = await PostService.getallsavepost();
-        this.posts = response.data?.posts;
-        this.isLoading = false;
-      } catch (error) {
-        console.log(error);
-      }
-    },
+    
   },
 });
 
