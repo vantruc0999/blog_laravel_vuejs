@@ -35,9 +35,12 @@ const authorStore = useAuthorStore()
 const props = defineProps({
     author: Object
 })
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+
+
 const handleGetFollow = (id) => {
-    authorStore.getFollowAuthor(id);
-    authorStore.getAuthorFollowed(id)
+    authorStore.getFollowAuthor(userData.value?.id, id);
+    // authorStore.getAuthorFollowed(id)
 }
 onMounted(async () => {
     await authorStore.getAuthorFollowed(props.author?.id)

@@ -3,18 +3,32 @@
         <Loading />
     </div>
     <div class="favorites__container">
-        <h1 class="favorites__header">Bạn có {{ postStore.posts?.length }} bài viết đã lưu</h1>
+        <h1 class="favorites__header">Bạn có {{ postStore.favorites?.length }} bài viết đã lưu</h1>
         <div class="favorites__wrapper">
-            <CardNew :post="post" v-for="(post, index) in postStore.posts" :key="post" />
+            <CardNew :post="post" v-for="(post, index) in postStore.favorites" :key="post" :isSaved="codeBip" />
         </div>
     </div>
 </template>
 <script setup>
+import { computed, onMounted } from "vue"
 import { usePostStore } from '../../../stores/postStore';
 import CardNew from "../../../components/cardnew.vue"
 import Loading from '../../../components/Loading.vue';
 const postStore = usePostStore()
-postStore.getAllSavePosts()
+onMounted(async () => {
+    await postStore.getAllSavePosts()
+})
+const handleGetDataSave = async () => {
+    await postStore.getAllSavePosts()
+}
+handleGetDataSave()
+const getIdOfFavorites = computed(() => {
+    return postStore?.favorites.map((favorites) => favorites?.id)
+})
+
+const codeBip = () => {
+    return true
+}
 </script>
 <style lang="scss" scoped>
 .favorites__container {

@@ -2,6 +2,7 @@ import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import { AuthorService } from "../services/authorServices";
 import router from "../route/router";
+import { AuthService } from "../services/authServices";
 
 export const useAuthorStore = defineStore("authorStore", {
   state: () => ({
@@ -13,14 +14,33 @@ export const useAuthorStore = defineStore("authorStore", {
     isFollow: false,
   }),
   actions: {
-    async getFollowAuthor(authorId) {
+    async getAuthorById(authorId) {
       try {
         this.isLoading = true;
-        const response = await AuthorService.getfollowauthor(authorId);
-        toast.success("Follow thành công", {
-          position: "top-right",
-          duration: 2500,
-        });
+        const response = await AuthService.getauthorbyid(authorId);
+        this.author = response?.data;
+        console.log("🚀 ~ file: authStore.js:90 ~ getAuthorById ~ this.author:", this.author)
+        this.isLoading = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getFollowing() {
+      try {
+        this.isLoading = true;
+        const response = await AuthorService.getfollowing();
+        this.authorsFollowing = response?.data?.my_following
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error)
+      }
+    },
+    async getFollowAuthor(authorId, id) {
+      try {
+        this.isLoading = true;
+        const response = await AuthorService.getfollowauthor(id);
+        this.getFollowing()
+        this.getAuthorById(authorId)
         this.isLoading = false;
       } catch (error) {
         console.log(error)
@@ -36,16 +56,7 @@ export const useAuthorStore = defineStore("authorStore", {
         console.log(error)
       }
     },
-    async getFollowing() {
-      try {
-        this.isLoading = true;
-        const response = await AuthorService.getfollowing();
-        this.authorsFollowing = response?.data?.my_following
-        this.isLoading = false;
-      } catch (error) {
-        console.log(error)
-      }
-    },
+    
     async getAuthorFollowed(authorId) {
       try {
         this.isLoading = true;
