@@ -38,7 +38,8 @@ class PostController extends Controller
                 'banner'
             );
             $post->comment_count = $post->comments->count();
-            $post->likes_count = $post->likes->count();
+            $post->likes_count = $post->likes->makeHidden(['created_at', 'updated_at'])->count();
+            $post->saves = $post->saves->makeHidden(['created_at', 'updated_at']);
             unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description, $post->comments);
         }
 
@@ -461,10 +462,34 @@ class PostController extends Controller
                 $query->where('name', 'like', "%$keyword%");
             })
             ->get();
-            
+
         return response([
             "message" => "success",
             "data" => $posts
         ]);
+    }
+
+    public function filterPost(Request $request)
+    {
+        // Start with the base query to retrieve all posts
+        $query = Post::select('posts.*')
+            ->with('category', 'blogger')
+            ->withCount('blogger as blogger_count');
+
+        // Check if a search query parameter is provided
+        if ($request->filled('search')) {
+            $searchTerm = $request->input('search');
+
+            // Apply the search filter using a where clause on the title or content columns
+            $query->where(function ($subquery) use ($searchTerm) {
+                $subquery->where('title', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        // Execute the query and retrieve the results
+        $posts = $query->get();
+
+        return $posts;
     }
 }

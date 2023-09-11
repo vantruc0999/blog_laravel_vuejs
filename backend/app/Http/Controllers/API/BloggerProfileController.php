@@ -22,7 +22,11 @@ class BloggerProfileController extends Controller
     //
     public function getAllBloggers()
     {
-        return Blogger::all()->makeHidden(['password']);
+        $bloggers = Blogger::all()->makeHidden(['password']);
+        foreach($bloggers as $item){
+            $item->follows = $item->follows->makeHidden(['updated_at', 'created_at']);
+        }
+        return $bloggers;
     }
 
     public function getPublicProfileInfor($id)

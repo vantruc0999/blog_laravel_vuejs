@@ -35,9 +35,10 @@ Route::get('/search/{keyword}', [PostController::class, 'searchPost']);
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
     Route::get('/tags/{id}', [PostController::class, 'getPostsByTagId']);
-    Route::get('/{slug}', [PostController::class, 'getDetailPostById']);
+    Route::get('/{id}', [PostController::class, 'getDetailPostById']);
     Route::get('/highlight/get-most-like', [PostController::class, 'getMostLikePosts']);
     Route::get('/highlight/get-most-view', [PostController::class, 'getMostViewPosts']);
+    Route::get('/filter/filter-post', [PostController::class, 'filterPost']);
 });
 
 Route::prefix('/blogger')->group(function () {
