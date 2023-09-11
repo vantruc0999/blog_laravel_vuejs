@@ -8,27 +8,51 @@ use Illuminate\Support\Facades\DB;
 class PostsChart extends BarChartWidget
 {
     protected static ?string $heading = 'Post created Chart';
+    // protected static string $color = 'danger';
 
-    private function countPostPerDayForChart(){
+    private function getDataSet()
+    {
         $countPostPerDayCollection = DB::table('posts')
-        ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
-        ->groupBy('date')
-        ->get();
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+            ->groupBy('date')
+            ->get();
 
-        // return $countPostPerDay;
+        $data = [];
+
+        foreach ($countPostPerDayCollection->toArray() as $item) {
+            $data[] = $item->count;
+        }
+
+        return $data;
+    }
+
+    private function getDateLabel()
+    {
+        $countPostPerDayCollection = DB::table('posts')
+            ->select(DB::raw('DATE(created_at) as date'), DB::raw('COUNT(*) as count'))
+            ->groupBy('date')
+            ->get();
+
+        $data = [];
+
+        foreach ($countPostPerDayCollection->toArray() as $item) {
+            $data[] = $item->date;
+        }
+
+        return $data;
     }
 
     protected function getData(): array
     {
-        dd($this->countPostPerDayForChart());
         return [
             'datasets' => [
                 [
                     'label' => 'Blog posts created',
-                    'data' => [0, 10, 5, 2, 21, 32, 45, 74, 65, 45, 77, 89],
+                    'data' => $this->getDataSet(),
+                    'backgroundColor' => ['#229c41', '#0341fc'],
                 ],
             ],
-            'labels' => ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            'labels' => $this->getDateLabel(),
         ];
     }
 }
