@@ -143,9 +143,9 @@ const handleOpenOptions = () => {
     margin-left: auto;
     padding: 12px;
     border: 1px solid var(--border-color);
-    border-radius: 8px;
+    border-radius: 15px;
     width: 100%;
-    max-width: 320px;
+    max-width: 400px;
     position: relative;
     background-color: #f6f8fc;
 }
@@ -163,7 +163,7 @@ const handleOpenOptions = () => {
 
 .search__icon {
     position: absolute;
-    top: 50%;
+    top: 54%;
     transform: translateY(-50%);
     right: 25px;
     cursor: pointer;
@@ -174,14 +174,14 @@ const handleOpenOptions = () => {
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 160px;
+    max-width: 130px;
     height: 45px;
     color: var(--white-color);
-    font-weight: 700;
-    font-size: 18px;
+    font-weight: 500;
+    font-size: 16px;
     cursor: pointer;
     background-color: var(--btn-color);
-    border-radius: 10px;
+    border-radius: 30px;
     margin-left: 10px;
 }
 
@@ -190,14 +190,14 @@ const handleOpenOptions = () => {
     align-items: center;
     justify-content: center;
     width: 100%;
-    max-width: 160px;
+    max-width: 130px;
     height: 45px;
     color: var(--black-color);
-    font-weight: 700;
-    font-size: 18px;
+    font-weight: 500;
+    font-size: 16px;
     cursor: pointer;
     background-color: var(--white-color);
-    border-radius: 10px;
+    border-radius: 30px;
     margin-left: 10px;
     border: 1px solid var(--border-color);
 }

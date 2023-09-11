@@ -8,6 +8,7 @@ export const usePostStore = defineStore("postStore", {
   state: () => ({
     posts: [],
     post: {},
+    favorites: [],
     comments: [],
     comment: {},
     tags: [],
@@ -18,9 +19,12 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getallpost();
-        this.posts = response?.data?.data;
-        // console.log("🚀 ~ file: postStore.js:19 ~ fetchAllPosts ~ this.posts:", this.posts)
-        this.isLoading = false;
+        if(response?.data?.data) {
+          this.posts = response?.data?.data;
+          console.log("store" , response?.data?.data);
+          // console.log("🚀 ~ file: postStore.js:19 ~ fetchAllPosts ~ this.posts:", this.posts)
+          this.isLoading = false;
+        }
       } catch (error) {
         console.log(error);
       }
@@ -29,7 +33,7 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getalltags();
-        console.log("🚀 ~ file: postStore.js:32 ~ getAllTags ~ response:", response)
+        // console.log("🚀 ~ file: postStore.js:32 ~ getAllTags ~ response:", response)
         this.tags = response?.data;
         this.isLoading = false;
       } catch (error) {
@@ -156,16 +160,20 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getallsavepost();
-        console.log("🚀 ~ file: postStore.js:177 ~ getAllSavePosts ~ response.data?.posts:", response.data?.posts)
-        this.posts = response.data?.posts;
-        this.isLoading = false;
+        if(response.data) {
+          this.favorites = response.data?.posts;
+          this.isLoading = false;
+        }
+        // console.log("🚀 ~ file: postStore.js:161 ~ getAllSavePosts ~ this.favorites:", this.favorites)
       } catch (error) {
         console.log(error);
+        this.isLoading = false;
+      } finally {
+        this.isLoading = false;
       }
     },
     async savePost(id) {
       try {
-        this.isLoading = true;
         const response = await PostService.savepost(id);
         const savedPost = response?.data;
         const index = this.posts.findIndex(post => post.id === savedPost.id);
@@ -173,8 +181,6 @@ export const usePostStore = defineStore("postStore", {
           this.posts[index] = savedPost;
         }
         this.getAllSavePosts()
-        toast.success("Lưu bài viết thành công.");
-        this.isLoading = false;
       } catch (error) {
         console.log(error);
         this.isLoading = false;

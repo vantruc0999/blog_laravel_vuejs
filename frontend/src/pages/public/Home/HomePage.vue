@@ -56,16 +56,18 @@
                 </swiper>
             </div>
             <div class="home__update">
-                <h2 class="home__card--title">Tin tức cập nhật</h2>
-
+                <h2 class="home__card--title">Được xem nhiều nhất</h2>
                 <div class="update__list">
-                    <CardNew :isCard="false" :post="post" v-for="(post, index) in postStore.posts " :key="index" />
+                    <!--  -->
+                    <CardNew :isCard="false" :isSaved="isSaved" :post="post" v-for="(post, index) in sortedPostByView "
+                        :key="index" />
                 </div>
 
                 <div class="home__special">
-                    <h2 class="home__card--title">Nổi bật trong tháng</h2>
+                    <h2 class="home__card--title">Được yêu thích</h2>
                     <div class="home__blog">
-                        <CardNew :isCard="false" :post="post" v-for="(post, index) in postStore.posts " :key="index" />
+                        <CardNew :isCard="false" :post="post" :isSaved="isSaved" v-for="(post, index) in sortedPostByLikes "
+                            :key="index" />
                     </div>
                 </div>
             </div>
@@ -78,7 +80,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue"
+import { ref, computed, onMounted, watchEffect } from "vue"
 import CardFeature from "../../../components/CardFeature.vue"
 import CardNew from "../../../components/CardNew.vue"
 import RelatedPage from "./RelatedPage/RelatedPage.vue";
@@ -95,29 +97,58 @@ import 'swiper/css/scrollbar';
 import { usePostStore } from "../../../stores/postStore";
 import { useAuthStore } from "../../../stores/authStore";
 
-
+// Store
 const postStore = usePostStore()
-postStore.fetchAllPosts()
 const authStore = useAuthStore()
-authStore.fetchAllBlogger()
-
-const currentPage = ref(1);
-const itemsPerPage = 2;
-
-const totalItems = computed(() => postStore?.posts?.length);
-const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
-const paginatedItems = computed(() => {
-    const startIndex = (currentPage.value - 1) * itemsPerPage;
-    const endIndex = startIndex + itemsPerPage;
-    return postStore?.posts.slice(startIndex, endIndex);
-});
-const handleGetFilterPage = (data) => {
-    plantStore.plants = data;
-    currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
-};
-const handleGoNewPage = (page) => {
-    currentPage.value = page
+// Call api
+const handleGetDataSave = async () => {
+    await postStore.getAllSavePosts()
 }
+const handleGetAllData = async () => {
+    await postStore.fetchAllPosts()
+}
+onMounted(async () => {
+    await authStore.fetchAllBlogger()
+})
+handleGetAllData()
+handleGetDataSave()
+
+// Get Id already saved
+const getIdOfFavorites = computed(() => {
+    return postStore?.favorites.map((favorites) => favorites?.id)
+})
+
+const isSaved = (id) => {
+    if (getIdOfFavorites.value.length > 0) {
+        return getIdOfFavorites.value.includes(id)
+    } else {
+        return false
+    }
+};
+
+// Pagination
+// const currentPage = ref(1);
+// const itemsPerPage = 2;
+
+// const totalItems = computed(() => postStore?.posts?.length);
+// const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
+// const paginatedItems = computed(() => {
+//     const startIndex = (currentPage.value - 1) * itemsPerPage;
+//     const endIndex = startIndex + itemsPerPage;
+//     return postStore?.posts.slice(startIndex, endIndex);
+// });
+
+// // const handleGetFilterPage = (data) => {
+// //     plantStore.plants = data;
+// //     currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
+// // };
+// const handleGoNewPage = (page) => {
+//     currentPage.value = page
+// }
+
+// Slideer
+const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
+
 const onSwiper = (swiper) => {
     // console.log(swiper);
 };
@@ -125,7 +156,33 @@ const onSlideChange = () => {
     console.log('slide change');
 };
 
-const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
+// Sort Post By Condition
+// --- Likes ---
+const sortPostsByLikes = (posts) => {
+    const sortedPosts = [...posts]; // Create a copy of the original array
+    return sortedPosts.sort((a, b) => b.likes_count - a.likes_count);
+};
+
+const sortedPostByLikes = computed(() => {
+    return sortPostsByLikes(postStore?.posts)
+});
+
+// --- View ---
+const sortPostsByView = (posts) => {
+    const sortedPosts = [...posts]; // Create a copy of the original array
+    return sortedPosts.sort((a, b) => b.view_count - a.view_count);
+};
+
+const sortedPostByView = computed(() => {
+    return sortPostsByView(postStore?.posts)
+});
+
+// sortPostsByView(postStore?.posts);
+
+// onMounted(() => {
+//     sortPostsByLikes(postStore?.posts);
+//     sortPostsByView(postStore?.posts);
+// });
 
 </script>
 

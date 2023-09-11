@@ -1,7 +1,4 @@
 <template >
-    <div v-if="authStore.isLoading">
-        <Loading />
-    </div>
     <div class="author__container">
         <div class="author__banner">
             <img src="../../../assets/images/books.jpg" alt="" class="author__image">

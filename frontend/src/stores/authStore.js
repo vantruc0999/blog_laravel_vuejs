@@ -115,22 +115,12 @@ export const useAuthStore = defineStore("authStore", {
         console.error(error);
       }
     },
-    async getAuthorById(authorId) {
-      try {
-        this.isLoading = true;
-        const response = await AuthService.getauthorbyid(authorId);
-        this.user = response?.data;
-        console.log("🚀 ~ file: authStore.js:90 ~ getAuthorById ~ this.user:", this.user)
-        this.isLoading = false;
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    
     async getMyProfile() {
       try {
         this.isLoading = true;
         const response = await AuthService.getmyprofile();
-        console.log("🚀 ~ file: authStore.js:98 ~ getMyProfile ~ response:", response.data)
+        // console.log("🚀 ~ file: authStore.js:98 ~ getMyProfile ~ response:", response.data)
         this.user = response?.data;
         this.isLoading = false;
       }catch (error) {

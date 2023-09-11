@@ -3,6 +3,7 @@
         <a-tabs v-model:activeKey="activeKey" :style="{ color: 'black' }" contenteditable="false">
             <a-tab-pane key="1" tab="Dành cho bạn">
                 <!-- <ForYouPage /> -->
+                <!-- :isSaved="isSaved" -->
                 <CardNew :isCard="true" :post="post" v-for="(post, index) in paginatedItems " :key="index" />
             </a-tab-pane>
             <a-tab-pane key="2" tab="Theo tác giả" force-render>
@@ -29,12 +30,20 @@ import CardNew from "../../../../components/CardNew.vue";
 import { usePostStore } from "../../../../stores/postStore";
 import ForYouPage from "./PageContent/foryoupage.vue"
 // import PageChange from "../../../../components/PageChange.vue"
-import { ref, computed } from 'vue';
+import { ref, computed, onMounted } from 'vue';
+
+// const getIdOfFavorites = computed(() => {
+//     return postStore?.favorites.map((favorites) => favorites?.id)
+// })
+
+// const isSaved = (id) => {
+//     const favoriteIds = getIdOfFavorites.value;
+//     return favoriteIds.includes(id);
+// }
 const activeKey = ref('1');
 const postStore = usePostStore()
-postStore.fetchAllPosts()
 const currentPage = ref(1);
-const itemsPerPage = 2;
+const itemsPerPage = 15;
 
 const totalItems = computed(() => postStore?.posts?.length);
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
@@ -60,6 +69,10 @@ const handleGoPrevPage = () => {
         currentPage.value--;
     }
 };
+onMounted(async () => {
+    await postStore.fetchAllPosts()
+    await postStore.getAllSavePosts()
+})
 </script>
 <style lang="scss" scoped>
 .related__wrapper {

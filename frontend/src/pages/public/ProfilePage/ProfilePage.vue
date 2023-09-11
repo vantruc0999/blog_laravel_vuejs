@@ -55,8 +55,8 @@
 
             </div>
             <div class="user__avatar">
-                <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore?.user?.blogger_infor?.profile_image"
-                    class="avatar__img" v-if="authStore?.user?.blogger_infor?.profile_image" />
+                <img :src="'http://127.0.0.1:8000/images/avatar/' + authorStore?.author?.blogger_infor?.profile_image"
+                    class="avatar__img" v-if="authorStore?.author?.blogger_infor?.profile_image" />
                 <img src="../../../assets/images/avatar-default.png" class="avatar__img" alt="" v-else />
             </div>
         </div>
@@ -65,18 +65,18 @@
         <div class="profile__desc">
             <div class="profile__detail">
                 <div class="user__infor">
-                    <span class="user__name">{{ authStore?.user?.blogger_infor?.name }}</span>
-                    <span class="user__nickname">@{{ authStore?.user?.blogger_infor?.slug }}</span>
+                    <span class="user__name">{{ authorStore?.author?.blogger_infor?.name }}</span>
+                    <span class="user__nickname">@{{ authorStore?.author?.blogger_infor?.slug }}</span>
                     <span class="user__follow" @click="handleOpenFollowed">{{
-                        authStore?.user?.blogger_infor?.number_of_followers }} <span
+                        authorStore?.author?.blogger_infor?.number_of_followers }} <span
                             class="user__follow--text">followers</span></span>
                 </div>
                 <div class="profile__options" v-if="!checkMyProfile">
-                    <button class="profile__btn" @click="handleGetFollow(authStore?.user?.blogger_infor?.id)"
+                    <button class="profile__btn" @click="handleGetFollow(authorStore?.author?.blogger_infor?.id)"
                         v-if="!authorStore?.isFollow"><ion-icon name="person-add-outline"></ion-icon> Theo
                         dõi</button>
                     <button class="profile__btn profile__btn--follow"
-                        @click="handleGetFollow(authStore?.user?.blogger_infor?.id)" v-else>Đang theo dõi
+                        @click="handleGetFollow(authorStore?.author?.blogger_infor?.id)" v-else>Đang theo dõi
                         <ion-icon name="checkmark-circle-outline"></ion-icon></button>
                     <span class="profile__delete">
                         <ion-icon name="ellipsis-vertical-outline" @click="handleOpenBanned"></ion-icon>
@@ -93,14 +93,14 @@
                 <div class="profile__interaction">
                     <div class="profile__followers" @click="handleOpenFollowing">
                         <div class="profile__interaction--amount">
-                            {{ authStore?.user?.blogger_infor?.number_of_following }}
+                            {{ authorStore?.author?.blogger_infor?.number_of_following }}
                         </div>
                         <span class="profile__interaction--text">following</span>
                     </div>
 
                     <div class="profile__followers">
                         <div class="profile__interaction--amount">
-                            {{ authStore?.user?.blogger_infor?.posts?.total_view }}3
+                            {{ authorStore?.author?.blogger_infor?.total_view_count }}
                         </div>
                         <span class="profile__interaction--text">views</span>
                     </div>
@@ -109,7 +109,7 @@
                     :checkMyProfile="checkMyProfile" />
                 <ModalFollowing :isOpenModalFollowing="isOpenModalFollowing" :handleCloseFollowing="handleCloseFollowing"
                     :checkMyProfile="checkMyProfile" />
-                <p class="profile__about">{{ authStore?.user?.blogger_infor?.bio }}</p>
+                <p class="profile__about">{{ authorStore?.author?.blogger_infor?.bio }}</p>
             </div>
             <div class="profile__action">
                 <div class="profile__action__controller">
@@ -133,8 +133,9 @@
                 </div>
                 <!-- Card -->
                 <div class="profile__card">
-                    <CardNew :isCard="false" :post="post" v-for="( post, index ) in  authStore?.user?.blogger_infor?.posts "
-                        :key="index" :isProfile="true" :isMyProfile="checkMyProfile" />
+                    <CardNew :isCard="false" :post="post"
+                        v-for="( post, index ) in  authorStore?.author?.blogger_infor?.posts " :key="index"
+                        :isProfile="true" :isMyProfile="checkMyProfile" />
                 </div>
             </div>
         </div>
@@ -224,7 +225,7 @@ watch(() => route.params.id, (newId) => {
 })
 
 const getProfileAuthor = computed(() => {
-    return authStore.getAuthorById(refAuthor.value)
+    return authorStore.getAuthorById(refAuthor.value)
 })
 handleCheckMyProfile(userData?.value?.id)
 onMounted(async () => {

@@ -5,7 +5,8 @@
             <div class="card__favorite">
                 <div class="card__categori">{{ post?.category_name }}</div>
                 <div class="card__icon">
-                    <ion-icon name="bookmark-outline" class="card__bookmark" @click="handleSavePost(post?.id)"></ion-icon>
+                    <!-- :class="{ 'activeBookMark': isSaved(post?.id) }" -->
+                    <ion-icon name="bookmark-outline" class="card__bookmark " @click="handleSavePost(post?.id)"></ion-icon>
                     <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"
                         v-if="props.post?.blogger_id === userData?.value?.id"></ion-icon>
                     <div class="card__options" v-if="isOpen">
@@ -65,7 +66,11 @@
         <div class="blog__favorite">
             <div class="blog__categori">{{ post?.category_name }}</div>
             <div class="blog__icon">
-                <ion-icon name="bookmark-outline" class="blog__bookmark" @click="handleSavePost(post?.id)"></ion-icon>
+                <!--  -->
+                <ion-icon v-if="isSaved(post?.id)" name="bookmark-outline" class="blog__bookmark activeBookMark"
+                    @click="handleSavePost(post?.id)"></ion-icon>
+                <ion-icon v-else name="bookmark-outline" class="blog__bookmark"
+                    @click="handleSavePost(post?.id)"></ion-icon>
                 <ion-icon name="ellipsis-vertical-outline" class="blog__menu" v-if="isMyProfile"
                     @click="handleOpenOption"></ion-icon>
                 <div class="card__options" v-if="isOpen">
@@ -89,7 +94,6 @@
                         {{ post?.title }}
                     </h3>
                 </router-link>
-                <!-- v-if="isProfileRoute.value" -->
                 <router-link :to="`/profile/${post?.blogger_infor?.id}`" class="blog__user" v-if="!isProfile">
                     <img :src="'http://127.0.0.1:8000/images/avatar/' + post?.blogger_infor?.profile_image"
                         class="blog__user__avatar" v-if="post?.blogger_infor?.profile_image" />
@@ -112,7 +116,7 @@
                     </div>
                     <div class="blog__comment">
                         <ion-icon name="triangle-outline"></ion-icon>
-                        <span>{{ post?.comment_count }}</span>
+                        <span>{{ post?.likes_count }}</span>
                         <ion-icon name="chatbubble-ellipses-outline"></ion-icon>
                         <span>{{ post?.comment_count }}</span>
                     </div>
@@ -128,6 +132,7 @@
 <script setup>
 import {
     computed,
+    onMounted,
     ref
 } from "vue"
 import { usePostStore } from "../stores/postStore";
@@ -137,6 +142,7 @@ import { useAuthStore } from "../stores/authStore";
 
 const route = useRoute();
 const postStore = usePostStore()
+
 const authStore = useAuthStore()
 // Định nghĩa prop "message"
 const props = defineProps({
@@ -144,10 +150,14 @@ const props = defineProps({
     post: Object,
     isProfile: Boolean,
     isMyProfile: Boolean,
+    favorites: Object,
+    isSaved: Function
 })
+
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
+
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
 }
@@ -186,6 +196,8 @@ const calculateTimeAgo = (created_at) => {
 const handleSavePost = (id) => {
     postStore.savePost(id)
 }
+
+
 </script>
 
 <style lang="scss" scoped>
@@ -625,5 +637,9 @@ const handleSavePost = (id) => {
 
 
     }
+}
+
+.activeBookMark {
+    color: red;
 }
 </style>
