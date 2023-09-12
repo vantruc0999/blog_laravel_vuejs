@@ -30,7 +30,6 @@ Route::get('/tags/get-all-tags', [PostController::class, 'getAllTags']);
 Route::get('/categories/get-all-categories', [PostController::class, 'getAllCategories']);
 Route::get('/bloggers', [BloggerProfileController::class, 'getAllBloggers']);
 Route::get('/categories-tags', [PostController::class, 'getTagsCategories']);
-Route::get('/search/{keyword}', [PostController::class, 'searchPost']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
@@ -59,14 +58,13 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::get('/me/created-post', [BloggerProfileController::class, 'viewCreatedPost']);
         Route::post('/me/change-password', [BloggerProfileController::class, 'changePassword']);
         Route::post('/me/change-email', [BloggerProfileController::class, 'changeEmail']);
-
-        // Route::delete('/unfollow/{id}', [BloggerProfileController::class, 'unfollow']);
     });
 
     Route::prefix('/posts')->group(function () {
         Route::post('/create-post', [PostController::class, 'store']);
         Route::post('/update-post/{slug}', [PostController::class, 'update']);
         Route::delete('/delete-post/{slug}', [PostController::class, 'delete']);
+        Route::get('/author/get-post-by-author', [PostController::class, 'getPostsByMyFollowing']);
     });
 
     Route::prefix('/comment')->group(function () {

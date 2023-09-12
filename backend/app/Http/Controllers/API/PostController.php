@@ -9,6 +9,7 @@ use App\Http\Requests\PostRequest;
 use App\Http\Requests\UpdatePostRequest;
 use App\Models\Category;
 use App\Models\Comment;
+use App\Models\Follow;
 use App\Models\Like;
 use App\Models\Post;
 use App\Models\Tag;
@@ -24,29 +25,30 @@ class PostController extends Controller
     //
     public function getAllActivePost()
     {
-        $posts = Post::where('status', 1)->orderBy('id', 'desc')->get();
+        $posts = Post::where('status', 1)
+            ->orderBy('id', 'desc')
+            ->get();
 
-        foreach ($posts as $post) {
-            $post->category_name = $post->category->name;
-            $post->blogger_infor = $post->blogger->makeHidden(
-                'address',
-                'phone',
-                'gender',
-                'birthday',
-                'created_at',
-                'updated_at',
-                'banner'
-            );
-            $post->comment_count = $post->comments->count();
-            $post->likes_count = $post->likes->makeHidden(['created_at', 'updated_at'])->count();
-            $post->saves = $post->saves->makeHidden(['created_at', 'updated_at']);
-            unset($post->blogger, $post->category, $post->blogger_infor->password, $post->description, $post->comments);
-        }
+        $posts = $this->getAllOverviewPosts($posts);
 
         return response([
             "message" => "success",
             "data" => $posts
         ]);
+    }
+
+    private function getAllOverviewPosts($posts)
+    {
+        foreach ($posts as $post) {
+            $post->category_name = $post->category->name;
+            $post->blogger_infor = $this->getBloggerInfor($post->blogger);
+            $post->comment_count = $post->comments->count();
+            $post->likes_count = $post->likes->makeHidden(['created_at', 'updated_at'])->count();
+            $post->saves = $post->saves->makeHidden(['created_at', 'updated_at']);
+            unset($post->blogger, $post->category, $post->description, $post->comments);
+        }
+
+        return $posts;
     }
 
     private function getCommentInfors($comments)
@@ -57,6 +59,21 @@ class PostController extends Controller
             unset($item->blogger, $item->post_id, $item->updated_at);
         }
         return $comments;
+    }
+
+    private function getBloggerInfor($blogger)
+    {
+        $blogger = $blogger->makeHidden(
+            'address',
+            'phone',
+            'gender',
+            'birthday',
+            'created_at',
+            'updated_at',
+            'banner',
+            'password'
+        );
+        return $blogger;
     }
 
     private function getTagsInfor($tags)
@@ -129,17 +146,7 @@ class PostController extends Controller
             $post->likes_count = $post->likes->count();
             $post->comments = $this->getCommentInfors($post->comments);
             $post->tags = $this->getTagsInfor($post->tags);
-            $post->blogger_infor = $post->blogger->makeHidden(
-                'password',
-                'phone',
-                'created_at',
-                'updated_at',
-                'address',
-                'phone',
-                'birthday',
-                'gender',
-                'banner'
-            );
+            $post->blogger_infor = $this->getBloggerInfor($post->blogger);
 
             unset($post->blogger_infor->password);
 
@@ -346,32 +353,7 @@ class PostController extends Controller
             }
             $posts = $tags->posts;
 
-            foreach ($posts as $item) {
-                $item->category_name = $item->category->name;
-                $item->likes_count = $item->likes->count();
-                $item->comments_count = $item->comments->count();
-                $item->blogger_infor = $item->blogger->makeHidden(
-                    'password',
-                    'phone',
-                    'address',
-                    'birthday',
-                    'gender',
-                    'created_at',
-                    'updated_at'
-                );
-
-                unset(
-                    $item->description,
-                    $item->new_post,
-                    $item->highlight,
-                    $item->blogger_id,
-                    $item->comments,
-                    $item->category,
-                    $item->category_id,
-                    $item->pivot,
-                    $item->blogger,
-                );
-            }
+            $posts = $this->getAllOverviewPosts($posts);
 
             return response([
                 'posts' => $posts
@@ -393,20 +375,12 @@ class PostController extends Controller
 
         foreach ($postsWithLikeCount as $post) {
             $post->category_name = $post->category->name;
-            $post->blogger_infor = $post->blogger->makeHidden(
-                'address',
-                'phone',
-                'gender',
-                'birthday',
-                'created_at',
-                'updated_at',
-                'banner'
-            );
+            $post->blogger_infor = $this->getBloggerInfor($post->blogger);
             $post->comment_count = $post->comments->count();
+
             unset(
                 $post->blogger,
                 $post->category,
-                $post->blogger_infor->password,
                 $post->description,
                 $post->comments,
                 $post->blogger_id,
@@ -414,7 +388,10 @@ class PostController extends Controller
             );
         }
 
-        return  $postsWithLikeCount;
+        return response([
+            'message' => 'Success',
+            'posts' => $postsWithLikeCount
+        ]);
     }
 
     public function getMostViewPosts()
@@ -424,20 +401,11 @@ class PostController extends Controller
             ->get();
         foreach ($posts as $post) {
             $post->category_name = $post->category->name;
-            $post->blogger_infor = $post->blogger->makeHidden(
-                'address',
-                'phone',
-                'gender',
-                'birthday',
-                'created_at',
-                'updated_at',
-                'banner'
-            );
+            $post->blogger_infor = $this->getBloggerInfor($post->blogger);
             $post->comment_count = $post->comments->count();
             unset(
                 $post->blogger,
                 $post->category,
-                $post->blogger_infor->password,
                 $post->description,
                 $post->comments,
                 $post->blogger_id,
@@ -451,45 +419,84 @@ class PostController extends Controller
         ]);
     }
 
-    public function searchPost($keyword)
-    {
-        $posts = Post::query()
-            ->where('title', 'like', "%$keyword%")
-            ->orWhereHas('tags', function ($query) use ($keyword) {
-                $query->where('name', 'like', "%$keyword%");
-            })
-            ->orWhereHas('blogger', function ($query) use ($keyword) {
-                $query->where('name', 'like', "%$keyword%");
-            })
-            ->get();
-
-        return response([
-            "message" => "success",
-            "data" => $posts
-        ]);
-    }
-
     public function filterPost(Request $request)
     {
-        // Start with the base query to retrieve all posts
         $query = Post::select('posts.*')
+            ->where('status', 1)
             ->with('category', 'blogger')
             ->withCount('blogger as blogger_count');
 
-        // Check if a search query parameter is provided
-        if ($request->filled('search')) {
-            $searchTerm = $request->input('search');
+        $tagId = request('tag_id');
 
-            // Apply the search filter using a where clause on the title or content columns
-            $query->where(function ($subquery) use ($searchTerm) {
-                $subquery->where('title', 'like', '%' . $searchTerm . '%')
-                    ->orWhere('description', 'like', '%' . $searchTerm . '%');
+        if ($request->filled('search')) {
+            $query->when(request('search') != "", function ($query) {
+                return $query->where('title', 'like', '%' . request('search') . "%");
+                // ->orWhere('description', 'like', '%' . request('search') . '%');
+            });
+        }
+
+        if ($request->filled('category_id')) {
+            $query->when(request('category_id') != "", function ($query) {
+                return $query->where('category_id', '=', request('category_id'));
+            });
+        }
+
+        if ($request->filled('tag_id')) {
+            $query->when($tagId, function ($query) use ($tagId) {
+                $query->whereHas('tags', function ($subQuery) use ($tagId) {
+                    $subQuery->where('tags.id', $tagId);
+                });
             });
         }
 
         // Execute the query and retrieve the results
         $posts = $query->get();
+        $posts = $this->getAllOverviewPosts($posts);
 
-        return $posts;
+        return response([
+            "message" => "success",
+            "data" =>  $posts,
+        ]);
+    }
+
+    public function getPostsByMyFollowing()
+    {
+        try {
+            $follows = Follow::all();
+
+            $posts = array();
+
+            foreach ($follows as $item) {
+                if ($item->blogger_id === Auth::user()['id'] && $item->following_id) {
+                    $post = Post::where([
+                        'blogger_id' => $item->following_id,
+                        'status' => 1
+                    ])
+                        ->orderBy('id', 'desc')
+                        ->get()
+                        ->makeHidden(['description']);
+
+                    $posts[] = $post;
+                }
+            }
+
+            $postCollection = collect($posts);
+
+            $flattendPosts = $postCollection->flatMap(function ($values) {
+                return $values;
+            });
+
+            $flattendPosts = $this->getAllOverviewPosts($flattendPosts);
+
+            return response([
+                "message" => "success",
+                "data" =>  $flattendPosts,
+            ]);
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while getting posts',
+                'error' => $err->getMessage(),
+            ], 500);
+        }
     }
 }
