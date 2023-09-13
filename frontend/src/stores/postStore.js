@@ -1,8 +1,8 @@
 import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import { PostService } from "../services/postServices";
-// import { createPost } from "../api/httpClient";
-// import router from "../route/router";
+import router from "../route/router";
+import axios from "axios";
 
 export const usePostStore = defineStore("postStore", {
   state: () => ({
@@ -13,6 +13,7 @@ export const usePostStore = defineStore("postStore", {
     comment: {},
     tags: [],
     isLoading: false,
+    dataSearch: []
   }),
   actions: {
     async fetchAllPosts() {
@@ -21,8 +22,7 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.getallpost();
         if(response?.data?.data) {
           this.posts = response?.data?.data;
-          console.log("store" , response?.data?.data);
-          // console.log("🚀 ~ file: postStore.js:19 ~ fetchAllPosts ~ this.posts:", this.posts)
+          // console.log("store" , response?.data?.data);
           this.isLoading = false;
         }
       } catch (error) {
@@ -56,7 +56,7 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getpostbyid(postId);
-        console.log("🚀 ~ file: postStore.js:57 ~ getPostById ~ response?.data:", response?.data)
+        // console.log("🚀 ~ file: postStore.js:57 ~ getPostById ~ response?.data:", response?.data)
         this.post = response?.data;
         // console.log("🚀 ~ file: postStore.js:44 ~ getPostById ~ this.post:", this.post)
         this.isLoading = false;
@@ -64,7 +64,7 @@ export const usePostStore = defineStore("postStore", {
         console.log(error);
       }
     },
-    async updatePost(postId, postData) {
+    async updatePost(userId,postId, postData) {
       try {
         this.isLoading = true;
         const response = await PostService.updatepost(postId, postData);
@@ -186,7 +186,35 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = false;
       }
     },
-    
+    // async searchPost(searchText) {
+    //   try {
+    //     this.isLoading = true;
+    //     const response = await PostService.searchPost(searchText);
+    //     console.log("🚀 ~ file: postStore.js:192 ~ searchPost ~ response:", response?.data)
+    //     this.dataSearch = response?.data;
+    //     this.isLoading = false;
+    //   } catch (error) {
+    //     console.log(error);
+    //     this.isLoading = false;
+    //   }
+    // },
+    async searchPost(searchText, category) {
+      try {
+        this.isLoading = true;
+        const data = await axios(`http://127.0.0.1:8000/api/posts/filter/filter-post?search=${searchText}&category_id=${category}`)
+        if(data) {
+          this.dataSearch = data.data
+          console.log("=======",data.data);
+          this.isLoading = false
+        } 
+      } catch (error) {
+        console.log(error);
+        this.isLoading = false;
+      }
+      finally {
+        this.isLoading = false;
+      }
+    },
   },
 });
 

@@ -99,3 +99,12 @@ button {
     opacity: 0.9;
   }
 }
+@keyframes toggleOptions {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}

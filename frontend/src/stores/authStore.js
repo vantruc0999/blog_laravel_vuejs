@@ -40,7 +40,7 @@ export const useAuthStore = defineStore("authStore", {
         localStorage.setItem("token", response.data.access_token);
         localStorage.setItem("user", JSON.stringify(response.data.blogger_infor));
         localStorage.setItem("isLogin", "true");
-        router.push('/'); // Sử dụng router từ Vue Router để chuyển hướng
+        router.push('/'); 
         this.isLoading = false;
       } catch (error) {
         toast.error("Đăng nhập thất bại", {
@@ -108,8 +108,10 @@ export const useAuthStore = defineStore("authStore", {
       try {
         this.isLoading = true;
         const response = await AuthService.getallblogger();
-        this.users = response?.data;
-        // console.log("🚀 ~ file: authStore.js:78 ~ fetchAllBlogger ~ this.users:", this.users)
+        if(response?.data) {
+          this.users = response?.data;
+          this.isLoading = false;
+        }
         this.isLoading = false;
       } catch (error) {
         console.error(error);

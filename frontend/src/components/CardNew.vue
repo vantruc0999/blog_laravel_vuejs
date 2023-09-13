@@ -640,6 +640,6 @@ const handleSavePost = (id) => {
 }
 
 .activeBookMark {
-    color: red;
+    color: var(--secondary-color);
 }
 </style>

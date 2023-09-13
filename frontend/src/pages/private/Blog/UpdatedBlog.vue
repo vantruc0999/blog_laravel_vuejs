@@ -1,4 +1,7 @@
 <template >
+    <div v-if="postStore.isLoading">
+        <Loading />
+    </div>
     <div class="blog__container">
         <div class="editor__container">
             <div class="editor__wrapper">
@@ -6,7 +9,10 @@
                     <textarea v-model="title" ref="textarea" :style="{ height: `${height}px` }" class="editor__input"
                         @input="handleResize" placeholder="Nhập tiêu đề của bạn..."></textarea>
                     <p class="message">{{ titleLength }}/150</p>
-                    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+                    <div class="editor__tool">
+                        <ckeditor :editor="editor" v-model="editorData" :config="editorConfig">
+                        </ckeditor>
+                    </div>
                 </div>
                 <div class="editor__tool">
                     <span class="editor__title">Thể loại</span>
@@ -59,14 +65,14 @@ import {
     useRoute,
     useRouter
 } from 'vue-router';
+import Loading from '../../../components/Loading.vue';
 
 const route = useRoute();
 const refPost = ref(route.params.id)
 const postStore = usePostStore();
 postStore.getAllTags();
 const postUpdatedId = ref(postStore?.post?.data?.id)
-
-
+const userData = ref(JSON.parse(localStorage.getItem("user")));
 
 const selectedCategory = ref('');
 const selectedTag = ref('');
@@ -86,16 +92,32 @@ watch(() => selectedCategory.value, () => {
 const temporaryImage = ref(null);
 const imagePath = ref(null);
 
-const editor = ref(ClassicEditor);
-const editorData = ref(postStore?.post?.data?.description);
-
 const editorConfig = ref({
     placeholder: 'Nhập nội dung...'
 });
-
+const editor = ref(ClassicEditor);
+const editorData = ref();
+const title = ref();
+const intro = ref();
 const height = ref(35);
-const title = ref(postStore?.post?.data?.title);
-const intro = ref(postStore.post?.data?.intro);
+watchEffect(() => {
+    const post = postStore.post;
+    console.log("🚀 ~ file: UpdatedBlog.vue:100 ~ watchEffect ~ post:", post)
+    if (post) {
+        title.value = post.data?.title;
+        intro.value = post.data?.intro;
+        editorData.value = post.data?.description;
+    }
+});
+const tagNames = computed(() => {
+    const tags = postStore?.post?.data?.tags;
+    if (tags) {
+        return tags.map(tag => tag.name);
+    } else {
+        return [];
+    }
+});
+console.log("🚀 ~ file: UpdatedBlog.vue:108 ~ tagNames ~ tagNames:", tagNames.value)
 const textarea = ref('');
 
 const maxIntroLength = 100;
@@ -198,7 +220,7 @@ const handlePostBlog = () => {
     formData.append('tags', selectedTagById.value)
 
     console.log("🚀 ~ file: BlogEditor.vue:134 ~ handlePostBlog ~ blogData:", formData)
-    postStore.updatePost(postUpdatedId.value, formData)
+    postStore.updatePost(userData.value?.id, postUpdatedId.value, formData)
 
     // title.value = '';
     // intro.value = '';
@@ -213,7 +235,7 @@ onMounted(async () => {
     await getDetailPost.value;
 });
 watchEffect(() => {
-    window.scrollTo(0, 0);
+
 
 })
 </script>
@@ -230,11 +252,10 @@ watchEffect(() => {
         width: 100%;
 
         .editor__wrapper {
-            // max-width: 750px;
             width: 100%;
             padding: 0px 50px;
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
+            display: flex;
+
             gap: 20px;
 
             .editor__intro {
@@ -246,6 +267,10 @@ watchEffect(() => {
                     font-size: 20px;
                     border: none;
                 }
+            }
+
+            .editor__tool {
+                width: 500px;
             }
 
             .editor__input {

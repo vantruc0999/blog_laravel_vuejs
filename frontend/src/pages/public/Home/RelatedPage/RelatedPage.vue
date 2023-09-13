@@ -10,19 +10,22 @@
                     Xem thêm
                 </router-link>
             </div>
-            <SignatureAuthor :author="author" v-for="(author, index) in authStore.users" :key="index" />
+            <SignatureAuthor :author="author" :isFollow="isFollow" v-for="(author, index) in authStore.users.slice(0, 3)"
+                :key="index" />
         </div>
 
     </div>
 </template>
 
 <script setup>
+import { computed, ref } from 'vue';
 import { useAuthStore } from '../../../../stores/authStore';
 import RelatedPost from './RelatedPost.vue';
 import SignatureAuthor from './SignatureAuthor.vue';
 
 const authStore = useAuthStore()
 authStore.fetchAllBlogger()
+
 
 </script>
 
@@ -48,7 +51,6 @@ authStore.fetchAllBlogger()
         flex: 1;
         height: 100%;
         max-height: 251px;
-        overflow: hidden;
         width: 100%;
 
         .signature__header {

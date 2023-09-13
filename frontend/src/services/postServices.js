@@ -8,9 +8,10 @@ import {
   API_DELETECOMMENT,
   API_GETALLTAGS,
   API_EDITCOMMENT,
-    API_LIKEPOST,
-    API_SAVEPOST,
-    API_GETALLSAVEPOST
+  API_LIKEPOST,
+  API_SAVEPOST,
+  API_GETALLSAVEPOST,
+  API_SEARCHPOST
 } from "../config/apis";
 
 export const PostService = {
@@ -49,5 +50,8 @@ export const PostService = {
   },
   getallsavepost(){
     return httpClient.get(API_GETALLSAVEPOST)
+  },
+  searchPost(searchText) {
+    return httpClient.get(`${API_SEARCHPOST}=${searchText}`)
   }
 };

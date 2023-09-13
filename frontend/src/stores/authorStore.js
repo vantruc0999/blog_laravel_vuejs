@@ -11,7 +11,8 @@ export const useAuthorStore = defineStore("authorStore", {
     authorsFollowed: [],
     authorsFollowing: [],
     isLoading: false,
-    isFollow: false,
+    isFollowed: false,
+    notFollowed: false
   }),
   actions: {
     async getAuthorById(authorId) {
@@ -61,7 +62,7 @@ export const useAuthorStore = defineStore("authorStore", {
       try {
         this.isLoading = true;
         const response = await AuthorService.getauthorfollowed(authorId);
-        this.isFollow = response.data.is_followed === 1 ? true : false;
+        this.isFollowed = response.data.is_followed === 1 ? true : false;
         this.isLoading = false;
       } catch (error) {
         console.log(error)

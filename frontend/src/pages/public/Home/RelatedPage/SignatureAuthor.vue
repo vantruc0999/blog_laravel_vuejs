@@ -14,7 +14,7 @@
             </router-link>
             <div class="signature__user__right">
                 <button class="signature__user__btn signature__user__btn--follow " @click="handleGetFollow(author?.id)"
-                    v-if="!authorStore?.isFollow">Theo dõi
+                    v-if="!checkRef && !authorStore?.isFollowed">Theo dõi
                     <ion-icon name="person-add-outline"></ion-icon>
                 </button>
                 <button class="signature__user__btn signature__user__btn--followed" @click="handleGetFollow(author?.id)"
@@ -22,6 +22,7 @@
                     <ion-icon name="checkmark-circle-outline"></ion-icon>
                 </button>
             </div>
+
         </div>
     </div>
 </template>
@@ -33,17 +34,30 @@ import { useAuthStore } from "../../../../stores/authStore";
 const authStore = useAuthStore()
 const authorStore = useAuthorStore()
 const props = defineProps({
-    author: Object
+    author: Object,
+    isFollow: Function
 })
+console.log("🚀 ~ file: SignatureAuthor.vue:38 ~ author:", props.author?.follows)
+const checkRef = ref(false)
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-
-
+// console.log("first", props.isFollow(userData.value?.id))
 const handleGetFollow = (id) => {
     authorStore.getFollowAuthor(userData.value?.id, id);
-    // authorStore.getAuthorFollowed(id)
+    authorStore.getAuthorFollowed(id)
 }
+
+const handleCheckFollow = (id) => {
+    const result = props.author?.follows?.find(fl => fl.id == id)
+    if (result) {
+        checkRef.value = true;
+    } else {
+        checkRef.value = false
+    }
+}
+
 onMounted(async () => {
     await authorStore.getAuthorFollowed(props.author?.id)
+    await handleCheckFollow(userData.value?.id)
 });
 
 watchEffect(() => {

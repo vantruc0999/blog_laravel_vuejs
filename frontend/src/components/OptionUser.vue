@@ -144,16 +144,4 @@ const handleLogout = () => {
         }
     }
 }
-
-
-
-@keyframes toggleOptions {
-    from {
-        opacity: 0;
-    }
-
-    to {
-        opacity: 1;
-    }
-}
 </style>
