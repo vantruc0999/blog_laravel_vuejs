@@ -29,15 +29,12 @@
 <script setup>
 import { watchEffect, onMounted, ref } from "vue"
 import { useAuthorStore } from "../../../../stores/authorStore";
-import { useAuthStore } from "../../../../stores/authStore";
 
-const authStore = useAuthStore()
 const authorStore = useAuthorStore()
 const props = defineProps({
     author: Object,
     isFollow: Function
 })
-console.log("🚀 ~ file: SignatureAuthor.vue:38 ~ author:", props.author?.follows)
 const checkRef = ref(false)
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 // console.log("first", props.isFollow(userData.value?.id))

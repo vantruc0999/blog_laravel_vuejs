@@ -1,19 +1,18 @@
-<template >
+<template>
     <div class="search__container">
-        <h1 class="search__heading">Kết quả tìm kiếm: "{{ searchParam.value }}"</h1>
+        <h1 class="search__heading">Kết quả tìm kiếm: "<span class="search__text">{{ $route.query.search }}</span>"</h1>
         <div class="search__tab">
             <TabPane />
         </div>
     </div>
 </template>
+
 <script setup>
-import { ref } from "vue"
-import TabPane from "../../../components/TabPane.vue"
+import { ref } from "vue";
+import TabPane from "../../../components/TabPane.vue";
 import { useRoute } from 'vue-router';
 const route = useRoute();
 
-const searchParam = ref(route.query.search)
-console.log("🚀 ~ file: SearchPage.vue:16 ~ searchParam:", searchParam.value)
 </script>
 <style lang="scss" scoped>
 .search__container {

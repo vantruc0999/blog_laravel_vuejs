@@ -6,9 +6,10 @@
         <div class="home__banner">
             <div class="home__content">
                 <h1 class="home__heading">Monkey Blogging</h1>
-                <p class="home__desc">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor
-                    incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco
-                    laboris nisi.</p>
+                <p class="home__desc">Monkey Blog là một nền tảng thú vị, nơi bạn có thể khám phá những bài viết
+                    hấp dẫn về nhiều chủ đề khác nhau. Từ du lịch, ẩm thực, công nghệ đến nghệ thuật và cuộc sống hàng ngày,
+                    chúng tôi cung cấp cho bạn một nền tảng để tìm hiểu, chia sẻ và trao đổi thông tin. Với những bài viết
+                    độc đáo và nội dung sáng tạo. </p>
                 <button class="home__button">Tìm hiểu</button>
 
             </div>
@@ -85,6 +86,7 @@
                 <RelatedPage />
             </div>
         </div>
+        <button v-if="showButton" class="scroll-top" @click="handleScroll">Cuộn lên</button>
     </div>
 </template>
 
@@ -93,12 +95,9 @@ import { ref, computed, onMounted, watchEffect } from "vue"
 import CardFeature from "../../../components/CardFeature.vue"
 import CardNew from "../../../components/CardNew.vue"
 import RelatedPage from "./RelatedPage/RelatedPage.vue";
-import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
 import Loading from "../../../components/Loading.vue"
-// Import Swiper Vue.js components
+import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
 import { Swiper, SwiperSlide } from 'swiper/vue';
-
-// Import Swiper styles
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
@@ -109,19 +108,31 @@ import { useAuthStore } from "../../../stores/authStore";
 // Store
 const postStore = usePostStore()
 const authStore = useAuthStore()
-// Call api
-const handleGetDataSave = async () => {
-    await postStore.getAllSavePosts()
-}
-const handleGetAllData = async () => {
-    await postStore.fetchAllPosts()
-}
-handleGetAllData()
-handleGetDataSave()
-onMounted(async () => {
-    await authStore.fetchAllBlogger()
-})
+const showButton = ref(false);
 
+const handleScroll = (event) => {
+    const scrollPosition = event.target.scrollTop;
+    showButton.value = scrollPosition >= 300;
+};
+
+const scrollToTop = () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth',
+    });
+};
+// Call api
+// const handleGetDataSave = async () => {
+//     await postStore.getAllSavePosts()
+// }
+// const handleGetAllData = async () => {
+//     await postStore.fetchAllPosts()
+// }
+// handleGetAllData()
+// handleGetDataSave()
+// onMounted(async () => {
+//     await authStore.fetchAllBlogger()
+// })
 
 // Get Id already saved
 const getIdOfFavorites = computed(() => {
@@ -135,26 +146,6 @@ const isSaved = (id) => {
         return false
     }
 };
-
-// Pagination
-// const currentPage = ref(1);
-// const itemsPerPage = 2;
-
-// const totalItems = computed(() => postStore?.posts?.length);
-// const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
-// const paginatedItems = computed(() => {
-//     const startIndex = (currentPage.value - 1) * itemsPerPage;
-//     const endIndex = startIndex + itemsPerPage;
-//     return postStore?.posts.slice(startIndex, endIndex);
-// });
-
-// // const handleGetFilterPage = (data) => {
-// //     plantStore.plants = data;
-// //     currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
-// // };
-// const handleGoNewPage = (page) => {
-//     currentPage.value = page
-// }
 
 // Slideer
 const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
@@ -197,19 +188,26 @@ const sortedPostByComments = computed(() => {
     return sortPostsByComment(postStore?.posts)
 });
 
-// sortPostsByView(postStore?.posts);
-
-// onMounted(() => {
-//     sortPostsByLikes(postStore?.posts);
-//     sortPostsByView(postStore?.posts);
-// });
-
 </script>
 
 <style lang="scss" scoped>
 .home__container {
-
     margin: 0 auto;
+
+    .scroll-top {
+        position: fixed;
+        bottom: 20px;
+        right: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 10px;
+        background-color: #333;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 }
 
 .home__banner {
@@ -222,13 +220,20 @@ const sortedPostByComments = computed(() => {
     justify-content: space-between;
 }
 
+.home__image {
+    img {
+        max-width: 280px;
+        object-fit: cover;
+    }
+}
+
 .home__content {
     max-width: 600px;
     color: var(--white-color);
 }
 
 .home__heading {
-    font-size: 46px;
+    font-size: 40px;
     margin-bottom: 20px;
 }
 

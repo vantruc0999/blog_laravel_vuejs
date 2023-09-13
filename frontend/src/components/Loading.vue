@@ -1,7 +1,39 @@
-<!-- <template>
+<template>
     <div class='loading-block'>
-        <div class='lds-roller'>
-            <img src="../assets/images/loading.gif" />
+        <div class="loading__top">
+            <div class="lds-default">
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+                <div></div>
+            </div>
+            <div class="loading__logo">
+                <span class="loading__text">M</span>
+                <span class="loading__text loading__text--sub">O</span>
+                <span class="loading__text">N</span>
+                <span class="loading__text">K</span>
+                <span class="loading__text loading__text--sub1">E</span>
+                <span class="loading__text">Y </span>
+                <span class="loading__text loading__text--sub1">B</span>
+                <span class="loading__text">L</span>
+                <span class="loading__text loading__text--sub">O</span>
+                <span class="loading__text">G</span>
+            </div>
+        </div>
+        <div class="loading__intro">
+            <span class="loading__from">From</span>
+            <div class="loading__author">
+                <img src="../assets/images/gautruc.png" alt="">
+                <h3 class="loaiding__name">Đông - Trúc</h3>
+            </div>
         </div>
     </div>
 </template>
@@ -18,32 +50,174 @@ export default {
     height: 100vh;
     position: fixed;
     display: flex;
+    flex-direction: column;
     top: 0;
     right: 0;
     left: 0;
     bottom: 0;
     align-items: center;
-    justify-content: center;
+    justify-content: space-around;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
+    // background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--white-color);
 
-    img {
-        margin: 0 auto;
-    }
+    .loading__intro {
+        margin-top: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
 
-    @keyframes lds-roller {
-        0% {
-            transform: rotate(0deg);
+        .loading__from {
+            color: var(--text-color-4);
+            font-size: 16px;
+            font-weight: 500;
         }
 
+        .loading__author {
+            display: flex;
+            align-items: center;
+            font-family: 'Pacifico', cursive;
+            font-size: 20px;
+
+            img {
+                width: 180px;
+                height: 120px;
+                object-fit: cover;
+            }
+        }
+    }
+
+    .loading__top {
+        display: flex;
+        align-items: center;
+        margin-bottom: 150px;
+        gap: 20px;
+
+        .loading__logo {
+            font-family: 'Pacifico', cursive;
+            font-size: 48px;
+            font-weight: 500;
+
+            .loading__text {
+
+                &--sub {
+                    color: var(--green-color);
+                }
+
+                &--sub1 {
+                    color: var(--primary-color);
+                }
+            }
+        }
+    }
+
+    .lds-default {
+        display: inline-block;
+        position: relative;
+        width: 80px;
+        height: 80px;
+    }
+
+    .lds-default div {
+        position: absolute;
+        width: 6px;
+        height: 6px;
+        background: rgb(115, 193, 76);
+        border-radius: 50%;
+        animation: lds-default 1.2s linear infinite;
+    }
+
+    .lds-default div:nth-child(1) {
+        animation-delay: 0s;
+        top: 37px;
+        left: 66px;
+    }
+
+    .lds-default div:nth-child(2) {
+        animation-delay: -0.1s;
+        top: 22px;
+        left: 62px;
+    }
+
+    .lds-default div:nth-child(3) {
+        animation-delay: -0.2s;
+        top: 11px;
+        left: 52px;
+    }
+
+    .lds-default div:nth-child(4) {
+        animation-delay: -0.3s;
+        top: 7px;
+        left: 37px;
+    }
+
+    .lds-default div:nth-child(5) {
+        animation-delay: -0.4s;
+        top: 11px;
+        left: 22px;
+    }
+
+    .lds-default div:nth-child(6) {
+        animation-delay: -0.5s;
+        top: 22px;
+        left: 11px;
+    }
+
+    .lds-default div:nth-child(7) {
+        animation-delay: -0.6s;
+        top: 37px;
+        left: 7px;
+    }
+
+    .lds-default div:nth-child(8) {
+        animation-delay: -0.7s;
+        top: 52px;
+        left: 11px;
+    }
+
+    .lds-default div:nth-child(9) {
+        animation-delay: -0.8s;
+        top: 62px;
+        left: 22px;
+    }
+
+    .lds-default div:nth-child(10) {
+        animation-delay: -0.9s;
+        top: 66px;
+        left: 37px;
+    }
+
+    .lds-default div:nth-child(11) {
+        animation-delay: -1s;
+        top: 62px;
+        left: 52px;
+    }
+
+    .lds-default div:nth-child(12) {
+        animation-delay: -1.1s;
+        top: 52px;
+        left: 62px;
+    }
+
+    @keyframes lds-default {
+
+        0%,
+        20%,
+        80%,
         100% {
-            transform: rotate(360deg);
+            transform: scale(1);
+        }
+
+        50% {
+            transform: scale(1.5);
         }
     }
-}
-</style> -->
 
-<template >
+}
+</style>
+
+<!-- <template >
     <div class="loading-block">
         <svg class="ip" viewBox="0 0 256 128" width="256px" height="128px" xmlns="http://www.w3.org/2000/svg">
             <defs>
@@ -73,6 +247,13 @@ export default {
                 </g>
             </g>
         </svg>
+        <div class="loading__intro">
+            <span class="loading__from">From</span>
+            <div class="loading__author">
+                <img src="../assets/images/gautruc.png" alt="">
+                <h3 class="loaiding__name">Đông - Trúc</h3>
+            </div>
+        </div>
     </div>
 </template>
 <script>
@@ -115,6 +296,7 @@ main {
     height: 100vh;
     position: fixed;
     display: flex;
+    flex-direction: column;
     top: 0;
     right: 0;
     left: 0;
@@ -122,7 +304,35 @@ main {
     align-items: center;
     justify-content: center;
     z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.5);
+    // background-color: rgba(0, 0, 0, 0.5);
+    background-color: var(--white-color);
+
+    .loading__intro {
+        margin-top: 100px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+
+        .loading__from {
+            color: var(--text-color-4);
+            font-size: 18px;
+            font-weight: 500;
+        }
+
+        .loading__author {
+            display: flex;
+            align-items: center;
+            font-family: 'Pacifico', cursive;
+            font-size: 22px;
+
+            img {
+                width: 200px;
+                height: 170px;
+                object-fit: cover;
+            }
+        }
+    }
 }
 
 .ip {
@@ -188,5 +398,5 @@ main {
         stroke-dashoffset: -358;
     }
 }
-</style>
+</style> -->
 

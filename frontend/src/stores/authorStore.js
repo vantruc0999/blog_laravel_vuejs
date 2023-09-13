@@ -54,6 +54,7 @@ export const useAuthorStore = defineStore("authorStore", {
         this.authorsFollowed = response?.data?.my_followers
         this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error)
       }
     },
@@ -65,6 +66,7 @@ export const useAuthorStore = defineStore("authorStore", {
         this.isFollowed = response.data.is_followed === 1 ? true : false;
         this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error)
       }
     },

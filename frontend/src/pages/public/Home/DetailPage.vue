@@ -71,11 +71,18 @@
             <span class="detail__controller">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </span>
-            <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
-                <swiper-slide>
-                    <CardNew :isSaved="fakeVariable" />
+            <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
+                :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
+                <swiper-slide v-for="(post, index) in postsWithSameCategoryId">
+                    <CardNew :isSaved="isSaved" :post="post" :key="index" />
                 </swiper-slide>
             </swiper>
+
+            <!-- <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
+                <swiper-slide v-for="(post, index) in postsWithSameCategoryId">
+                    <CardNew :isSaved="fakeVariable" :post="post" :key="index" />
+                </swiper-slide>
+            </swiper> -->
             <span class="detail__controller">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
             </span>
@@ -88,9 +95,10 @@
             <span class="detail__controller">
                 <ion-icon name="arrow-back-outline"></ion-icon>
             </span>
-            <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
-                <swiper-slide>
-                    <CardNew :isSaved="fakeVariable" />
+            <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
+                :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
+                <swiper-slide v-for="(post, index) in sortedPostByView" :key="index">
+                    <CardNew :isSaved="isSaved" :post="post" />
                 </swiper-slide>
             </swiper>
             <span class="detail__controller">
@@ -106,19 +114,20 @@ import {
     ref,
     watchEffect,
     computed,
-    onMounted
+    onMounted,
+    watch
 } from "vue";
 import CardNew from "../../../components/CardNew.vue";
 import Comment from "../../public/Home/Comment/Comment.vue"
 import {
     useRoute
 } from 'vue-router';
-import {
-    Swiper,
-    SwiperSlide
-} from "swiper/vue";
-import "swiper/swiper-bundle.css";
-import "swiper/css";
+import { Navigation, Pagination, Scrollbar, A11y, Autoplay } from 'swiper/modules';
+import { Swiper, SwiperSlide } from 'swiper/vue';
+import 'swiper/css';
+import 'swiper/css/navigation';
+import 'swiper/css/pagination';
+import 'swiper/css/scrollbar';
 import Loading from "../../../components/Loading.vue"
 import { usePostStore } from "../../../stores/postStore";
 
@@ -128,25 +137,56 @@ const refDetail = ref(route.params.id)
 const postId = ref(refDetail)
 const isLike = ref(false)
 let isOpenComment = ref(false);
-
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-
+const getDetailPost = computed(() => {
+    return postStore.getPostById(refDetail.value)
+})
+// handle Like
 const handleLikePost = (id) => {
     postStore.likePost(id)
     isLike.value = !isLike.value
 }
+// open comment
 const handleOpenComment = () => {
     isOpenComment.value = !isOpenComment.value
 }
+// Sort posts
+const sortPostsByView = (posts) => {
+    const sortedPosts = [...posts]; // Create a copy of the original array
+    return sortedPosts.sort((a, b) => b.view_count - a.view_count);
+};
+const sortedPostByView = computed(() => {
+    return sortPostsByView(postStore?.posts)
+});
+// check save (favorites)
+const getIdOfFavorites = computed(() => {
+    return postStore?.favorites.map((favorites) => favorites?.id)
+})
 
-const getDetailPost = computed(() => {
-    return postStore.getPostById(refDetail.value)
+const isSaved = (id) => {
+    if (getIdOfFavorites.value.length > 0) {
+        return getIdOfFavorites.value.includes(id)
+    } else {
+        return false
+    }
+};
+
+
+watch(() => route.params, (newId) => {
+    postStore.getPostById(newId)
 })
 
 onMounted(async () => {
     await getDetailPost.value;
 });
-
+watch(refDetail.value, (newValue) => {
+    console.log("🚀 ~ file: DetailPage.vue:158 ~ watch ~ newValue:", newValue)
+    getDetailPost.value = postStore.getPostById(newValue);
+});
+const postsWithSameCategoryId = computed(() => {
+    const currentCategoryId = postStore.post?.data?.category_id;
+    return postStore.posts.filter((post) => post.category_id === currentCategoryId);
+});
 
 const calculateTimeAgo = (created_at) => {
     const currentTime = new Date();
@@ -167,6 +207,15 @@ const calculateTimeAgo = (created_at) => {
         return `${minutes} phút trước`;
     }
 }
+// Slideer
+const modules = [Navigation, Pagination, Scrollbar, A11y, Autoplay]
+
+const onSwiper = (swiper) => {
+    // console.log(swiper);
+};
+const onSlideChange = () => {
+    console.log('slide change');
+};
 
 const fakeVariable = () => {
     return true
