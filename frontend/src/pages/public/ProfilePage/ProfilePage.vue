@@ -114,28 +114,45 @@
             <div class="profile__action">
                 <div class="profile__action__controller">
                     <ul class="profile__action__list">
-                        <router-link to="/profile" class="profile__action__item">
-                            <span class="profile__action__icon">
-                                <ion-icon name="create-outline"></ion-icon>
+                        <div class="profile__action__item" v-for="(tab, index) in tabs" :key="index"
+                            @click="selectedTab = tab" :class="{ activeTab: selectedTab === tab }">
+                            <span class="profile__action__icon" v-html="tab.icon">
                             </span>
-                            <span class="profile__action__text">Bài viết (47)</span>
-                        </router-link>
-                        <router-link to="/" class="profile__action__item">
-                            <span class="profile__action__icon">
-                                <ion-icon name="layers-outline"></ion-icon>
-                            </span>
-                            <span class="profile__action__text">Series</span>
-                        </router-link>
+                            <span class="profile__action__text">{{ tab.name }}</span>
+                        </div>
                     </ul>
                 </div>
-                <div class="profile__action__time">
+                <!-- <div class="profile__action__time">
                     <DropDown title="Theo thời gian" :items="filterData" />
-                </div>
+                </div> -->
                 <!-- Card -->
-                <div class="profile__card">
+                <div class="profile__card" v-if="selectedTab === tabs[0]">
                     <CardNew :isCard="false" :post="post"
                         v-for="( post, index ) in  authorStore?.author?.blogger_infor?.posts " :key="index"
                         :isProfile="true" :isMyProfile="checkMyProfile" :isSaved="fakeVariable" />
+                </div>
+                <div class="profile__draft" v-else>
+                    <div class="profile__wrap">
+                        <div class="profile__draft__content">
+                            <p class="profile__draft__title">Tôi là ai ai là tôi</p>
+                            <span class="profile__draft__time">Khoảng một phút trước</span>
+                        </div>
+                        <div class="profile__draft__editor">
+                            <div class="profile__draft__action">
+                                <ion-icon name="pencil-outline"></ion-icon>
+                                <span class="profile__draft__controller">Tiếp tục</span>
+                            </div>
+                            <div class="profile__draft__action profile__draft__action--delete"
+                                @click="handleOpenModalDraft">
+                                <ion-icon name="trash-outline"></ion-icon>
+                                <span class="profile__draft__controller">Xóa</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <ModalController title="Bạn có chắc muốn xóa bản nháp này?"
+                        content="Bạn có chắc rằng muốn xóa bản nháp này? Hành động này sẽ không thể hoàn thành khi bạn chưa đồng ý"
+                        :closeModel="handleCloseModalDraft" :isOpenModal="isOpenModalDraft" />
                 </div>
             </div>
         </div>
@@ -173,21 +190,28 @@ const isOpenModalFollowed = ref(false)
 const isOpenModalFollowing = ref(false)
 const isBanned = ref(false)
 const isOpenModal = ref(false)
+const isOpenModalDraft = ref(false)
+const tabs = ref([
+    { name: 'Bài viết', icon: '<ion-icon name="create-outline"></ion-icon>' },
+    { name: 'Lưu nháp', icon: '<ion-icon name="layers-outline"></ion-icon>' }
+]);
+const selectedTab = ref(tabs.value[0]);
+
 const fakeVariable = () => {
     return true
 }
 const handleOpenOptions = () => {
     isOpen.value = !isOpen.value;
 };
-const filterData = [{
-    title: "Theo ngày gần nhất",
-    link: "#"
-},
-{
-    title: "Theo ngày xa nhất",
-    link: "#"
-},
-]
+// const filterData = [{
+//     title: "Theo ngày gần nhất",
+//     link: "#"
+// },
+// {
+//     title: "Theo ngày xa nhất",
+//     link: "#"
+// },
+// ]
 
 const handleOpenBanned = () => {
     isBanned.value = !isBanned.value;
@@ -197,6 +221,13 @@ const handleOpenModalBan = () => {
 }
 const handleCloseModalBan = () => {
     isOpenModal.value = false
+}
+
+const handleOpenModalDraft = () => {
+    isOpenModalDraft.value = !isOpenModalDraft.value;
+}
+const handleCloseModalDraft = () => {
+    isOpenModalDraft.value = false
 }
 const handleGetFollow = (id) => {
     authorStore.getFollowAuthor(refAuthor.value, id);
@@ -222,13 +253,13 @@ const handleOpenFollowing = () => {
 const handleCloseFollowing = () => {
     isOpenModalFollowing.value = false
 }
-// console.log(checkMyProfile.value);
-watch(() => route.params.id, (newId) => {
-    console.log("newid", newId);
-})
+
 
 const getProfileAuthor = computed(() => {
     return authorStore.getAuthorById(refAuthor.value)
+})
+watch(() => route.params, (newId) => {
+    authorStore.getAuthorById(newId.id)
 })
 handleCheckMyProfile(userData?.value?.id)
 onMounted(async () => {
@@ -566,6 +597,58 @@ watchEffect(() => {
         flex: 1;
         background-color: var(--white-color);
         padding: 0 20px;
+
+        .profile__draft {
+            padding: 20px;
+            border: 1px solid var(--border-color);
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+
+            .profile__wrap {
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                border-bottom: 1px solid var(--border-color);
+                padding-bottom: 20px;
+                margin-top: 20px;
+
+                &:last-child {
+                    border-bottom: none;
+                }
+
+                .profile__draft__content {
+                    display: flex;
+                    flex-direction: column;
+                }
+
+                .profile__draft__title {
+                    font-weight: 600;
+                    font-size: 16px;
+                }
+
+                .profile__draft__time {
+                    font-weight: 300;
+                    color: var(--text-color-4);
+                    font-size: 14px;
+                }
+
+                .profile__draft__editor {
+                    display: flex;
+                    gap: 20px;
+                    align-items: center;
+                }
+
+                .profile__draft__action {
+                    display: flex;
+                    gap: 10px;
+                    font: size 14px;
+                    cursor: pointer;
+
+                    &--delete {
+                        color: red;
+                    }
+                }
+            }
+        }
     }
 
     .profile__action__time {
@@ -576,7 +659,6 @@ watchEffect(() => {
     }
 
     .profile__card {
-        margin-top: 30px;
         display: grid;
         grid-template-columns: repeat(3, 1fr);
         gap: 8px;
@@ -598,7 +680,10 @@ watchEffect(() => {
             align-items: center;
             gap: 5px;
             padding-bottom: 12px;
+        }
 
+        .activeTab {
+            border-bottom: 2px solid var(--primary-color);
         }
 
         .profile__action__icon {
@@ -613,6 +698,7 @@ watchEffect(() => {
         }
     }
 }
+
 
 .router-link-exact-active {
     border-bottom: 2px solid var(--primary-color);

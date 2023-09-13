@@ -8,9 +8,10 @@
                 <div class="tab" v-for="(tab, index) in tabs" :key="index" @click="selectedTab = tab"
                     :class="{ activeTab: selectedTab === tab }">{{ tab }}</div>
             </div>
-            <div class="tab__menu">
+            <div class="tab__menu" v-if="selectedTab != 'Theo tác giả'">
                 <ion-icon name="menu-outline" @click="handleOpenSelectCategory"></ion-icon>
                 <div class="tab__option" v-if="isSelectCategory">
+                    <span class="tab__category" @click="handleSelectAll">Tất cả</span>
                     <span class="tab__category" v-for="(tag, index) in postStore.tags" :key="index"
                         @click="handleFilterCategory(tag?.id)">{{ tag.name }}</span>
                 </div>
@@ -19,7 +20,7 @@
         <div class="tab__content">
             <div class="tab__post" v-if="selectedTab === 'Theo bài viết'">
                 <CardNew :isCard="true" :post="post" v-for="(post, index) in postStore.dataSearch?.data" :key="index"
-                    :isSaved="fakeVariable" />
+                    :isSaved="isSaved" />
             </div>
             <div class="tab__author" v-else>
                 Đây là author
@@ -29,7 +30,7 @@
 </template>
 
 <script setup>
-import { ref } from "vue";
+import { ref, computed } from "vue";
 import CardNew from "./CardNew.vue";
 import { usePostStore } from "../stores/postStore";
 import Loading from "./Loading.vue";
@@ -37,19 +38,39 @@ import { useRoute } from "vue-router";
 
 const postStore = usePostStore();
 postStore.getAllTags();
+const handleGetDataSave = async () => {
+    await postStore.getAllSavePosts()
+}
+
+handleGetDataSave()
 const route = useRoute()
-console.log("hello", postStore.dataSearch);
+const searchParam = ref(route.query.search)
 const tabs = ref(['Theo bài viết', 'Theo tác giả']);
 const selectedTab = ref('Theo bài viết');
-
 const isSelectCategory = ref(false)
+
 const handleOpenSelectCategory = () => {
     isSelectCategory.value = !isSelectCategory.value
 }
-
-const handleFilterCategory = (id) => {
-    console.log(id);
+const handleFilterCategory = async (id) => {
+    await postStore.searchPost(searchParam.value, id)
 }
+const handleSelectAll = async () => {
+    await postStore.searchPost(searchParam.value, "")
+};
+// saved
+const getIdOfFavorites = computed(() => {
+    return postStore?.favorites.map((favorites) => favorites?.id)
+})
+
+const isSaved = (id) => {
+    if (getIdOfFavorites.value.length > 0) {
+        return getIdOfFavorites.value.includes(id)
+    } else {
+        return false
+    }
+};
+
 const fakeVariable = () => {
     return false
 }

@@ -22,10 +22,11 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.getallpost();
         if(response?.data?.data) {
           this.posts = response?.data?.data;
-          // console.log("store" , response?.data?.data);
+          console.log("store" , response?.data?.data);
           this.isLoading = false;
         }
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
       }
     },
@@ -164,7 +165,6 @@ export const usePostStore = defineStore("postStore", {
           this.favorites = response.data?.posts;
           this.isLoading = false;
         }
-        // console.log("🚀 ~ file: postStore.js:161 ~ getAllSavePosts ~ this.favorites:", this.favorites)
       } catch (error) {
         console.log(error);
         this.isLoading = false;
@@ -186,18 +186,6 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = false;
       }
     },
-    // async searchPost(searchText) {
-    //   try {
-    //     this.isLoading = true;
-    //     const response = await PostService.searchPost(searchText);
-    //     console.log("🚀 ~ file: postStore.js:192 ~ searchPost ~ response:", response?.data)
-    //     this.dataSearch = response?.data;
-    //     this.isLoading = false;
-    //   } catch (error) {
-    //     console.log(error);
-    //     this.isLoading = false;
-    //   }
-    // },
     async searchPost(searchText, category) {
       try {
         this.isLoading = true;
