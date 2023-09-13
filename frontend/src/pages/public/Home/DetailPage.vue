@@ -73,22 +73,7 @@
             </span>
             <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
                 <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
+                    <CardNew :isSaved="fakeVariable" />
                 </swiper-slide>
             </swiper>
             <span class="detail__controller">
@@ -105,22 +90,7 @@
             </span>
             <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
                 <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
-                </swiper-slide>
-                <swiper-slide>
-                    <CardNew />
+                    <CardNew :isSaved="fakeVariable" />
                 </swiper-slide>
             </swiper>
             <span class="detail__controller">
@@ -177,9 +147,7 @@ onMounted(async () => {
     await getDetailPost.value;
 });
 
-watchEffect(() => {
-    window.scrollTo(0, 0);
-})
+
 const calculateTimeAgo = (created_at) => {
     const currentTime = new Date();
     const commentTime = new Date(created_at);
@@ -198,6 +166,10 @@ const calculateTimeAgo = (created_at) => {
     } else {
         return `${minutes} phút trước`;
     }
+}
+
+const fakeVariable = () => {
+    return true
 }
 </script>
 

@@ -50,8 +50,8 @@
           component: updatedBlog,
         },
         {
-          path: "/search",
-          name: "search",
+          path: "/filter/filter-post",
+          name: "filter",
           component: SearchPage,
         },
         {

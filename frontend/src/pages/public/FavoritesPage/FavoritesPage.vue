@@ -5,7 +5,7 @@
     <div class="favorites__container">
         <h1 class="favorites__header">Bạn có {{ postStore.favorites?.length }} bài viết đã lưu</h1>
         <div class="favorites__wrapper">
-            <CardNew :post="post" v-for="(post, index) in postStore.favorites" :key="post" :isSaved="codeBip" />
+            <CardNew :post="post" v-for="(post, index) in postStore.favorites" :key="post" :isSaved="fakeVariable" />
         </div>
     </div>
 </template>
@@ -26,8 +26,8 @@ const getIdOfFavorites = computed(() => {
     return postStore?.favorites.map((favorites) => favorites?.id)
 })
 
-const codeBip = () => {
-    return true
+const fakeVariable = () => {
+    return false
 }
 </script>
 <style lang="scss" scoped>

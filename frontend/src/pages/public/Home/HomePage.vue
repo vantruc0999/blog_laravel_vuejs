@@ -59,15 +59,24 @@
                 <h2 class="home__card--title">Được xem nhiều nhất</h2>
                 <div class="update__list">
                     <!--  -->
-                    <CardNew :isCard="false" :isSaved="isSaved" :post="post" v-for="(post, index) in sortedPostByView "
-                        :key="index" />
+                    <CardNew :isCard="false" :isSaved="isSaved" :post="post"
+                        v-for="(post, index) in sortedPostByView.slice(0, 4) " :key="index" />
                 </div>
-
+                <!-- ---------- -->
                 <div class="home__special">
                     <h2 class="home__card--title">Được yêu thích</h2>
                     <div class="home__blog">
-                        <CardNew :isCard="false" :post="post" :isSaved="isSaved" v-for="(post, index) in sortedPostByLikes "
-                            :key="index" />
+                        <CardNew :isCard="false" :post="post" :isSaved="isSaved"
+                            v-for="(post, index) in sortedPostByLikes.slice(0, 4) " :key="index" />
+                    </div>
+                </div>
+                <!-- ---------- -->
+
+                <div class="home__special">
+                    <h2 class="home__card--title">Được bàn luận nhiều</h2>
+                    <div class="home__blog">
+                        <CardNew :isCard="false" :post="post" :isSaved="isSaved"
+                            v-for="(post, index) in sortedPostByComments.slice(0, 4) " :key="index" />
                     </div>
                 </div>
             </div>
@@ -107,11 +116,12 @@ const handleGetDataSave = async () => {
 const handleGetAllData = async () => {
     await postStore.fetchAllPosts()
 }
+handleGetAllData()
+handleGetDataSave()
 onMounted(async () => {
     await authStore.fetchAllBlogger()
 })
-handleGetAllData()
-handleGetDataSave()
+
 
 // Get Id already saved
 const getIdOfFavorites = computed(() => {
@@ -175,6 +185,16 @@ const sortPostsByView = (posts) => {
 
 const sortedPostByView = computed(() => {
     return sortPostsByView(postStore?.posts)
+});
+
+// --- Comment ---
+const sortPostsByComment = (posts) => {
+    const sortedPosts = [...posts]; // Create a copy of the original array
+    return sortedPosts.sort((a, b) => b.comment_count - a.comment_count);
+};
+
+const sortedPostByComments = computed(() => {
+    return sortPostsByComment(postStore?.posts)
 });
 
 // sortPostsByView(postStore?.posts);

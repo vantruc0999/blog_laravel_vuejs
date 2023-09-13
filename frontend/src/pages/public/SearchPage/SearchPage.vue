@@ -1,14 +1,6 @@
 <template >
     <div class="search__container">
-        <h1 class="search__heading">Kết quả tìm kiếm: "Thể thao"</h1>
-        <!-- <a-tabs v-model:activeKey="activeKey" :style="{ color: 'black' }" contenteditable="false">
-            <a-tab-pane key="1" tab="Dành cho bạn">
-                <Foryoupage />
-            </a-tab-pane>
-            <a-tab-pane key="2" tab="Theo tác giả" force-render>
-            </a-tab-pane>
-
-        </a-tabs> -->
+        <h1 class="search__heading">Kết quả tìm kiếm: "{{ searchParam.value }}"</h1>
         <div class="search__tab">
             <TabPane />
         </div>
@@ -16,9 +8,12 @@
 </template>
 <script setup>
 import { ref } from "vue"
-import Foryoupage from "../Home/RelatedPage/PageContent/foryoupage.vue";
 import TabPane from "../../../components/TabPane.vue"
+import { useRoute } from 'vue-router';
+const route = useRoute();
 
+const searchParam = ref(route.query.search)
+console.log("🚀 ~ file: SearchPage.vue:16 ~ searchParam:", searchParam.value)
 </script>
 <style lang="scss" scoped>
 .search__container {

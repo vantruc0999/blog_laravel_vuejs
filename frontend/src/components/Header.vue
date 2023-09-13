@@ -22,8 +22,9 @@
             <!-- <div class="header__right"> -->
             <div class="header__right" v-if="!isAuth">
                 <div class="header__search">
-                    <input type="text" class="search__input" placeholder="Tìm kiếm theo tiêu đề tác giả hoặc tags" />
-                    <span class="search__icon">
+                    <input type="text" class="search__input" v-model="searchText"
+                        placeholder="Tìm kiếm theo tiêu đề tác giả hoặc tags" />
+                    <span class="search__icon" @click="handleSearch">
                         <ion-icon name="search-outline"></ion-icon>
                     </span>
                 </div>
@@ -36,8 +37,9 @@
             </div>
             <div class="header__user" v-else>
                 <div class="header__search" v-if="$route.path !== '/blog-post'">
-                    <input type="text" class="search__input" placeholder="Tìm kiếm theo tiêu đề tác giả hoặc tags" />
-                    <span class="search__icon">
+                    <input type="text" class="search__input" v-model="searchText"
+                        placeholder="Tìm kiếm theo tiêu đề tác giả hoặc tags" />
+                    <span class="search__icon" @click="handleSearch">
                         <ion-icon name="search-outline"></ion-icon>
                     </span>
                 </div>
@@ -67,12 +69,17 @@ import {
 } from 'vue';
 import OptionUser from "../components/OptionUser.vue"
 import { useAuthStore } from '../stores/authStore';
+import { usePostStore } from '../stores/postStore';
+import { useRouter } from 'vue-router';
+import axios from 'axios';
 
 const authStore = useAuthStore()
+const postStore = usePostStore()
 authStore.getMyProfile()
 
+const route = useRouter()
+let searchText = ref("")
 const isAuth = ref(localStorage.getItem("isLogin"));
-
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 
 let isOpen = ref(false);
@@ -80,6 +87,17 @@ let isOpen = ref(false);
 const handleOpenOptions = () => {
     isOpen.value = !isOpen.value;
 };
+
+const handleSearch = async () => {
+    const searchValue = searchText.value.trim();
+    if (searchValue) {
+        await postStore.searchPost(searchValue, "");
+        route.push({ path: '/filter/filter-post', query: { search: searchValue } });
+    } else {
+        route.push({ path: '/filter/filter-post' });
+    }
+};
+
 
 </script>
 

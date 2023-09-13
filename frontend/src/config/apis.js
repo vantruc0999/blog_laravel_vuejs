@@ -28,3 +28,5 @@ export const API_DELETECOMMENT = '/comment/delete-comment'
 export const API_GETALLTAGS = '/categories-tags'
 // LIKE POST
 export const API_LIKEPOST = '/like'
+// Search
+export const API_SEARCHPOST = '/posts/filter/filter-post?search'

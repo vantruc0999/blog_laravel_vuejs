@@ -1,4 +1,7 @@
 <template >
+    <div v-if="authStore.isLoading">
+        <Loading />
+    </div>
     <div class="author__container">
         <div class="author__banner">
             <img src="../../../assets/images/books.jpg" alt="" class="author__image">
@@ -28,11 +31,6 @@ import Loading from "../../../components/Loading.vue";
 const authStore = useAuthStore()
 authStore.fetchAllBlogger()
 
-
-watchEffect(() => {
-    window.scrollTo(0, 0);
-
-})
 </script>
 <style lang="scss" scoped>
 .author__container {

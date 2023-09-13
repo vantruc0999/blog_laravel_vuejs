@@ -135,7 +135,7 @@
                 <div class="profile__card">
                     <CardNew :isCard="false" :post="post"
                         v-for="( post, index ) in  authorStore?.author?.blogger_infor?.posts " :key="index"
-                        :isProfile="true" :isMyProfile="checkMyProfile" />
+                        :isProfile="true" :isMyProfile="checkMyProfile" :isSaved="fakeVariable" />
                 </div>
             </div>
         </div>
@@ -173,6 +173,9 @@ const isOpenModalFollowed = ref(false)
 const isOpenModalFollowing = ref(false)
 const isBanned = ref(false)
 const isOpenModal = ref(false)
+const fakeVariable = () => {
+    return true
+}
 const handleOpenOptions = () => {
     isOpen.value = !isOpen.value;
 };
@@ -196,7 +199,7 @@ const handleCloseModalBan = () => {
     isOpenModal.value = false
 }
 const handleGetFollow = (id) => {
-    authorStore.getFollowAuthor(id);
+    authorStore.getFollowAuthor(refAuthor.value, id);
     authorStore.getAuthorFollowed(id)
 }
 
