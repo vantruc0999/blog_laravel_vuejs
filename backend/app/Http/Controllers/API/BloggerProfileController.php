@@ -46,6 +46,7 @@ class BloggerProfileController extends Controller
             $blogger->number_of_following = $numberOfFollowing;
             $blogger->number_of_followers = $numberOfFollowers;
             $blogger->total_view_count = (int)$total_view;
+            $blogger->follows = $blogger->follows;
 
             $blogger->posts = $blogger
                 ->posts()

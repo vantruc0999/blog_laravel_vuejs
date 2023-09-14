@@ -38,6 +38,7 @@ Route::prefix('/posts')->group(function () {
     Route::get('/highlight/get-most-like', [PostController::class, 'getMostLikePosts']);
     Route::get('/highlight/get-most-view', [PostController::class, 'getMostViewPosts']);
     Route::get('/filter/filter-post', [PostController::class, 'filterPost']);
+    Route::get('/filter/filter-post2', [PostController::class, 'filterPost2']);
 });
 
 Route::prefix('/blogger')->group(function () {
@@ -65,6 +66,7 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/update-post/{slug}', [PostController::class, 'update']);
         Route::delete('/delete-post/{slug}', [PostController::class, 'delete']);
         Route::get('/author/get-post-by-author', [PostController::class, 'getPostsByMyFollowing']);
+        Route::get('/draft/get-all-draft', [PostController::class, 'getDraftPosts']);
     });
 
     Route::prefix('/comment')->group(function () {

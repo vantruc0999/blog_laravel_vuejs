@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\AddPostRequest;
 use App\Http\Requests\PostRequest;
 use App\Http\Requests\UpdatePostRequest;
+use App\Models\Blogger;
 use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Follow;
@@ -17,6 +18,7 @@ use Carbon\Carbon;
 use DateTime;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 
@@ -45,6 +47,7 @@ class PostController extends Controller
             $post->comment_count = $post->comments->count();
             $post->likes_count = $post->likes->makeHidden(['created_at', 'updated_at'])->count();
             $post->saves = $post->saves->makeHidden(['created_at', 'updated_at']);
+            // $post->tags = $post->tags->makeHidden(['created_at', 'updated_at']);
             unset($post->blogger, $post->category, $post->description, $post->comments);
         }
 
@@ -73,6 +76,16 @@ class PostController extends Controller
             'banner',
             'password'
         );
+
+        $totalView = Post::where(
+            [
+                'blogger_id' => $blogger->id,
+                'status' => 1
+            ]
+        )->sum('view_count');
+
+        $blogger->total_view = (int)$totalView;
+
         return $blogger;
     }
 
@@ -161,6 +174,12 @@ class PostController extends Controller
 
             unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger);
 
+            $category_id = $post->category_id;
+
+            $relavantPosts = $this->getRelevantPosts($category_id);
+
+            $post->relavant_posts = $relavantPosts;
+
             return response([
                 "message" => "success",
                 "data" => $post
@@ -172,6 +191,18 @@ class PostController extends Controller
                 'error' => $err->getMessage()
             ], 500);
         }
+    }
+
+    private function getRelevantPosts($category_id)
+    {
+        return $this->getAllOverviewPosts(
+            Category::find($category_id)
+                ->first()   
+                ->posts()
+                ->orderBy('view_count', 'desc')
+                ->take(5)
+                ->get()
+        );
     }
 
     public function store(AddPostRequest $request)
@@ -373,20 +404,7 @@ class PostController extends Controller
             ->orderBy('likes_count', 'desc')
             ->get();
 
-        foreach ($postsWithLikeCount as $post) {
-            $post->category_name = $post->category->name;
-            $post->blogger_infor = $this->getBloggerInfor($post->blogger);
-            $post->comment_count = $post->comments->count();
-
-            unset(
-                $post->blogger,
-                $post->category,
-                $post->description,
-                $post->comments,
-                $post->blogger_id,
-                $post->category_id,
-            );
-        }
+        $postsWithLikeCount = $this->getAllOverviewPosts($postsWithLikeCount);
 
         return response([
             'message' => 'Success',
@@ -399,19 +417,8 @@ class PostController extends Controller
         $posts = Post::where('status', 1)
             ->orderBy('view_count', 'desc')
             ->get();
-        foreach ($posts as $post) {
-            $post->category_name = $post->category->name;
-            $post->blogger_infor = $this->getBloggerInfor($post->blogger);
-            $post->comment_count = $post->comments->count();
-            unset(
-                $post->blogger,
-                $post->category,
-                $post->description,
-                $post->comments,
-                $post->blogger_id,
-                $post->category_id,
-            );
-        }
+        
+        $posts = $this->getAllOverviewPosts($posts);
 
         return response([
             "message" => "success",
@@ -419,43 +426,90 @@ class PostController extends Controller
         ]);
     }
 
-    public function filterPost(Request $request)
+    public function filterPost2()
     {
         $query = Post::select('posts.*')
-            ->where('status', 1)
-            ->with('category', 'blogger')
-            ->withCount('blogger as blogger_count');
+            ->where('status', 1);
 
-        $tagId = request('tag_id');
-
-        if ($request->filled('search')) {
+        if (request('search') != "") {
             $query->when(request('search') != "", function ($query) {
-                return $query->where('title', 'like', '%' . request('search') . "%");
-                // ->orWhere('description', 'like', '%' . request('search') . '%');
+                return $query
+                    ->join('bloggers', 'posts.blogger_id', '=', 'bloggers.id')
+                    ->where('title', 'like', '%' . request('search') . '%')
+                    ->orWhere('bloggers.name', 'like', '%' . request('search') . '%');
             });
+        } else {
+            return response([
+                "message" => "success",
+                "data" =>  [],
+            ]);
         }
 
-        if ($request->filled('category_id')) {
+        if (request('category_id') != "") {
             $query->when(request('category_id') != "", function ($query) {
-                return $query->where('category_id', '=', request('category_id'));
+                return $query
+                    ->where('category_id', '=', request('category_id'));
             });
+            // $query->where('posts.category_id', '=', request('category_id'));
         }
 
-        if ($request->filled('tag_id')) {
-            $query->when($tagId, function ($query) use ($tagId) {
-                $query->whereHas('tags', function ($subQuery) use ($tagId) {
-                    $subQuery->where('tags.id', $tagId);
-                });
-            });
-        }
+        // if ($request->filled('tag_id')) {
+        //     //     $query->when($tagId, function ($query) use ($tagId) {
+        //     //         $query->whereHas('tags', function ($subQuery) use ($tagId) {
+        //     //             $subQuery->where('tags.id', $tagId);
+        //     //         });
+        //     //     });
+        //     // }
 
-        // Execute the query and retrieve the results
-        $posts = $query->get();
+        $posts = $query->distinct()->orderBy('id', 'desc')->get();
         $posts = $this->getAllOverviewPosts($posts);
 
         return response([
             "message" => "success",
             "data" =>  $posts,
+        ]);
+    }
+
+    public function filterPost()
+    {
+        $query = Post::select('posts.*')
+            ->where('status', 1);
+
+        if (request('search') != "") {
+            $query->when(request('search') != "", function ($query) {
+                return $query
+                    ->where('title', 'like', '%' . request('search') . '%');
+            });
+        } else {
+            return response([
+                "message" => "success",
+                "data" =>  [],
+            ]);
+        }
+
+        if (request('category_id') != "") {
+            $query->when(request('category_id') != "", function ($query) {
+                return $query
+                    ->where('category_id', '=', request('category_id'));
+            });
+        }
+
+        $posts = $query->distinct()->orderBy('id', 'desc')->get();
+        $posts = $this->getAllOverviewPosts($posts);
+
+        $bloggers = Blogger::where('name', 'like', '%' . request('search') . '%')->get();
+
+        foreach ($bloggers as $item) {
+            $item = $this->getBloggerInfor($item);
+            $item->number_of_following = Follow::where('blogger_id', $item->id)->count('following_id');
+            $item->number_of_followers = Follow::where('blogger_id', $item->id)->count('follower_id');
+            $item->follows = $item->follows;
+        }
+
+        return response([
+            "message" => "success",
+            "posts" =>  $posts,
+            "bloggers" => $bloggers,
         ]);
     }
 
@@ -498,5 +552,21 @@ class PostController extends Controller
                 'error' => $err->getMessage(),
             ], 500);
         }
+    }
+
+    public function getDraftPosts()
+    {
+        $posts = Post::where('status', 3)->get();
+        $posts = $this->getAllOverviewPosts($posts);
+
+        return response([
+            "message" => "success",
+            "posts" =>  $posts,
+        ]);
+    }
+
+    public function createDraftPost()
+    {
+
     }
 }
