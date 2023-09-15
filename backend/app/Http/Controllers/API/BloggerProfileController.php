@@ -410,6 +410,8 @@ class BloggerProfileController extends Controller
             if ($request->input('password')) {
                 if (!Hash::check($request->input('old_password'), Auth::user()['password']))
                     return response([
+                        'status' => 401,
+                        'error' => 'Unauthorized',
                         'message' => 'Wrong password',
                     ]);
                 $data['password'] = bcrypt($request->input('password'));
@@ -418,6 +420,7 @@ class BloggerProfileController extends Controller
             $blogger->update($data);
 
             return response([
+                'status' => 200,
                 'message' => 'Success',
                 'blogger_infor' => $blogger
             ]);
