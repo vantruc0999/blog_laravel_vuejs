@@ -176,7 +176,7 @@ class PostController extends Controller
 
             $category_id = $post->category_id;
 
-            $relavantPosts = $this->getRelevantPosts($category_id);
+            $relavantPosts = $this->getRelevantPosts($category_id, $post->id);
 
             $post->relavant_posts = $relavantPosts;
 
@@ -193,12 +193,12 @@ class PostController extends Controller
         }
     }
 
-    private function getRelevantPosts($category_id)
+    private function getRelevantPosts($category_id, $post_id)
     {
         return $this->getAllOverviewPosts(
             Category::find($category_id)
-                ->first()   
                 ->posts()
+                ->where('id', '!=', $post_id)
                 ->orderBy('view_count', 'desc')
                 ->take(5)
                 ->get()
@@ -417,7 +417,7 @@ class PostController extends Controller
         $posts = Post::where('status', 1)
             ->orderBy('view_count', 'desc')
             ->get();
-        
+
         $posts = $this->getAllOverviewPosts($posts);
 
         return response([
@@ -429,14 +429,22 @@ class PostController extends Controller
     public function filterPost2()
     {
         $query = Post::select('posts.*')
+
             ->where('status', 1);
 
         if (request('search') != "") {
             $query->when(request('search') != "", function ($query) {
                 return $query
                     ->join('bloggers', 'posts.blogger_id', '=', 'bloggers.id')
-                    ->where('title', 'like', '%' . request('search') . '%')
-                    ->orWhere('bloggers.name', 'like', '%' . request('search') . '%');
+                    ->join('post_tag', 'posts.id', '=', 'post_tag.post_id')
+                    ->join('tags', 'tags.id', '=', 'post_tag.tag_id')
+                    ->where(function ($query) {
+                        $query->where('title', 'like', '%' . request('search') . '%')
+                            ->orWhere('bloggers.name', 'like', '%' . request('search') . '%')
+                            ->orWhere('tags.name', 'like', '%' . request('search') . '%');
+                    });
+                // ->where('title', 'like', '%' . request('search') . '%')
+                // ->orWhere('bloggers.name', 'like', '%' . request('search') . '%');
             });
         } else {
             return response([
@@ -448,10 +456,12 @@ class PostController extends Controller
         if (request('category_id') != "") {
             $query->when(request('category_id') != "", function ($query) {
                 return $query
-                    ->where('category_id', '=', request('category_id'));
+                    ->where('posts.category_id', '=', request('category_id'));
             });
             // $query->where('posts.category_id', '=', request('category_id'));
         }
+        // dd($query->toSql());
+
 
         // if ($request->filled('tag_id')) {
         //     //     $query->when($tagId, function ($query) use ($tagId) {
@@ -567,6 +577,31 @@ class PostController extends Controller
 
     public function createDraftPost()
     {
+    }
 
+    public function recommendPost($query)
+    {
+        $query->select([
+            'posts.id',
+            'title',
+            'description',
+            'category_id'
+        ])
+            ->join('categories', 'posts.category_id', '=', 'categories.id')
+            ->where('posts.id', '!=', request('post_id'))
+            ->where(function ($query) {
+                $query->where('posts.category_id', '=', request('category_id'));
+            });
+
+        return $query;
+    }
+
+    public function getRecommendPost()
+    {
+        $query = Post::select('posts.*')
+            ->where('status', 1);
+        $query = $this->recommendPost($query);
+
+        return $query->get();
     }
 }
