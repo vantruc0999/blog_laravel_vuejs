@@ -1,30 +1,28 @@
 <template>
     <div class="card__container">
-        <!-- <div className="card__overlay"></div> -->
         <div class="card__image">
-            <img src="https://images.unsplash.com/photo-1682685797769-481b48222adf?ixlib=rb-4.0.3&ixid=M3wxMjA3fDF8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=870&q=80"
-                alt="">
+            <img :src="feature.imgPath" alt="">
         </div>
         <div class="card__infor">
             <div class="card__top">
-                <div class="card__category">Kiến thức</div>
+                <div class="card__category">{{ feature.category }}</div>
                 <div class="card__public">
                     <span class="card__public--time">22/08</span>
-                    <!-- <span class="card__public--author">David Dong</span> -->
                 </div>
             </div>
-            <p class="card__content">Hướng dẫn setup phòng cực chill dành cho Hướng dẫn setup phòng cực chill dành cho
-                nHướng dẫn setup phòng cực chill dành cho n người mới toàn tập</p>
+            <p class="card__content">{{ feature.content }}</p>
             <div class="card__author">
-                <img src="../assets/images/banner.png" alt="">
-                <span class="card__author--name">Dong Pham</span>
+                <img :src="feature.avatarPath" alt="">
+                <span class="card__author--name">{{ feature.author }}</span>
             </div>
         </div>
     </div>
 </template>
 
 <script setup>
-
+const props = defineProps({
+    feature: Object
+})
 </script>
 
 <style lang="scss" scoped>
@@ -36,6 +34,7 @@
     height: 272px;
     position: relative;
     border-radius: 10px;
+    max-width: 320px;
 
     &:hover {
         transform: scale(1.01);
@@ -44,7 +43,7 @@
 
 .card__image {
     img {
-        width: 100%;
+        width: 320px;
         height: 100%;
         border-radius: 16px;
         object-fit: cover;
@@ -54,13 +53,15 @@
 .card__top {
     display: flex;
     align-items: center;
-    // justify-content: space-between;
 }
 
 .card__infor {
     position: absolute;
+    background-color: rgba(0, 0, 0, 0.5);
     padding: 20px;
     max-width: 400px;
+    height: 100%;
+    border-radius: 16px;
 }
 
 .card__category {

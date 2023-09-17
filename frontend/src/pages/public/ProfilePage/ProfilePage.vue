@@ -73,7 +73,7 @@
                 </div>
                 <div class="profile__options" v-if="!checkMyProfile">
                     <button class="profile__btn" @click="handleGetFollow(authorStore?.author?.blogger_infor?.id)"
-                        v-if="!authorStore?.isFollow"><ion-icon name="person-add-outline"></ion-icon> Theo
+                        v-if="!isFollowed(userData?.id)"><ion-icon name="person-add-outline"></ion-icon> Theo
                         dõi</button>
                     <button class="profile__btn profile__btn--follow"
                         @click="handleGetFollow(authorStore?.author?.blogger_infor?.id)" v-else>Đang theo dõi
@@ -122,14 +122,10 @@
                         </div>
                     </ul>
                 </div>
-                <!-- <div class="profile__action__time">
-                    <DropDown title="Theo thời gian" :items="filterData" />
-                </div> -->
-                <!-- Card -->
                 <div class="profile__card" v-if="selectedTab === tabs[0]">
                     <CardNew :isCard="false" :post="post"
                         v-for="( post, index ) in  authorStore?.author?.blogger_infor?.posts " :key="index"
-                        :isProfile="true" :isMyProfile="checkMyProfile" :isSaved="fakeVariable" />
+                        :isProfile="true" :isMyProfile="checkMyProfile" :isSaved="isSaved" />
                 </div>
                 <div class="profile__draft" v-else>
                     <div class="profile__wrap">
@@ -176,12 +172,14 @@ import { useAuthorStore } from "../../../stores/authorStore"
 import ModalFollowed from "../../../components/ModalFollowed.vue"
 import ModalFollowing from "../../../components/ModalFollowing.vue"
 import ModalController from "../../../components/ModalController.vue"
+import { usePostStore } from "../../../stores/postStore"
 
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
-
+const postStore = usePostStore()
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
+console.log("check==", userData.value?.id);
 const checkMyProfile = ref(false)
 const route = useRoute();
 const refAuthor = ref(route.params.id)
@@ -196,22 +194,38 @@ const tabs = ref([
     { name: 'Lưu nháp', icon: '<ion-icon name="layers-outline"></ion-icon>' }
 ]);
 const selectedTab = ref(tabs.value[0]);
+// check follow
+const getUserFollow = computed(() => {
+    return authorStore.author?.blogger_infor?.follows.map((user) => user?.follower_id)
+})
 
-const fakeVariable = () => {
-    return true
-}
+const isFollowed = (id) => {
+    console.log("🚀 ~ file: ProfilePage.vue:205 ~ isFollowed ~ id:", id)
+    if (getUserFollow.value?.length > 0) {
+        return getUserFollow.value.includes(id)
+    } else {
+        return false
+    }
+};
+// const fakeVariable = () => {
+//     return false
+// }
+// saved
+const getIdOfFavorites = computed(() => {
+    return postStore?.favorites.map((favorites) => favorites?.id)
+})
+
+const isSaved = (id) => {
+    if (getIdOfFavorites.value.length > 0) {
+        return getIdOfFavorites.value.includes(id)
+    } else {
+        return false
+    }
+};
+// open options
 const handleOpenOptions = () => {
     isOpen.value = !isOpen.value;
 };
-// const filterData = [{
-//     title: "Theo ngày gần nhất",
-//     link: "#"
-// },
-// {
-//     title: "Theo ngày xa nhất",
-//     link: "#"
-// },
-// ]
 
 const handleOpenBanned = () => {
     isBanned.value = !isBanned.value;
@@ -253,7 +267,6 @@ const handleOpenFollowing = () => {
 const handleCloseFollowing = () => {
     isOpenModalFollowing.value = false
 }
-
 
 const getProfileAuthor = computed(() => {
     return authorStore.getAuthorById(refAuthor.value)

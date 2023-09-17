@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import { AuthorService } from "../services/authorServices";
-import router from "../route/router";
+import { PostService } from "../services/postServices";
 import { AuthService } from "../services/authServices";
 
 export const useAuthorStore = defineStore("authorStore", {
@@ -70,6 +70,16 @@ export const useAuthorStore = defineStore("authorStore", {
         console.log(error)
       }
     },
-    
+    async deletePost(authorId,id) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.deletepost(id);
+        await this.getAuthorById(authorId)
+        toast.success("Xóa bài viết thành công.");
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
   },
 });

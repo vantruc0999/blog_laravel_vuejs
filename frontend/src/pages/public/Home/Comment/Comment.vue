@@ -7,27 +7,20 @@
                 <span class="comment__top--report">(Nếu thấy bình luận spam, các bạn bấm report giúp admin nhé)</span>
             </div>
             <div class="comment__user">
-                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData.value?.profile_image" alt="avatar"
-                    v-if="userData.value?.profile_image">
-                <img src="../../../../assets/images/banner.png" alt="" v-else>
+                <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore.user.blogger_info?.profile_image" alt="avatar"
+                    v-if="authStore.user.blogger_info?.profile_image">
+                <img src="../assets/images/avatar-default.png" alt="" v-else>
+                <EmojiPicker v-if="showEmojiPicker" :native="true" @select="onSelectEmoji" class="comment__emoji" />
+                <ion-icon name="happy-outline" @click="toggleEmojiPicker"></ion-icon>
                 <input type="text" placeholder="Viết bình luận của bạn..." v-model="commentDescription">
                 <ion-icon name="send-outline" class="comment__icon" @click="handlePostComment"></ion-icon>
             </div>
             <span class="comment__close" @click="handleOpenComment">
                 <ion-icon name="close-outline"></ion-icon>
             </span>
-            <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments" :key="index">
+            <div class="comment__list" v-for="(comment, index) in postStore.post?.data?.comments" :key="index"
+                @click="onCloseEmoji">
                 <CommentUser :comment="comment" :idPost="postStore.post?.data?.id" :isOpen="isOpen" />
-                <div class="comment__more">
-                    <div class="comment__answer" @click="handleOpenCommentSub">
-                        Xem 1 câu trả lời
-                        <ion-icon name="chevron-down-outline" v-if="!isOpenCommentDetail"></ion-icon>
-                        <ion-icon name="chevron-up-outline" v-else></ion-icon>
-                    </div>
-                    <div class="comment__answers">
-                        <CommentUser :comment="comment" :isOpen="isOpen" v-if="isOpenCommentDetail" />
-                    </div>
-                </div>
             </div>
         </div>
     </div>
@@ -42,25 +35,40 @@ import {
 import {
     usePostStore
 } from "../../../../stores/postStore";
+import EmojiPicker from 'vue3-emoji-picker'
+
 import CommentUser from "./CommentUser.vue"
+import { useAuthStore } from "../../../../stores/authStore";
 const props = defineProps({
     isOpenComment: Boolean,
     handleOpenComment: Function,
     idPost: String
 });
 const postStore = usePostStore()
+const authStore = useAuthStore()
+
 const userData = ref(JSON.parse(localStorage.getItem("user")));
+// console.log("🚀 ~ file: Comment.vue:48 ~ userData:", userData.value.id)
+
+
 const commentDescription = ref('');
+const showEmojiPicker = ref(false);
 const isScrollEnabled = ref(false);
-const isOpenCommentDetail = ref(false)
 const editorConfig = ref({
     placeholder: 'Nhập nội dung...'
 });
 const editorData = ref('');
-// open option
-const handleOpenCommentSub = () => {
-    isOpenCommentDetail.value = !isOpenCommentDetail.value;
+
+
+const toggleEmojiPicker = () => {
+    showEmojiPicker.value = !showEmojiPicker.value;
+};
+const onCloseEmoji = () => {
+    showEmojiPicker.value = false
 }
+const onSelectEmoji = (emoji) => {
+    commentDescription.value += emoji.i;
+};
 
 const formData = new FormData();
 formData.append('commentDescription', commentDescription.value)
@@ -140,7 +148,19 @@ onMounted(async () => {
             display: flex;
             align-items: center;
             margin-top: 80px;
-            gap: 20px;
+            gap: 10px;
+            position: relative;
+
+            ion-icon {
+                cursor: pointer;
+                font-size: 20px;
+            }
+
+            .comment__emoji {
+                position: absolute;
+                width: 250px;
+                top: 40px;
+            }
 
             img {
                 width: 40px;
@@ -167,28 +187,7 @@ onMounted(async () => {
 
         .comment__list {
             display: flex;
-            overflow-y: scroll;
             flex-direction: column;
-
-            .comment__more {
-                margin-left: 40px;
-
-                .comment__answer {
-                    display: flex;
-                    align-items: center;
-                    gap: 5px;
-                    color: var(--black-color);
-                    font-size: 15px;
-                    font-weight: 600;
-                    cursor: pointer;
-                }
-
-                .comment__answers {
-                    border-left: 1px solid var(--green-color);
-                    padding-left: 10px;
-
-                }
-            }
         }
     }
 }

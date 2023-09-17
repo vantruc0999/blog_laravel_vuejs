@@ -4,13 +4,12 @@
             <a-tab-pane key="1" tab="Dành cho bạn">
                 <!-- <ForYouPage /> -->
                 <!-- :isSaved="isSaved" -->
-                <CardNew :isCard="true" :post="post" v-for="(post, index) in paginatedItems " :key="index" />
+                <CardNew :isCard="true" :isSaved="isSaved" :post="post" v-for="(post, index) in paginatedItems "
+                    :key="index" />
             </a-tab-pane>
             <a-tab-pane key="2" tab="Theo tác giả" force-render>
-                <ForYouPage />
-            </a-tab-pane>
-            <a-tab-pane key="3" tab="Đánh giá cao">
-                <ForYouPage />
+                <CardNew :isCard="true" :isSaved="isSaved" :post="post" v-for="(post, index) in postStore.postsAuthor "
+                    :key="index" />
             </a-tab-pane>
         </a-tabs>
         <div class="pagination__wrapper">
@@ -32,14 +31,7 @@ import ForYouPage from "./PageContent/foryoupage.vue"
 // import PageChange from "../../../../components/PageChange.vue"
 import { ref, computed, onMounted } from 'vue';
 
-// const getIdOfFavorites = computed(() => {
-//     return postStore?.favorites.map((favorites) => favorites?.id)
-// })
 
-// const isSaved = (id) => {
-//     const favoriteIds = getIdOfFavorites.value;
-//     return favoriteIds.includes(id);
-// }
 const activeKey = ref('1');
 const postStore = usePostStore()
 const currentPage = ref(1);
@@ -52,10 +44,10 @@ const paginatedItems = computed(() => {
     const endIndex = startIndex + itemsPerPage;
     return postStore?.posts.slice(startIndex, endIndex);
 });
-const handleGetFilterPage = (data) => {
-    plantStore.plants = data;
-    currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
-};
+// const handleGetFilterPage = (data) => {
+//     plantStore.plants = data;
+//     currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
+// };
 const handleGoNewPage = (page) => {
     currentPage.value = page
 }
@@ -69,9 +61,22 @@ const handleGoPrevPage = () => {
         currentPage.value--;
     }
 };
+// is Favorites (saved)
+const getIdOfFavorites = computed(() => {
+    return postStore?.favorites.map((favorites) => favorites?.id)
+})
+
+const isSaved = (id) => {
+    if (getIdOfFavorites.value.length > 0) {
+        return getIdOfFavorites.value.includes(id)
+    } else {
+        return false
+    }
+};
 onMounted(async () => {
     await postStore.fetchAllPosts()
     await postStore.getAllSavePosts()
+    await postStore.fetchPostsByFollowAuhor()
 })
 </script>
 <style lang="scss" scoped>

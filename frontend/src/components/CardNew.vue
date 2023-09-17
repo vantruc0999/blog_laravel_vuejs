@@ -6,7 +6,12 @@
                 <div class="card__categori">{{ post?.category_name }}</div>
                 <div class="card__icon">
                     <!-- :class="{ 'activeBookMark': isSaved(post?.id) }" -->
-                    <ion-icon name="bookmark-outline" class="card__bookmark " @click="handleSavePost(post?.id)"></ion-icon>
+                    <ion-icon v-if="isSaved(post?.id)" name="bookmark-outline" class="card__bookmark activeBookMark"
+                        @click="handleSavePost(post?.id)"></ion-icon>
+                    <ion-icon v-else name="bookmark-outline" class="card__bookmark"
+                        @click="handleSavePost(post?.id)"></ion-icon>
+                    <!-- <ion-icon name="bookmark-outline" class="card__bookmark " @click="handleSavePost(post?.id)"></ion-icon>
+                    <ion-icon name="bookmark-outline" class="card__bookmark " @click="handleSavePost(post?.id)"></ion-icon> -->
                     <ion-icon name="ellipsis-vertical-outline" class="card__menu" @click="handleOpenOption"
                         v-if="props.post?.blogger_id === userData?.value?.id"></ion-icon>
                     <div class="card__options" v-if="isOpen">
@@ -69,9 +74,10 @@
                 <!--  -->
                 <ion-icon v-if="isSaved(post?.id)" name="bookmark-outline" class="blog__bookmark activeBookMark"
                     @click="handleSavePost(post?.id)"></ion-icon>
-                <ion-icon v-else name="bookmark-outline" class="blog__bookmark"
-                    @click="handleSavePost(post?.id)"></ion-icon>
-                <ion-icon name="ellipsis-vertical-outline" class="blog__menu" v-if="isMyProfile"
+                <ion-icon v-else name="bookmark-outline" class="blog__bookmark" @click="handleSavePost(post?.id)"
+                    v-if="authStore.user.blogger_info?.id != props.post?.blogger_infor?.id"></ion-icon>
+                <ion-icon name="ellipsis-vertical-outline" class="blog__menu"
+                    v-if="authStore.user.blogger_info?.id === props.post?.blogger_infor?.id"
                     @click="handleOpenOption"></ion-icon>
                 <div class="card__options" v-if="isOpen">
                     <router-link :to="`/updated-post/${post?.id}`" class="card__options--edit">
@@ -139,11 +145,12 @@ import { usePostStore } from "../stores/postStore";
 import ModalController from "../components/ModalController.vue"
 import { useRoute } from 'vue-router';
 import { useAuthStore } from "../stores/authStore";
+import { useAuthorStore } from "../stores/authorStore";
 
 const route = useRoute();
 const postStore = usePostStore()
-
 const authStore = useAuthStore()
+const authorStore = useAuthorStore()
 // Định nghĩa prop "message"
 const props = defineProps({
     isCard: Boolean,
@@ -155,6 +162,8 @@ const props = defineProps({
 })
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
+const checkAuthen = ref(JSON.parse(localStorage.getItem("isAuthen")));
+console.log("🚀 ~ file: CardNew.vue:166 ~ checkAuthenn:", checkAuthen.value)
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
 
@@ -165,7 +174,7 @@ const closeModel = () => {
     isOpenModal.value = false
 }
 const handleDeletePost = () => {
-    authStore.deletePost(idTemp.value)
+    authorStore.deletePost(userData.value?.id, idTemp.value)
 }
 
 // open option

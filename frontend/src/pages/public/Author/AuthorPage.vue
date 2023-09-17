@@ -30,7 +30,6 @@ import Loading from "../../../components/Loading.vue";
 
 const authStore = useAuthStore()
 authStore.fetchAllBlogger()
-
 </script>
 <style lang="scss" scoped>
 .author__container {
