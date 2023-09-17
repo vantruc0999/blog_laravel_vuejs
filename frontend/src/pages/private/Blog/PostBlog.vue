@@ -6,9 +6,10 @@
                     <textarea v-model="title" ref="textarea" :style="{ height: `${height}px` }" class="editor__input"
                         @input="handleResize" placeholder="Nhập tiêu đề của bạn..."></textarea>
                     <p class="message">{{ titleLength }}/150</p>
-                    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig"></ckeditor>
+                    <ckeditor :editor="editor" v-model="editorData" :config="editorConfig" style="
+    height: 200px"></ckeditor>
                 </div>
-                <div class="editor__tool">
+                <div class=" editor__tool">
                     <span class="editor__title">Thể loại</span>
                     <div class="editor__category">
                         <a-select v-model="selectedCategory" placeholder="Thể loại" @change="handleCategoryChange">
@@ -37,7 +38,8 @@
                     </div>
                     <div class="editor__controller">
                         <div class="editor__btn">Hủy</div>
-                        <div class="editor__btn editor__btn--submit" @click="handlePostBlog" :disabled="!isFormValid">Đăng
+                        <div class="editor__btn editor__btn--submit" @click="handlePostBlog" :disabled="!isFormValid">
+                            Đăng
                             bài
                         </div>
                     </div>
@@ -52,7 +54,7 @@ import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { usePostStore } from '../../../stores/postStore';
 // import CKEditor from '@ckeditor/ckeditor5-vue';
 // import { Select } from 'ant-design-vue';
-
+import uploadImage from "../../../utils/uploadImage"
 const postStore = usePostStore();
 postStore.getAllTags();
 
@@ -77,9 +79,23 @@ const imagePath = ref(null);
 const editor = ref(ClassicEditor);
 const editorData = ref('');
 
+function uploader(editor) {
+    editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
+        return new uploadImage(loader)
+    }
+}
+
+
 const editorConfig = ref({
-    placeholder: 'Nhập nội dung...'
+    placeholder: 'Nhập nội dung...',
+    extraPlugins: [uploader]
 });
+
+
+
+
+
+
 
 const height = ref(35);
 const title = ref('');
@@ -181,13 +197,13 @@ const handlePostBlog = () => {
     formData.append('title', submittedTitle)
     formData.append('intro', submittedIntro)
     formData.append('description', submittedEditorData)
+    console.log("🚀 ~ file: PostBlog.vue:199 ~ handlePostBlog ~ submittedEditorData:", submittedEditorData)
     formData.append('category_id', selectedTagData.id)
     formData.append('banner', imagePath.value)
     formData.append('tags', selectedTagById.value)
 
-    console.log("🚀 ~ file: BlogEditor.vue:134 ~ handlePostBlog ~ blogData:", formData)
+    // console.log("🚀 ~ file: BlogEditor.vue:134 ~ handlePostBlog ~ blogData:", formData)
     postStore.actCreatePost(formData)
-
     title.value = '';
     intro.value = '';
     editorData.value = '';
@@ -235,7 +251,7 @@ const handlePostBlog = () => {
                 resize: none;
                 height: auto;
                 min-height: 35px;
-                font-size: 30px;
+                font-size: 25px;
                 font-family: Montserrat, Raleway, sans-serif;
                 line-height: 3rem;
                 font-weight: 700;
@@ -297,6 +313,7 @@ const handlePostBlog = () => {
         width: 100%;
         height: 100%;
         opacity: 0;
+        z-index: 2;
         object-fit: cover;
         cursor: pointer;
     }
@@ -312,6 +329,7 @@ const handlePostBlog = () => {
         font-weight: bold;
         opacity: 0.8;
         pointer-events: none;
+        z-index: 1;
     }
 
     .image-select:hover::before {
@@ -361,5 +379,9 @@ const handlePostBlog = () => {
     .ck.ck-editor__main>.ck-editor__editable:not(.ck-focused) {
         border-color: red !important;
     }
+}
+
+.ck-blurred {
+    height: 400px;
 }
 </style>

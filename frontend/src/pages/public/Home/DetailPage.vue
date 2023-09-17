@@ -49,7 +49,12 @@
                             </div>
                         </router-link>
                         <div class="detail__user__right">
-                            <span class="detail__user__icon">
+                            <span class="detail__user__icon activeBookMark" v-if="isSaved(postStore.post?.data?.id)"
+                                @click="handleSavePost(postStore.post?.data?.id)">
+                                <ion-icon name="bookmark-outline"></ion-icon>
+                            </span>
+                            <span class="detail__user__icon activeBookMark"
+                                @click="handleSavePost(postStore.post?.data?.id)" v-else>
                                 <ion-icon name="bookmark-outline"></ion-icon>
                             </span>
                             <span class="detail__user__icon">
@@ -68,42 +73,41 @@
         </div>
         <h1 class="detail__related__title">Bài viết liên quan</h1>
         <div class="detail__related">
-            <span class="detail__controller">
+            <!-- <span class="detail__controller">
                 <ion-icon name="arrow-back-outline"></ion-icon>
-            </span>
+            </span> -->
             <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
                 :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
                 <swiper-slide v-for="(post, index) in postsWithSameCategoryId">
                     <CardNew :isSaved="isSaved" :post="post" :key="index" />
                 </swiper-slide>
             </swiper>
-
             <!-- <swiper :slides-per-view="4" :space-between="20" ref="swiper" class="detail__swiper">
                 <swiper-slide v-for="(post, index) in postsWithSameCategoryId">
                     <CardNew :isSaved="fakeVariable" :post="post" :key="index" />
                 </swiper-slide>
             </swiper> -->
-            <span class="detail__controller">
+            <!-- <span class="detail__controller">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
-            </span>
+            </span> -->
         </div>
 
         <!-- Special -->
         <h1 class="detail__related__title">Bài viết nổi bật</h1>
 
         <div class="detail__related">
-            <span class="detail__controller">
+            <!-- <span class="detail__controller">
                 <ion-icon name="arrow-back-outline"></ion-icon>
-            </span>
+            </span> -->
             <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
                 :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
                 <swiper-slide v-for="(post, index) in sortedPostByView" :key="index">
                     <CardNew :isSaved="isSaved" :post="post" />
                 </swiper-slide>
             </swiper>
-            <span class="detail__controller">
+            <!-- <span class="detail__controller">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
-            </span>
+            </span> -->
         </div>
     </div>
     <Comment :isOpenComment="isOpenComment" :handleOpenComment="handleOpenComment" :idPost="postId" />
@@ -138,6 +142,18 @@ const postId = ref(refDetail)
 const isLike = ref(false)
 let isOpenComment = ref(false);
 const userData = ref(JSON.parse(localStorage.getItem("user")));
+const isAuth = ref(JSON.parse(localStorage.getItem("isLogin")));
+console.log("🚀 ~ file: DetailPage.vue:146 ~ isAuth:", isAuth.value)
+const handleCheckAuthen = computed(() => {
+    if (isAuth.value == false) {
+        route.push('auth/signin')
+        return false
+    }
+    else {
+        return true
+    }
+})
+console.log("check auth", handleCheckAuthen.value);
 const getDetailPost = computed(() => {
     return postStore.getPostById(refDetail.value)
 })
@@ -158,6 +174,10 @@ const sortPostsByView = (posts) => {
 const sortedPostByView = computed(() => {
     return sortPostsByView(postStore?.posts)
 });
+// handle Save Posts
+const handleSavePost = (id) => {
+    postStore.savePost(id)
+}
 // check save (favorites)
 const getIdOfFavorites = computed(() => {
     return postStore?.favorites.map((favorites) => favorites?.id)
@@ -170,7 +190,6 @@ const isSaved = (id) => {
         return false
     }
 };
-
 
 watch(() => route.params, (newId) => {
     postStore.getPostById(newId)
@@ -361,6 +380,7 @@ const fakeVariable = () => {
     padding: 5px;
 }
 
+
 .detail__related__title {
     margin: 80px 0px 30px 0px;
     padding-top: 10px;
@@ -378,5 +398,9 @@ const fakeVariable = () => {
         width: 35px;
         height: 3px;
     }
+}
+
+.activeBookMark {
+    color: var(--secondary-color);
 }
 </style>

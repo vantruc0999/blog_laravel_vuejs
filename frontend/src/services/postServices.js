@@ -6,12 +6,14 @@ import {
   API_DELETEPOST,
   API_POSTCOMMENT,
   API_DELETECOMMENT,
+  API_REPLYCOMMENT,
   API_GETALLTAGS,
   API_EDITCOMMENT,
   API_LIKEPOST,
   API_SAVEPOST,
   API_GETALLSAVEPOST,
-  API_SEARCHPOST
+  API_SEARCHPOST,
+  API_GETPOSTAUTHORFOLLOWING
 } from "../config/apis";
 
 export const PostService = {
@@ -39,6 +41,9 @@ export const PostService = {
   deletecomment(id) {
     return httpClient.delete(`${API_DELETECOMMENT}/${id}`)
   },
+  replycomment(id) {
+    return httpClient.post(`${API_REPLYCOMMENT}/${id}`)
+  },
   getalltags() {
     return httpClient.get(API_GETALLTAGS)
   },
@@ -53,5 +58,8 @@ export const PostService = {
   },
   searchPost(searchText) {
     return httpClient.get(`${API_SEARCHPOST}=${searchText}`)
+  },
+  getpostfollowauthor() {
+    return httpClient.get(API_GETPOSTAUTHORFOLLOWING)
   }
 };

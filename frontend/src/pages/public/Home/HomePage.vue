@@ -11,7 +11,6 @@
                     chúng tôi cung cấp cho bạn một nền tảng để tìm hiểu, chia sẻ và trao đổi thông tin. Với những bài viết
                     độc đáo và nội dung sáng tạo. </p>
                 <button class="home__button">Tìm hiểu</button>
-
             </div>
             <div class="home__image">
                 <img src="../../../assets/images/banner.png" />
@@ -23,22 +22,10 @@
             <div class="home__card">
                 <h2 class="home__card--title">Tính năng</h2>
                 <div class="card__render">
-                    <swiper :modules="modules" :loop="true" :slides-per-view="3" :space-between="50" navigation
+                    <swiper :modules="modules" :loop="true" :slides-per-view="3.5" :space-between="50" navigation
                         :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange">
-                        <swiper-slide>
-                            <CardFeature />
-                        </swiper-slide>
-                        <swiper-slide>
-                            <CardFeature />
-                        </swiper-slide>
-                        <swiper-slide>
-                            <CardFeature />
-                        </swiper-slide>
-                        <swiper-slide>
-                            <CardFeature />
-                        </swiper-slide>
-                        <swiper-slide>
-                            <CardFeature />
+                        <swiper-slide v-for="(feature, index) in fakeData" :key="index">
+                            <CardFeature :feature="feature" />
                         </swiper-slide>
                     </swiper>
 
@@ -105,6 +92,41 @@ import 'swiper/css/scrollbar';
 import { usePostStore } from "../../../stores/postStore";
 import { useAuthStore } from "../../../stores/authStore";
 
+// Fake data
+const fakeData = [
+    {
+        id: 1,
+        imgPath: "https://plus.unsplash.com/premium_photo-1685366445883-709973744248?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
+        content: "Tập thể thao để tăng cường sức khỏe, chứ không phải để làm kiểng. Hãy chăm chỉ tập thể thao nhé",
+        author: "Alex Sandra",
+        avatarPath: "https://images.unsplash.com/photo-1438761681033-6461ffad8d80?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        category: "Thể thao"
+    },
+    {
+        id: 2,
+        imgPath: "https://plus.unsplash.com/premium_photo-1683133980156-52903fae39e9?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+        content: "Mỹ đã bắn hai quả đại pháo đến Trung Quốc nhằm giải tán nguy cơ xâm lược Hoàng Sa, Trường xa",
+        author: "Uchiha Itachi",
+        avatarPath: "https://plus.unsplash.com/premium_photo-1678197937465-bdbc4ed95815?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
+        category: "Chính trị"
+    },
+    {
+        id: 3,
+        imgPath: "https://plus.unsplash.com/premium_photo-1675324517011-24d2c741c22f?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80",
+        content: "Sau vụ cháy chung cư mini ở Hà Nội, giao dịch bất động sản có sự biến động rất lớn",
+        author: "Bất động sản xanh",
+        avatarPath: "https://images.unsplash.com/photo-1492681290082-e932832941e6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2071&q=80",
+        category: "Bất động sản"
+    },
+    {
+        id: 4,
+        imgPath: "https://images.unsplash.com/photo-1578191290994-f02a85fee202?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2021&q=80",
+        content: "Sau vụ cháy chung cư mini ở Hà Nội, giao dịch bất động sản có sự biến động rất lớn",
+        author: "Bất động sản xanh",
+        avatarPath: "https://images.unsplash.com/photo-1616179054043-7570cd0d47d6?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=1887&q=80",
+        category: "Chính trị"
+    },
+]
 // Store
 const postStore = usePostStore()
 const authStore = useAuthStore()
@@ -121,6 +143,7 @@ const scrollToTop = () => {
         behavior: 'smooth',
     });
 };
+
 // Call api
 // const handleGetDataSave = async () => {
 //     await postStore.getAllSavePosts()

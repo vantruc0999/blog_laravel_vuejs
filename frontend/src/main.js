@@ -8,7 +8,8 @@ import { createPinia } from "pinia";
 import CKEditor from "@ckeditor/ckeditor5-vue";
 import Antd from 'ant-design-vue';
 import 'ant-design-vue/dist/reset.css';
-
+import Cloudinary from 'cloudinary-vue';
+import 'vue3-emoji-picker/css'
 
 createApp(App)
   .use(Antd)
@@ -16,4 +17,9 @@ createApp(App)
   .use(VueToastify)
   .use(createPinia())
   .use(router)
+  .use(Cloudinary, {
+    configuration: {
+      cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME,
+    },
+  })
   .mount("#app");

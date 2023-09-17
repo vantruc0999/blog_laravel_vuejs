@@ -19,11 +19,17 @@
         </div>
         <div class="tab__content">
             <div class="tab__post" v-if="selectedTab === 'Theo bài viết'">
-                <CardNew :isCard="true" :post="post" v-for="(post, index) in postStore.dataSearch?.data" :key="index"
+                <CardNew :isCard="true" :post="post" v-for="(post, index) in postStore.dataSearch?.posts" :key="index"
                     :isSaved="isSaved" />
             </div>
             <div class="tab__author" v-else>
-                Đây là author
+                <router-link to="/" class="tab__author__wrapper" v-for="(author, index) in postStore.dataSearch?.bloggers"
+                    :key="index">
+                    <img class="tab__author__avatar" :src="'http://127.0.0.1:8000/images/avatar/' + author?.profile_image"
+                        alt="" v-if="author?.profile_image">
+                    <img class="tab__author__avatar" src="../../../../assets/images/avatar-default.png" alt="" v-else>
+                    <div class="tab__author__name">{{ author?.name }}</div>
+                </router-link>
             </div>
         </div>
     </div>
@@ -35,6 +41,7 @@ import CardNew from "./CardNew.vue";
 import { usePostStore } from "../stores/postStore";
 import Loading from "./Loading.vue";
 import { useRoute } from "vue-router";
+import SignatureAuthor from "../pages/public/Home/RelatedPage/SignatureAuthor.vue";
 
 const postStore = usePostStore();
 postStore.getAllTags();
@@ -147,6 +154,38 @@ const fakeVariable = () => {
             display: flex;
             flex-direction: column;
             gap: 20px;
+        }
+
+        .tab__author {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            width: 100%;
+            gap: 20px;
+
+            .tab__author__wrapper {
+                cursor: pointer;
+                display: flex;
+                align-items: center;
+                gap: 20px;
+                box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px, rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+                max-width: 720px;
+                width: 100%;
+                padding: 15px;
+                border-radius: 8px;
+                height: 75px;
+
+                .tab__author__avatar {
+                    width: 50px;
+                    height: 50px;
+                    object-fit: cover;
+                    border-radius: 50%;
+                }
+
+                .tab__author__name {
+                    font-weight: 700;
+                }
+
+            }
         }
     }
 }

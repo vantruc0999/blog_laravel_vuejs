@@ -1,7 +1,6 @@
 import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import { AuthService } from "../services/authServices";
-import { PostService } from "../services/postServices";
 import router from "../route/router";
 
 export const useAuthStore = defineStore("authStore", {
@@ -40,6 +39,7 @@ export const useAuthStore = defineStore("authStore", {
         localStorage.setItem("token", response.data.access_token);
         localStorage.setItem("user", JSON.stringify(response.data.blogger_infor));
         localStorage.setItem("isLogin", "true");
+        localStorage.setItem("isAuthen", "true");
         router.push('/'); 
         this.isLoading = false;
       } catch (error) {
@@ -97,6 +97,7 @@ export const useAuthStore = defineStore("authStore", {
         localStorage.removeItem("token");
         localStorage.removeItem("isLogin");
         localStorage.removeItem("user");
+        localStorage.setItem("isAuthen", "false");
         this.isLogin = false;
         router.push("/auth/signin");
       } catch (error) {
@@ -110,6 +111,7 @@ export const useAuthStore = defineStore("authStore", {
         const response = await AuthService.getallblogger();
         if(response?.data) {
           this.users = response?.data;
+          console.log("🚀 ~ file: authStore.js:112 ~ fetchAllBlogger ~ response?.data:", response?.data)
           this.isLoading = false;
         }
         this.isLoading = false;
@@ -127,18 +129,6 @@ export const useAuthStore = defineStore("authStore", {
         this.isLoading = false;
       }catch (error) {
         console.error(error);
-      }
-    },
-    async deletePost(id) {
-      try {
-        this.isLoading = true;
-        const response = await PostService.deletepost(id);
-        this.getMyProfile()
-        // this.posts = this.posts.filter(post => post.id !== id);
-        toast.success("Xóa bài viết thành công.");
-        this.isLoading = false;
-      } catch (error) {
-        console.log(error);
       }
     },
     async updateMyProfile(data) {

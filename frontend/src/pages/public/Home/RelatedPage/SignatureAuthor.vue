@@ -1,6 +1,9 @@
 <template >
     <div class="signature__wrapper">
-        <div class="signature__user">
+        <div v-if="authorStore.isLoading" class="loading">
+            <LoadingSmall />
+        </div>
+        <div class="signature__user" v-else>
             <router-link :to="`/profile/${author?.id}`">
                 <div class="signature__user__left">
                     <img class="signature__user__img" :src="'http://127.0.0.1:8000/images/avatar/' + author?.profile_image"
@@ -12,6 +15,7 @@
                     </div>
                 </div>
             </router-link>
+
             <div class="signature__user__right">
                 <button class="signature__user__btn signature__user__btn--follow " @click="handleGetFollow(author?.id)"
                     v-if="!checkRef && !authorStore?.isFollowed">Theo dõi
@@ -27,22 +31,37 @@
     </div>
 </template>
 <script setup>
-import { watchEffect, onMounted, ref } from "vue"
+import { watchEffect, onMounted, ref, computed } from "vue"
 import { useAuthorStore } from "../../../../stores/authorStore";
-
+import LoadingSmall from "../../../../components/LoadingSmall.vue"
 const authorStore = useAuthorStore()
 const props = defineProps({
     author: Object,
     isFollow: Function
 })
+console.log("hellos", props.author?.follows);
 const checkRef = ref(false)
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-// console.log("first", props.isFollow(userData.value?.id))
+
 const handleGetFollow = (id) => {
     authorStore.getFollowAuthor(userData.value?.id, id);
     authorStore.getAuthorFollowed(id)
 }
 
+
+// const getUserFollow = computed(() => {
+//     return props.author?.follows.map((user) => user?.follower_id)
+// })
+// console.log("🚀 ~ file: SignatureAuthor.vue:53 ~ getUserFollow ~ getUserFollow:", getUserFollow.value)
+
+// const isFollowed = (id) => {
+//     console.log("🚀 ~ file: ProfilePage.vue:205 ~ isFollowed ~ id:", id)
+//     if (getUserFollow.value?.length > 0) {
+//         return getUserFollow.value.includes(id)
+//     } else {
+//         return false
+//     }
+// };
 const handleCheckFollow = (id) => {
     const result = props.author?.follows?.find(fl => fl.id == id)
     if (result) {
@@ -63,6 +82,13 @@ watchEffect(() => {
 })
 </script>
 <style lang="scss" scoped>
+.loading {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
 .signature__wrapper {
     width: 100%;
 

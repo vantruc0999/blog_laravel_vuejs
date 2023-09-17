@@ -14,6 +14,9 @@
     "@vueup/vue-quill": "^1.2.0",
     "ant-design-vue": "^4.0.1",
     "axios": "^1.5.0",
+    "cloudinary": "^1.40.0",
+    "cloudinary-vue": "^1.2.4",
+    "dotenv": "^16.3.1",
     "formik": "^2.4.3",
     "iview": "^3.5.4",
     "node-sass": "^9.0.0",
@@ -23,11 +26,14 @@
     "uuid": "^9.0.0",
     "vue": "^3.3.4",
     "vue-awesome-swiper": "^5.0.1",
+    "vue-emoji-mart": "^1.0.5",
     "vue-router": "^4.2.4",
+    "vue3-emoji-picker": "^1.1.7",
     "vue3-toastify": "^0.1.12",
     "yup": "^1.2.0"
   },
   "devDependencies": {
+    "@types/node": "^20.6.0",
     "@vitejs/plugin-vue": "^4.2.3",
     "sass": "^1.66.1",
     "vite": "^4.4.5"

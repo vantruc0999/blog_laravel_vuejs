@@ -11,6 +11,7 @@ export const API_UPDATEPOST = "/posts/update-post"
 export const API_DELETEPOST = "/posts/delete-post"
 export const API_SAVEPOST = "/save"
 export const API_GETALLSAVEPOST = '/save/get-saved-post'
+export const API_GETPOSTAUTHORFOLLOWING = '/posts/author/get-post-by-author'
 // BLOGGER
 export const API_GETALLBLOGGER = '/bloggers'
 export const API_GETAUTHOR = '/blogger'
@@ -24,6 +25,7 @@ export const API_GETFOLLOWING = "/blogger/me/view-following"
 export const API_POSTCOMMENT = '/comment'
 export const API_EDITCOMMENT = 'comment/edit-comment'
 export const API_DELETECOMMENT = '/comment/delete-comment'
+export const API_REPLYCOMMENT = "/comment/reply-comment"
 // GET TAGS
 export const API_GETALLTAGS = '/categories-tags'
 // LIKE POST

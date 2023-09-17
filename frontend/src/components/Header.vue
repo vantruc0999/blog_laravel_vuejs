@@ -59,6 +59,19 @@
             </div>
         </div>
         <!-- </div> -->
+        <div class="header__options">
+            <router-link to="/" class="header__option" v-for="(tag, index) in postStore.tags.slice(0, 6)" :key="index">
+                {{ tag.name }}
+            </router-link>
+            <ion-icon name="menu-outline" class="header__icon" @click="handleChangeOptionMenu"></ion-icon>
+            <div class="option__tag" :class="{ activeOption: isOptionMenu }">
+                <ul class="option__menu" v-for="(tag, index) in postStore.tags" :key="index">
+                    <li class=" option__item">
+                        {{ tag.name }}
+                    </li>
+                </ul>
+            </div>
+        </div>
 
     </header>
 </template>
@@ -71,12 +84,18 @@ import OptionUser from "../components/OptionUser.vue"
 import { useAuthStore } from '../stores/authStore';
 import { usePostStore } from '../stores/postStore';
 import { useRouter } from 'vue-router';
-import axios from 'axios';
 
 const authStore = useAuthStore()
 const postStore = usePostStore()
 authStore.getMyProfile()
-
+postStore.getAllTags();
+const isOptionMenu = ref(false)
+const handleChangeOptionMenu = () => {
+    isOptionMenu.value = !isOptionMenu.value
+}
+const handleCloseOptionMenu = () => {
+    isOptionMenu.value = false
+}
 const route = useRouter()
 let searchText = ref("")
 const isAuth = ref(localStorage.getItem("isLogin"));
@@ -103,7 +122,7 @@ const handleSearch = async () => {
 
 <style lang="scss" scoped>
 .header__container {
-    height: 80px;
+    height: 120px;
     padding: 0px 122px;
     position: fixed;
     top: 0;
@@ -114,6 +133,54 @@ const handleSearch = async () => {
     z-index: 900;
     box-shadow: 0 -2px 20px rgb(0 0 0 / 10%);
     border-bottom: 1px solid #e8ebed;
+
+    .header__options {
+        display: flex;
+        cursor: pointer;
+        justify-content: space-between;
+        gap: 20px;
+        align-items: center;
+        color: var(--text-color-4);
+        margin-top: 10px;
+        position: relative;
+
+        .header__icon {
+            font-size: 20px;
+        }
+
+        .option__tag {
+            position: absolute;
+            right: 0;
+            top: 36px;
+            width: 250px;
+            background-color: var(--white-color);
+            height: 0;
+            overflow-y: auto;
+            box-shadow: rgba(99, 99, 99, 0.2) 0px 2px 8px 0px;
+            border-radius: 2px;
+
+            .option__menu {
+                display: flex;
+                flex-direction: column;
+                color: var(--black-color);
+                font-weight: 500;
+                width: 100%;
+
+                .option__item {
+                    padding: 15px;
+                    width: 100%;
+
+                    &:hover {
+                        background-color: var(--border-color);
+                    }
+                }
+            }
+        }
+
+        .activeOption {
+            min-height: 500px;
+        }
+    }
 }
 
 .header__top {

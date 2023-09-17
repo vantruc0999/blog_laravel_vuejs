@@ -117,7 +117,6 @@ const tagNames = computed(() => {
         return [];
     }
 });
-console.log("🚀 ~ file: UpdatedBlog.vue:108 ~ tagNames ~ tagNames:", tagNames.value)
 const textarea = ref('');
 
 const maxIntroLength = 100;
@@ -280,7 +279,7 @@ watchEffect(() => {
                 resize: none;
                 height: auto;
                 min-height: 35px;
-                font-size: 30px;
+                font-size: 25px;
                 font-family: Montserrat, Raleway, sans-serif;
                 line-height: 3rem;
                 font-weight: 700;

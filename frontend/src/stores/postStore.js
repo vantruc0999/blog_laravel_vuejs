@@ -8,9 +8,11 @@ export const usePostStore = defineStore("postStore", {
   state: () => ({
     posts: [],
     post: {},
+    postsAuthor: [],
     favorites: [],
     comments: [],
     comment: {},
+    replyComments: [],
     tags: [],
     isLoading: false,
     dataSearch: []
@@ -23,6 +25,20 @@ export const usePostStore = defineStore("postStore", {
         if(response?.data?.data) {
           this.posts = response?.data?.data;
           console.log("store" , response?.data?.data);
+          this.isLoading = false;
+        }
+      } catch (error) {
+        this.isLoading = false;
+        console.log(error);
+      }
+    },
+    async fetchPostsByFollowAuhor() {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getpostfollowauthor();
+        if(response?.data?.data) {
+          this.postsAuthor = response?.data?.data;
+          // console.log("🚀 ~ file: postStore.js:40 ~ fetchPostsByFollowAuhor ~ this.postsAuthor:", this.postsAuthor)
           this.isLoading = false;
         }
       } catch (error) {
@@ -59,7 +75,7 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.getpostbyid(postId);
         // console.log("🚀 ~ file: postStore.js:57 ~ getPostById ~ response?.data:", response?.data)
         this.post = response?.data;
-        // console.log("🚀 ~ file: postStore.js:44 ~ getPostById ~ this.post:", this.post)
+        console.log("🚀 ~ file: postStore.js:44 ~ getPostById ~ this.post:", this.post)
         this.isLoading = false;
       } catch (error) {
         console.log(error);
@@ -95,9 +111,9 @@ export const usePostStore = defineStore("postStore", {
         console.log(error);
       }
     },
+
     async postComment(id, commentDescription) {
       try {
-        this.isLoading = true;
         const response = await PostService.postcomment(id, commentDescription);
         this.getPostById(id)
         const { comment } = response.data;
@@ -112,9 +128,24 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = false;
       }
     },
+    async replyComment(id, commentDescription) {
+      try {
+        const response = await PostService.replycomment(id, commentDescription);
+        this.getPostById(id)
+        const { comment } = response.data;
+        const postIndex = this.posts.findIndex(post => post.id === id);
+        if (postIndex !== -1) {
+          this.posts[postIndex].replyComments.push(comment);
+        }
+        toast.success("Bình luận của bạn đã được đăng.");
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+        this.isLoading = false;
+      }
+    },
    async editComment(postId,idComment, postData) {
       try {
-        this.isLoading = true;
         const response = await PostService.editcomment(idComment, postData);
         const updatedPost = response?.data;
         this.getPostById(postId)
@@ -133,7 +164,6 @@ export const usePostStore = defineStore("postStore", {
     },
     async deleteComment(postId,commentId) {
       try {
-        this.isLoading = true;
         const response = await PostService.deletecomment(commentId);
         this.getPostById(postId)
         this.posts.forEach(post => {
@@ -181,6 +211,7 @@ export const usePostStore = defineStore("postStore", {
           this.posts[index] = savedPost;
         }
         this.getAllSavePosts()
+        this.isLoading = false;
       } catch (error) {
         console.log(error);
         this.isLoading = false;
@@ -190,9 +221,10 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const data = await axios(`http://127.0.0.1:8000/api/posts/filter/filter-post?search=${searchText}&category_id=${category}`)
+        console.log("🚀 ~ file: postStore.js:206 ~ searchPost ~ data:", data)
         if(data) {
           this.dataSearch = data.data
-          console.log("=======",data.data);
+          console.log("=======",this.dataSearch);
           this.isLoading = false
         } 
       } catch (error) {

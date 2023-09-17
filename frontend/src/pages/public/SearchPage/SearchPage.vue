@@ -30,6 +30,10 @@ const route = useRoute();
         font-weight: 700;
     }
 
+    .search__text {
+        color: var(--primary-color);
+    }
+
     .search__tab {
         background-color: var(--white-color);
         max-width: 750px;
