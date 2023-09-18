@@ -1,0 +1,31 @@
+version: "3.8"
+
+services:
+
+  webserver:
+    image: nginx:alpine
+    container_name: webserver
+    ports:
+      - "8080:80"
+    volumes:
+      - ./backend:/var/www
+      - ./docker/nginx/conf.d/:/etc/nginx/conf.d/
+    depends_on:
+      - php
+    networks: 
+      - waocon-blog-network
+  
+  php:
+    build:
+      context: ./docker
+      dockerfile: blog.Dockerfile
+    container_name: php
+    volumes:
+      - ./backend:/var/www
+      - ./docker/php/local.ini:/usr/local/etc/php/conf.d/local.ini
+    networks:
+      - waocon-blog-network
+
+networks:
+  waocon-blog-network:
+    driver: bridge

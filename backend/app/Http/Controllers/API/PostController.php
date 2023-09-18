@@ -139,6 +139,24 @@ class PostController extends Controller
         return $post;
     }
 
+    private function handleCommentByPost($id)
+    {
+        $comments = Comment::where('post_id', $id)
+            ->whereNull('parent_id')
+            ->get();
+
+        foreach ($comments as $comment) {
+            $comment->replies = Comment::with(['blogger' => function ($query) {
+                $query->select(['id', 'name', 'email', 'profile_image']);
+            }])
+                ->where('parent_id', $comment->id)
+                ->get()
+                ->makeHidden(['updated_at']);
+        }
+
+        return $this->getCommentInfors($comments);
+    }
+
     public function getDetailPostById($id)
     {
         $post = $this->checkActivePost($id);
@@ -157,7 +175,7 @@ class PostController extends Controller
             $post->category_name = $post->category->name;
             $post->blogger_name = $post->blogger->name;
             $post->likes_count = $post->likes->count();
-            $post->comments = $this->getCommentInfors($post->comments);
+            $post->comments = $this->handleCommentByPost($id);
             $post->tags = $this->getTagsInfor($post->tags);
             $post->blogger_infor = $this->getBloggerInfor($post->blogger);
 
@@ -429,22 +447,34 @@ class PostController extends Controller
     public function filterPost2()
     {
         $query = Post::select('posts.*')
-
             ->where('status', 1);
 
         if (request('search') != "") {
+            // $query->when(request('search') != "", function ($query) {
+            //     return $query
+            //         // ->join('bloggers', 'posts.blogger_id', '=', 'bloggers.id')
+            //         // ->join('post_tag', 'posts.id', '=', 'post_tag.post_id')
+            //         // ->join('tags', 'tags.id', '=', 'post_tag.tag_id')
+            //         ->where(function ($query) {
+            //             $query->where('title', 'like', '%' . request('search') . '%')
+            //                 ->orWhere('bloggers.name', 'like', '%' . request('search') . '%')
+            //                 ->orWhere('tags.name', 'like', '%' . request('search') . '%');
+            //         });
+            // });
+
             $query->when(request('search') != "", function ($query) {
                 return $query
-                    ->join('bloggers', 'posts.blogger_id', '=', 'bloggers.id')
-                    ->join('post_tag', 'posts.id', '=', 'post_tag.post_id')
-                    ->join('tags', 'tags.id', '=', 'post_tag.tag_id')
+                    ->with(['blogger', 'tags'])
                     ->where(function ($query) {
-                        $query->where('title', 'like', '%' . request('search') . '%')
-                            ->orWhere('bloggers.name', 'like', '%' . request('search') . '%')
-                            ->orWhere('tags.name', 'like', '%' . request('search') . '%');
+                        $searchTerm = '%' . request('search') . '%';
+                        $query->where('title', 'like', $searchTerm)
+                            ->orWhereHas('blogger', function ($query) use ($searchTerm) {
+                                $query->where('name', 'like', $searchTerm);
+                            })
+                            ->orWhereHas('tags', function ($query) use ($searchTerm) {
+                                $query->where('name', 'like', $searchTerm);
+                            });
                     });
-                // ->where('title', 'like', '%' . request('search') . '%')
-                // ->orWhere('bloggers.name', 'like', '%' . request('search') . '%');
             });
         } else {
             return response([
@@ -575,6 +605,40 @@ class PostController extends Controller
         ]);
     }
 
+    public function getPendingPost()
+    {
+        $posts = Post::where('status', 0)->get();
+        $posts = $this->getAllOverviewPosts($posts);
+
+        return response([
+            "message" => "success",
+            "posts" =>  $posts,
+        ]);
+    }
+
+    public function getPublishedPost()
+    {
+        $posts = Post::where('status', 1)->get();
+        $posts = $this->getAllOverviewPosts($posts);
+
+        return response([
+            "message" => "success",
+            "posts" =>  $posts,
+        ]);
+    }
+
+    public function getPostByCategoryId($id)
+    {
+        $posts = Category::find($id)->posts;
+
+        $posts = $this->getAllOverviewPosts($posts);
+
+        return response([
+            "message" => "success",
+            "posts" =>  $posts,
+        ]);
+    }
+
     public function createDraftPost()
     {
     }
@@ -584,17 +648,35 @@ class PostController extends Controller
         $query->select([
             'posts.id',
             'title',
+            'intro',
             'description',
-            'category_id'
+            'category_id',
+            'categories.name',
+            'bloggers.name'
         ])
             ->join('categories', 'posts.category_id', '=', 'categories.id')
+            ->join('bloggers', 'posts.blogger_id', '=', 'bloggers.id')
             ->where('posts.id', '!=', request('post_id'))
             ->where(function ($query) {
-                $query->where('posts.category_id', '=', request('category_id'));
+                $query->where('posts.category_id', '=', request('category_id'))
+                    ->orWhere('posts.blogger_id', '=', request('blogger_id'));
             });
 
         return $query;
     }
+
+    // public function recommendPost($query)
+    // {
+    //     $categoryId = request('category_id');
+
+    //     return $query
+    //         ->select(['id', 'title', 'intro', 'description', 'category_id'])
+    //         ->where('id', '!=', request('post_id'))
+    //         ->whereHas('category', function ($query) use ($categoryId) {
+    //             $query->where('id', $categoryId);
+    //         })
+    //         ->with('category:name'); // Assuming your Category model has a 'name' field
+    // }
 
     public function getRecommendPost()
     {

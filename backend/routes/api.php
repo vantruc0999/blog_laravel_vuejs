@@ -40,6 +40,7 @@ Route::prefix('/posts')->group(function () {
     Route::get('/filter/filter-post', [PostController::class, 'filterPost']);
     Route::get('/filter/filter-post2', [PostController::class, 'filterPost2']);
     Route::get('/recommend/recommend-posts', [PostController::class, 'getRecommendPost']);
+    Route::get('/category/{id}', [PostController::class, 'getPostByCategoryId']);
 });
 
 Route::prefix('/blogger')->group(function () {
