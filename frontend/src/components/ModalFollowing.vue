@@ -51,6 +51,7 @@ const props = defineProps({
 })
 
 const authorStore = useAuthorStore()
+console.log("check", authorStore?.authorsFollowing);
 
 onMounted(async () => {
     await authorStore.getFollowing();

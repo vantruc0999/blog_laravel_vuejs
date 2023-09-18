@@ -10,6 +10,7 @@ export const useAuthorStore = defineStore("authorStore", {
     author: {},
     authorsFollowed: [],
     authorsFollowing: [],
+    users: [],
     isLoading: false,
     isFollowed: false,
     notFollowed: false
@@ -28,7 +29,7 @@ export const useAuthorStore = defineStore("authorStore", {
     },
     async getFollowing() {
       try {
-        this.isLoading = true;
+        // this.isLoading = true;
         const response = await AuthorService.getfollowing();
         this.authorsFollowing = response?.data?.my_following
         this.isLoading = false;
@@ -36,10 +37,24 @@ export const useAuthorStore = defineStore("authorStore", {
         console.log(error)
       }
     },
-    async getFollowAuthor(authorId, id) {
+    async fetchAllBlogger() {
       try {
         this.isLoading = true;
+        const response = await AuthService.getallblogger();
+        if(response?.data) {
+          this.users = response?.data;
+          this.isLoading = false;
+        }
+        this.isLoading = false;
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async getFollowAuthor(authorId, id) {
+      try {
+        // this.isLoading = true;
         const response = await AuthorService.getfollowauthor(id);
+        this.fetchAllBlogger()
         this.getFollowing()
         this.getAuthorById(authorId)
         this.isLoading = false;

@@ -6,22 +6,38 @@
                 <!-- :isSaved="isSaved" -->
                 <CardNew :isCard="true" :isSaved="isSaved" :post="post" v-for="(post, index) in paginatedItems "
                     :key="index" />
+                <div class="pagination__wrapper">
+                    <div class="pagination__page " @click="handleGoPrevPage()"><ion-icon
+                            name="arrow-back-outline"></ion-icon>
+                    </div>
+                    <span v-for="page in totalPages" :key="page" class="pagination__page "
+                        :class="{ ' pagination__active': page === currentPage }" @click="handleGoNewPage(page)">
+                        {{ page }}
+                    </span>
+                    <div class="pagination__page " @click="handleGoNextPage()"><ion-icon
+                            name="arrow-forward-outline"></ion-icon>
+                    </div>
+                </div>
             </a-tab-pane>
             <a-tab-pane key="2" tab="Theo tác giả" force-render>
-                <CardNew :isCard="true" :isSaved="isSaved" :post="post" v-for="(post, index) in postStore.postsAuthor "
+                <CardNew :isCard="true" :isSaved="isSaved" :post="post" v-for="(post, index) in paginatedItemsFollow "
                     :key="index" />
+                <div class="pagination__wrapper">
+                    <div class="pagination__page " @click="handleGoPrevPageFollow()"><ion-icon
+                            name="arrow-back-outline"></ion-icon>
+                    </div>
+                    <span v-for="pageFollow in totalPagesFollow" :key="pageFollow" class="pagination__page "
+                        :class="{ ' pagination__active': pageFollow === currentPageFollow }"
+                        @click="handleGoNewPageFollow(pageFollow)">
+                        {{ pageFollow }}
+                    </span>
+                    <div class="pagination__page " @click="handleGoNextPageFollow()"><ion-icon
+                            name="arrow-forward-outline"></ion-icon>
+                    </div>
+                </div>
             </a-tab-pane>
         </a-tabs>
-        <div class="pagination__wrapper">
-            <div class="pagination__page " @click="handleGoPrevPage()"><ion-icon name="arrow-back-outline"></ion-icon>
-            </div>
-            <span v-for="page in totalPages" :key="page" class="pagination__page "
-                :class="{ ' pagination__active': page === currentPage }" @click="handleGoNewPage(page)">
-                {{ page }}
-            </span>
-            <div class="pagination__page " @click="handleGoNextPage()"><ion-icon name="arrow-forward-outline"></ion-icon>
-            </div>
-        </div>
+
     </div>
 </template>
 <script setup>
@@ -32,10 +48,11 @@ import ForYouPage from "./PageContent/foryoupage.vue"
 import { ref, computed, onMounted } from 'vue';
 
 
-const activeKey = ref('1');
 const postStore = usePostStore()
+// author post
+const activeKey = ref('1');
 const currentPage = ref(1);
-const itemsPerPage = 15;
+const itemsPerPage = 20;
 
 const totalItems = computed(() => postStore?.posts?.length);
 const totalPages = computed(() => Math.ceil(totalItems.value / itemsPerPage));
@@ -44,10 +61,6 @@ const paginatedItems = computed(() => {
     const endIndex = startIndex + itemsPerPage;
     return postStore?.posts.slice(startIndex, endIndex);
 });
-// const handleGetFilterPage = (data) => {
-//     plantStore.plants = data;
-//     currentPage.value = 1; // Reset trang khi áp dụng bộ lọc mới
-// };
 const handleGoNewPage = (page) => {
     currentPage.value = page
 }
@@ -61,6 +74,31 @@ const handleGoPrevPage = () => {
         currentPage.value--;
     }
 };
+// follow author post
+const currentPageFollow = ref(1);
+const itemsPerPageFollow = 20;
+
+const totalItemsFollow = computed(() => postStore.postsAuthor?.length);
+const totalPagesFollow = computed(() => Math.ceil(totalItemsFollow.value / itemsPerPageFollow));
+const paginatedItemsFollow = computed(() => {
+    const startIndexFollow = (currentPageFollow.value - 1) * itemsPerPageFollow;
+    const endIndexFolow = startIndexFollow + itemsPerPageFollow;
+    return postStore?.posts.slice(startIndexFollow, endIndexFolow);
+});
+const handleGoNewPageFollow = (page) => {
+    currentPageFollow.value = page
+}
+const handleGoNextPageFollow = () => {
+    if (currentPageFollow.value < totalPagesFollow.value) {
+        currentPageFollow.value++;
+    }
+};
+const handleGoPrevPageFollow = () => {
+    if (currentPageFollow.value > 1) {
+        currentPageFollow.value--;
+    }
+};
+
 // is Favorites (saved)
 const getIdOfFavorites = computed(() => {
     return postStore?.favorites.map((favorites) => favorites?.id)

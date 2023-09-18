@@ -3,7 +3,7 @@
         <div v-if="authorStore.isLoading" class="loading">
             <LoadingSmall />
         </div>
-        <div class="signature__user" v-else>
+        <div class="signature__user">
             <router-link :to="`/profile/${author?.id}`">
                 <div class="signature__user__left">
                     <img class="signature__user__img" :src="'http://127.0.0.1:8000/images/avatar/' + author?.profile_image"
@@ -17,69 +17,47 @@
             </router-link>
 
             <div class="signature__user__right">
-                <button class="signature__user__btn signature__user__btn--follow " @click="handleGetFollow(author?.id)"
-                    v-if="!checkRef && !authorStore?.isFollowed">Theo dõi
+                <button class="signature__user__btn signature__user__btn--follow " v-if="!handleCheckFollow()"
+                    @click="handleToggleFollow(author?.id)">Theo dõi
                     <ion-icon name="person-add-outline"></ion-icon>
                 </button>
-                <button class="signature__user__btn signature__user__btn--followed" @click="handleGetFollow(author?.id)"
-                    v-else>Đang theo dõi
+                <button class="signature__user__btn signature__user__btn--followed" v-else
+                    @click="handleToggleFollow(author?.id)">Đang theo dõi
                     <ion-icon name="checkmark-circle-outline"></ion-icon>
                 </button>
             </div>
-
         </div>
     </div>
 </template>
 <script setup>
-import { watchEffect, onMounted, ref, computed } from "vue"
+import { ref } from "vue"
 import { useAuthorStore } from "../../../../stores/authorStore";
-import LoadingSmall from "../../../../components/LoadingSmall.vue"
+// import LoadingSmall from "../../../../components/LoadingSmall.vue"
 const authorStore = useAuthorStore()
 const props = defineProps({
     author: Object,
-    isFollow: Function
+    handleFollow: Function
 })
-console.log("hellos", props.author?.follows);
+
 const checkRef = ref(false)
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 
-const handleGetFollow = (id) => {
-    authorStore.getFollowAuthor(userData.value?.id, id);
-    authorStore.getAuthorFollowed(id)
-}
-
-
-// const getUserFollow = computed(() => {
-//     return props.author?.follows.map((user) => user?.follower_id)
-// })
-// console.log("🚀 ~ file: SignatureAuthor.vue:53 ~ getUserFollow ~ getUserFollow:", getUserFollow.value)
-
-// const isFollowed = (id) => {
-//     console.log("🚀 ~ file: ProfilePage.vue:205 ~ isFollowed ~ id:", id)
-//     if (getUserFollow.value?.length > 0) {
-//         return getUserFollow.value.includes(id)
-//     } else {
-//         return false
-//     }
-// };
-const handleCheckFollow = (id) => {
-    const result = props.author?.follows?.find(fl => fl.id == id)
-    if (result) {
-        checkRef.value = true;
+const handleCheckFollow = () => {
+    if (props.author?.follows?.length > 0) {
+        const result = props.author.follows.map((user) => user.follower_id).includes(userData.value?.id);
+        if (result === true) {
+            return true
+        } else {
+            return false
+        }
     } else {
-        checkRef.value = false
+        return false
     }
 }
 
-onMounted(async () => {
-    await authorStore.getAuthorFollowed(props.author?.id)
-    await handleCheckFollow(userData.value?.id)
-});
-
-watchEffect(() => {
-    window.scrollTo(0, 0);
-
-})
+const handleToggleFollow = (id) => {
+    authorStore.getFollowAuthor(userData.value.id, id)
+}
 </script>
 <style lang="scss" scoped>
 .loading {

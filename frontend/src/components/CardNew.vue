@@ -163,7 +163,7 @@ const props = defineProps({
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const checkAuthen = ref(JSON.parse(localStorage.getItem("isAuthen")));
-console.log("🚀 ~ file: CardNew.vue:166 ~ checkAuthenn:", checkAuthen.value)
+// console.log("🚀 ~ file: CardNew.vue:166 ~ checkAuthenn:", checkAuthen.value)
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
 
@@ -213,7 +213,7 @@ const handleSavePost = (id) => {
 //  Card 
 .card {
     display: flex;
-    margin-bottom: 20px;
+    margin-bottom: 50px;
 
     .card__right {
         width: 100%;

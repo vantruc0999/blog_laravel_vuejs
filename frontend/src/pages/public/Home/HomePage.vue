@@ -90,7 +90,7 @@ import 'swiper/css/navigation';
 import 'swiper/css/pagination';
 import 'swiper/css/scrollbar';
 import { usePostStore } from "../../../stores/postStore";
-import { useAuthStore } from "../../../stores/authStore";
+// import { useAuthStore } from "../../../stores/authStore";
 
 // Fake data
 const fakeData = [
@@ -129,20 +129,8 @@ const fakeData = [
 ]
 // Store
 const postStore = usePostStore()
-const authStore = useAuthStore()
+// const authStore = useAuthStore()
 const showButton = ref(false);
-
-const handleScroll = (event) => {
-    const scrollPosition = event.target.scrollTop;
-    showButton.value = scrollPosition >= 300;
-};
-
-const scrollToTop = () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth',
-    });
-};
 
 // Call api
 // const handleGetDataSave = async () => {

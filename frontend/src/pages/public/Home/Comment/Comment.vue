@@ -77,18 +77,18 @@ const handlePostComment = async () => {
         description: commentDescription.value
     }
     postStore.postComment(props.idPost, payload)
-    await getDetailPost.value;
+    // await getDetailPost.value;
     commentDescription.value = ''
 }
 
-const getDetailPost = computed(() => {
-    return postStore.getPostById(props.idPost)
-})
+// const getDetailPost = computed(() => {
+//     return postStore.getPostById(props.idPost)
+// })
 
-onMounted(async () => {
-    await getDetailPost.value;
-    await handlePostComment
-});
+// onMounted(async () => {
+//     await getDetailPost.value;
+//     await handlePostComment
+// });
 </script>
 
 <style lang="scss" scoped>

@@ -17,7 +17,7 @@ const route = useRoute();
 <style lang="scss" scoped>
 .search__container {
     // padding: 100px 400px 0px 400px;
-    margin: 100px auto;
+    margin: 140px auto;
     width: 100%;
     display: flex;
     justify-content: center;

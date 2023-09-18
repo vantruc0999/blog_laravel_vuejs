@@ -1,8 +1,8 @@
 <template >
     <div class="container">
         <img :src="'http://127.0.0.1:8000/images/avatar/' + comment?.blogger_image" alt="avatar"
-                                v-if="comment?.blogger_image">
-                            <img src="../../../../assets/images/banner.png" alt="" v-else>
+            v-if="comment?.blogger_image">
+        <img src="../../../../assets/images/banner.png" alt="" v-else>
         <div class="comment__people">
             <div class="comment__list--user">
                 <span class="comment__list--name">{{ comment.blogger_name }}</span>
@@ -23,9 +23,9 @@
                 </div>
                 <div class="comment__reply__user" v-if="isAnswer">
                     <div class="comment__user">
-                        <img :src="'http://127.0.0.1:8000/images/avatar/' + comment?.blogger_image" alt="avatar"
-                            v-if="comment?.blogger_image">
-                        <img src="../../../../assets/images/banner.png" alt="" v-else>
+                        <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore.user.blogger_info?.profile_image"
+                            alt="avatar" v-if="authStore.user.blogger_info?.profile_image">
+                        <img src="../assets/images/avatar-default.png" alt="" v-else>
                         <EmojiPicker v-if="showEmojiPicker" :native="true" @select="onSelectEmoji" class="comment__emoji" />
                         <ion-icon name="happy-outline" @click="toggleEmojiPicker"></ion-icon>
                         <input type="text" placeholder="Viết câu trả lời..." v-model="commentDescription">
@@ -46,14 +46,15 @@
             </div>
         </div>
     </div>
-    <div class="comment__more">
+    <div class="comment__more" v-if="comment?.replies?.length > 0">
         <div class="comment__answer" @click="handleOpenCommentSub">
-            Xem 1 câu trả lời
+            Xem {{ comment?.replies?.length }} câu trả lời
             <ion-icon name="chevron-down-outline" v-if="!isOpenCommentDetail"></ion-icon>
             <ion-icon name="chevron-up-outline" v-else></ion-icon>
         </div>
         <div class="comment__answers">
-            <CommentUser :comment="comment" :isOpen="isOpen" v-if="isOpenCommentDetail" />
+            <CommentUser :comment="reply" :isOpen="isOpen" v-for="(reply, index) in comment?.replies" :key="index"
+                v-if="isOpenCommentDetail" />
         </div>
     </div>
     <ModalController title="You want to delete this comment?"
@@ -63,7 +64,8 @@
 <script setup>
 import {
     ref,
-    computed
+    computed,
+    onMounted
 } from "vue";
 import { usePostStore } from "../../../../stores/postStore"
 import ModalController from "../../../../components/ModalController.vue"
@@ -75,7 +77,7 @@ const props = defineProps({
     handleOpenOption: Function,
     idPost: String,
 });
-
+console.log("check author", props.comment?.id);
 const tempCommentId = ref(props.comment?.id)
 const postStore = usePostStore()
 const authStore = useAuthStore()
@@ -87,6 +89,8 @@ const isOpen = ref(false)
 const isOpenEdit = ref(true)
 const editCommentValue = ref(props.comment?.description)
 const showEmojiPicker = ref(true);
+const commentDescription = ref('');
+
 // open emoji
 const toggleEmojiPicker = () => {
     showEmojiPicker.value = !showEmojiPicker.value;
@@ -97,7 +101,25 @@ const onCloseEmoji = () => {
 const onSelectEmoji = (emoji) => {
     commentDescription.value += emoji.i;
 };
+const formData = new FormData();
 
+formData.append('commentDescription', commentDescription.value)
+const handlePostComment = async () => {
+    const payload = {
+        description: commentDescription.value
+    }
+    postStore.replyComment(props.idPost, tempCommentId.value, payload)
+    // await getDetailPost.value;
+    commentDescription.value = ''
+}
+// const getDetailPost = computed(() => {
+//     return postStore.getPostById(props.idPost)
+// })
+
+// onMounted(async () => {
+//     await getDetailPost.value;
+//     await handlePostComment
+// });
 // open modal
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
@@ -107,12 +129,12 @@ const getBloggerID = computed(() => {
     const comments = postStore.post?.data?.comments;
     return comments.map((comment) => comment?.blogger_id);
 })
-console.log("🚀 ~ file: CommentUser.vue:95 ~ getBloggerID ~ getBloggerID:", getBloggerID.value)
+// console.log("🚀 ~ file: CommentUser.vue:95 ~ getBloggerID ~ getBloggerID:", getBloggerID.value)
 
 const isComment = (id) => {
-    console.log("🚀 ~ file: CommentUser.vue:98 ~ isComment ~ id:", id)
+    // console.log("🚀 ~ file: CommentUser.vue:98 ~ isComment ~ id:", id)
     if (getBloggerID.value.length > 0) {
-        console.log("🚀 ~ file: CommentUser.vue:101 ~ isComment ~ getBloggerID.value.includes(id):", getBloggerID.value.includes(id))
+        // console.log("🚀 ~ file: CommentUser.vue:101 ~ isComment ~ getBloggerID.value.includes(id):", getBloggerID.value.includes(id))
         return getBloggerID.value.includes(id)
     } else {
         return false
@@ -353,7 +375,7 @@ const calculateTimeAgo = (created_at) => {
 .comment__user {
     display: flex;
     align-items: center;
-    gap: 20px;
+    gap: 10px;
     // position: relative;
     // .comment__emoji {
     //     position: absolute;
