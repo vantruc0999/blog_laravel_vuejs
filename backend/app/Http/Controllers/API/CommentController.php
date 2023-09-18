@@ -138,10 +138,10 @@ class CommentController extends Controller
                 'parent_id' => $parent_id,
             ]);
 
-            return response()->json([
-                'message' => 'success',
-                'comment' =>  $comment,
-            ], 500);
+            return response([
+                "message" => "success",
+                "data" => $comment
+            ]);
         } catch (\Exception $err) {
             return response()->json([
                 'message' => 'An error occurred while replying comment',
