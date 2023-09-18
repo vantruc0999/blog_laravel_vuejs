@@ -141,18 +141,20 @@ class PostController extends Controller
 
     private function handleCommentByPost($id)
     {
-        $comments = Comment::where('post_id', $id)
+        $comments = Comment::with(['replies.blogger' => function ($query) {
+            $query->select(['id', 'name', 'email', 'profile_image']);
+        }])
+            ->where('post_id', $id)
             ->whereNull('parent_id')
-            ->get();
-
-        foreach ($comments as $comment) {
-            $comment->replies = Comment::with(['blogger' => function ($query) {
-                $query->select(['id', 'name', 'email', 'profile_image']);
-            }])
-                ->where('parent_id', $comment->id)
-                ->get()
-                ->makeHidden(['updated_at']);
-        }
+            ->get()
+            ->each(function ($comment) {
+                $comment->replies->makeHidden(['updated_at', 'blogger']);
+                $comment->replies->each(function ($item) {
+                    $item->blogger_name = $item->blogger->name;
+                    $item->blogger_email = $item->blogger->email;
+                    $item->blogger_image = $item->blogger->profile_image;
+                });
+            });
 
         return $this->getCommentInfors($comments);
     }
