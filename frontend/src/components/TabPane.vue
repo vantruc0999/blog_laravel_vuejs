@@ -23,8 +23,8 @@
                     :isSaved="isSaved" />
             </div>
             <div class="tab__author" v-else>
-                <router-link to="/" class="tab__author__wrapper" v-for="(author, index) in postStore.dataSearch?.bloggers"
-                    :key="index">
+                <router-link :to="`/profile/${author?.id}`" class="tab__author__wrapper"
+                    v-for="(author, index) in postStore.dataSearch?.bloggers" :key="index">
                     <img class="tab__author__avatar" :src="'http://127.0.0.1:8000/images/avatar/' + author?.profile_image"
                         alt="" v-if="author?.profile_image">
                     <img class="tab__author__avatar" src="../../../../assets/images/avatar-default.png" alt="" v-else>

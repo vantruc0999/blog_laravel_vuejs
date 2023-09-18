@@ -31,7 +31,7 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from "vue"
+import { computed, onMounted, ref } from "vue"
 import SignatureAuthor from '../pages/public/Home/RelatedPage/SignatureAuthor.vue';
 import { useAuthorStore } from '../stores/authorStore';
 import LoadingSmall from "../components/loadingsmall.vue"
@@ -55,7 +55,10 @@ const tabs = ref(['Người theo dõi', 'Đang theo dõi']);
 const selectedTab = ref('Người theo dõi');
 
 authorStore.getFollowered()
-console.log("followed", authorStore?.authorsFollowed)
+const handleFollow = computed(() => {
+    return authorStore?.authorsFollowing.map((user) => user.id) || []
+})
+
 </script>
 <style lang="scss" scoped>
 .container {

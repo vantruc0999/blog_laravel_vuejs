@@ -102,7 +102,6 @@ const intro = ref();
 const height = ref(35);
 watchEffect(() => {
     const post = postStore.post;
-    console.log("🚀 ~ file: UpdatedBlog.vue:100 ~ watchEffect ~ post:", post)
     if (post) {
         title.value = post.data?.title;
         intro.value = post.data?.intro;

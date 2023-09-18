@@ -17,8 +17,9 @@
                     <div class="profile__right">
                         <div class="header__right" v-if="!isAuth">
                             <div class="header__search">
-                                <input type="text" class="search__input" placeholder="Search post..." />
-                                <span class="search__icon">
+                                <input type="text" class="search__input" placeholder="Search post..."
+                                    v-model="searchText" />
+                                <span class="search__icon" @click="handleSearch">
                                     <ion-icon name="search-outline"></ion-icon>
                                 </span>
                             </div>
@@ -31,8 +32,9 @@
                         </div>
                         <div class="header__user" v-else>
                             <div class="header__user__search" v-if="$route.path !== '/blog-post'">
-                                <input type="text" class="header__user__input" placeholder="Search post..." />
-                                <span class="header__user__icon">
+                                <input type="text" class="header__user__input" placeholder="Search post..."
+                                    v-model="searchText" />
+                                <span class="header__user__icon" @click="handleSearch">
                                     <ion-icon name="search-outline"></ion-icon>
                                 </span>
                             </div>
@@ -44,9 +46,9 @@
                                 </button>
                             </router-link>
                             <div class="header__user__avatar" @click="handleOpenOptions">
-                                <img :src="'http://127.0.0.1:8000/images/avatar/' + userData?.profile_image"
-                                    class="avatar__img" v-if="userData?.profile_image" />
-                                <img src="../../../assets/images/avatar-default.png" alt="" v-else>
+                                <img :src="'http://127.0.0.1:8000/images/avatar/' + authStore.user.blogger_info?.profile_image"
+                                    alt="avatar" v-if="authStore.user.blogger_info?.profile_image">
+                                <img src="../assets/images/avatar-default.png" alt="" v-else>
                             </div>
                             <OptionUser :isOpen="isOpen" />
                         </div>
@@ -179,9 +181,9 @@ const authStore = useAuthStore()
 const postStore = usePostStore()
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-console.log("check==", userData.value?.id);
 const checkMyProfile = ref(false)
 const route = useRoute();
+const router = useRouter()
 const refAuthor = ref(route.params.id)
 const isOpen = ref(false);
 const isOpenModalFollowed = ref(false)
@@ -194,6 +196,19 @@ const tabs = ref([
     { name: 'Lưu nháp', icon: '<ion-icon name="layers-outline"></ion-icon>' }
 ]);
 const selectedTab = ref(tabs.value[0]);
+let searchText = ref("")
+
+// search
+const handleSearch = async () => {
+    const searchValue = searchText.value.trim();
+    if (searchValue) {
+        await postStore.searchPost(searchValue, "");
+        router.push({ path: '/filter/filter-post', query: { search: searchValue } });
+    } else {
+        router.push({ path: '/filter/filter-post' });
+    }
+};
+
 // check follow
 const getUserFollow = computed(() => {
     return authorStore.author?.blogger_infor?.follows.map((user) => user?.follower_id)

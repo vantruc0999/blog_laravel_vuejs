@@ -102,7 +102,7 @@
 </template>
 
 <script setup>
-import { watch, ref, onMounted } from 'vue';
+import { watch, ref, onMounted, watchEffect } from 'vue';
 import { useAuthStore } from '../../../stores/authStore';
 import Loading from "../../../components/Loading.vue"
 // store
@@ -130,6 +130,14 @@ const idOpenChangeEmail = ref(false)
 const isError = ref(false)
 const bio = ref('')
 const emailValue = ref('')
+
+
+watchEffect(() => {
+    const auth = authStore.user;
+    if (auth) {
+        bio.value = auth.blogger_info?.bio;
+    }
+});
 onMounted(async () => {
     await authStore.getMyProfile()
     genderValue.value = authStore.user?.blogger_info?.gender
@@ -140,7 +148,7 @@ const maxBioLength = 150;
 const bioLength = ref(0);
 
 const handleBioInput = () => {
-    if (bio.value.length > maxBioLength) {
+    if (bio.value?.length > maxBioLength) {
         bio.value = intro.value.slice(0, maxBioLength);
     }
 };
@@ -171,8 +179,8 @@ const handleSaveEmail = (e) => {
     }
 }
 watch(bio, (newBio) => {
-    bioLength.value = newBio.length;
-    if (newBio.length > maxBioLength) {
+    bioLength.value = newBio?.length;
+    if (newBio?.length > maxBioLength) {
         bio.value = newBio.slice(0, maxBioLength);
     }
 });
@@ -209,28 +217,33 @@ const handleBirthInput = (event) => {
     birthValue.value = event.target.value;
 };
 const handleUpdateProfile = () => {
-    if (birthValue.value) {
-        const date = new Date(birthValue.value);
-        const day = date.getDate().toString().padStart(2, '0');
-        const month = (date.getMonth() + 1).toString().padStart(2, '0');
-        const year = date.getFullYear().toString();
-        const formattedDate = `${day}/${month}/${year}`;
-        authStore.user.blogger_info.birthday = formattedDate;
-    }
     const formData = new FormData();
-    formData.append('name', authStore.user?.blogger_info?.name)
-    formData.append('bio', bio.value)
-    formData.append('profile_image', avatarPath.value)
-    formData.append('profile_banner', bannerPath.value)
-    formData.append('gender', genderValue.value)
-    formData.append('birthday', birthValue.value)
-    authStore.updateMyProfile(formData)
-    // const updatedUser = {
-    //     profile_image: authStore.user?.blogger_info?.profile_image,
-    //     name: authStore.user?.blogger_info?.name,
-    //     bio: bio.value
-    // };
-    // localStorage.setItem('user', JSON.stringify(updatedUser));
+    // Thêm các giá trị hiện có từ authStore vào formData
+    formData.append('name', authStore.user?.blogger_info?.name);
+    formData.append('bio', authStore.user?.blogger_info?.bio);
+    formData.append('gender', authStore.user?.blogger_info?.gender);
+    formData.append('birthday', authStore.user?.blogger_info?.birthday);
+
+    // Kiểm tra và thêm giá trị mới vào formData
+    if (bio.value && bio.value !== authStore.user?.blogger_info?.bio) {
+        formData.set('bio', bio.value);
+    }
+    if (avatarPath.value) {
+        // Nếu có giá trị mới cho avatarPath, thêm giá trị binary của ảnh vào formData
+        formData.append('profile_image', avatarPath.files[0]);
+    }
+    if (bannerPath.value) {
+        // Nếu có giá trị mới cho bannerPath, thêm giá trị binary của ảnh vào formData
+        formData.append('profile_banner', bannerPath.files[0]);
+    }
+    if (genderValue.value !== authStore.user?.blogger_info?.gender) {
+        formData.set('gender', genderValue.value);
+    }
+    if (birthValue.value && birthValue.value !== authStore.user?.blogger_info?.birthday) {
+        formData.set('birthday', birthValue.value);
+    }
+
+    authStore.updateMyProfile(formData);
 };
 
 // handle password
@@ -585,5 +598,205 @@ const handleCancel = () => {
 .ant-picker {
     width: 100%;
     background-color: #edf2f7;
+}
+
+@media only screen and (max-width: 1020px) {
+    .sidebar__container {
+        .account__infor {
+            .account__detail {
+                margin-top: 30px;
+                display: flex;
+                flex-direction: column;
+
+                .account__avatar {
+                    margin-left: 45%;
+                    margin-bottom: 50px;
+                }
+
+                .editor__input {
+                    width: 100%;
+                }
+            }
+
+            .temporary-image {
+                width: 100%;
+            }
+
+            .image-select {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                width: 720px;
+                height: 160px;
+                position: relative;
+            }
+
+            .image-select .temporary-image {
+                width: 100%;
+                height: 100%;
+                object-fit: cover;
+                position: absolute;
+
+            }
+
+            .image-select .image-input {
+                position: absolute;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                opacity: 0;
+                object-fit: cover;
+                cursor: pointer;
+
+            }
+
+            .image-select .image-icon {
+                cursor: pointer;
+                position: absolute;
+                top: 50%;
+                left: 50%;
+                right: 10px;
+                transform: translateY(-50%);
+                color: #999;
+                font-size: 30px;
+                z-index: -1;
+
+            }
+
+            .image-select:hover::before {
+                opacity: 1;
+            }
+
+            .forgot__form.active {
+                height: 435px;
+                transition: height 0.4s ease-in-out;
+            }
+
+            .forgot__form {
+                position: relative;
+                height: 0;
+                overflow: hidden;
+                transition: height 0.4s ease-in-out;
+
+                .forgot__field {
+                    display: flex;
+                    flex-direction: column;
+                    margin-bottom: 10px;
+
+                    .forgot__text {
+                        text-transform: uppercase;
+                        color: var(--black-color);
+                        font-weight: 600;
+                        font-size: 15px;
+                        margin-bottom: 10px;
+                    }
+
+                    .forgot__input {
+                        width: 100% height;
+                        background-color: #edf2f7;
+                        height: 50px;
+                        padding: 10px;
+                        border-radius: 12px;
+                        border: 1px solid var(--border-color);
+                    }
+
+                    .error {
+                        margin: 5px 0px;
+                        font-size: 14px;
+                        color: red;
+                    }
+                }
+
+                .forgot__button {
+                    margin-top: 10px;
+                    width: 100%;
+                    padding: 15px;
+                    border-radius: 13px;
+                    color: var(--white-color);
+                    font-weight: 600;
+                    background-color: var(--secondary-color);
+                }
+            }
+        }
+
+        .account__name {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-top: 30px;
+
+            .account__col {
+                display: flex;
+                flex-direction: column;
+                gap: 20px;
+                position: relative;
+
+                ion-icon {
+                    position: absolute;
+                    top: 51px;
+                    font-size: 18px;
+                    right: 15px;
+                    cursor: pointer;
+                }
+
+                .account__name--text {
+                    text-transform: uppercase;
+                    color: #B0A99F;
+                    font-weight: 600;
+                }
+
+                .account__name--input {
+                    cursor: pointer;
+                    width: 100% height;
+                    background-color: #edf2f7;
+                    height: 50px;
+                    padding: 5px;
+                    display: flex;
+                    justify-content: flex-start;
+                    align-items: center;
+                    border-radius: 12px;
+                    border: 1px solid var(--border-color);
+                }
+            }
+
+        }
+
+        .account__password {
+            width: 100%;
+            margin: 40px 0;
+            padding: 13px;
+            background-color: var(--white-color);
+            border-radius: 12px;
+            box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+            font-weight: 500;
+
+            &:hover {
+                background-color: #edf2f7;
+            }
+        }
+
+        .account__controller {
+            display: flex;
+            justify-content: flex-end;
+            margin-top: 30px;
+            gap: 20px;
+            font-weight: 700;
+            font-size: 16px;
+
+            .account__btn {
+                width: 110px;
+                height: 40px;
+                border-radius: 12px;
+                cursor: pointer;
+                padding: 10px;
+
+                &--save {
+                    background-image: linear-gradient(to right bottom, #2ebac1, #a4d96c);
+                    color: var(--white-color);
+                }
+            }
+        }
+    }
 }
 </style>

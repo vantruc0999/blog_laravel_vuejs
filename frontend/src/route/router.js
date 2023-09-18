@@ -18,6 +18,7 @@
   import ForYouPage from "../pages/public/Home/RelatedPage/PageContent/ForYouPage.vue"
   import SearchPage from "../pages/public/SearchPage/SearchPage.vue"
   import FavoritesPage from "../pages/public/FavoritesPage/FavoritesPage.vue"
+  import CategoriesPage from "../pages/public/CategoriesPage/CategoriesPage.vue"
   const routes = [
     {
       path: "/",
@@ -88,7 +89,11 @@
           name: "favorites",
           component: FavoritesPage,
         },
-
+        {
+          path: "/posts/category/:id",
+          name: "categories",
+          component: CategoriesPage,
+        },
       ],
     },
     {

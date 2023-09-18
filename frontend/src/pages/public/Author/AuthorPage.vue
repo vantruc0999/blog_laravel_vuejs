@@ -1,5 +1,5 @@
 <template >
-    <div v-if="authStore.isLoading">
+    <div v-if="authorStore.isLoading">
         <Loading />
     </div>
     <div class="author__container">
@@ -15,7 +15,7 @@
             <span class="author__time">Mọi thời điểm</span>
         </div>
         <div class="author__list">
-            <SignatureAuthor :author="author" v-for="(author, index) in authStore.users" :key="index" />
+            <SignatureAuthor :author="author" v-for="(author, index) in authorStore.users" :key="index" />
         </div>
     </div>
 </template>
@@ -23,13 +23,19 @@
 import SignatureAuthor from "../../../pages/public/Home/RelatedPage/SignatureAuthor.vue"
 
 import {
+    onMounted,
     watchEffect
 } from "vue";
-import { useAuthStore } from "../../../stores/authStore";
+import { useAuthorStore } from "../../../stores/authorStore";
 import Loading from "../../../components/Loading.vue";
 
-const authStore = useAuthStore()
-authStore.fetchAllBlogger()
+const authorStore = useAuthorStore()
+const handleFetchUserFollower = () => {
+    authorStore.fetchAllBlogger()
+}
+handleFetchUserFollower()
+// console.log("check", authorStore.users);
+
 </script>
 <style lang="scss" scoped>
 .author__container {

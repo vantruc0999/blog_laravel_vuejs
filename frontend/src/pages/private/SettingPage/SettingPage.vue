@@ -4,9 +4,6 @@
             <router-link to="/setting/account" class="setting__route">
                 Tài khoản
             </router-link>
-            <!-- <router-link to="/setting/account">
-            Seri
-        </router-link> -->
             <router-link to="/setting/ban" class="setting__route">
                 Đã chặn
             </router-link>
@@ -21,7 +18,7 @@
 .setting__container {
     padding: 0 140px;
     display: flex;
-    margin-top: 120px;
+    margin-top: 140px;
 
     .setting__controller {
         display: flex;
@@ -47,7 +44,26 @@
     color: #718096;
     font-weight: 700;
     transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+}
 
+@media only screen and (max-width: 1020px) {
+    .setting__container {
+        display: flex;
+        flex-direction: column;
 
+        .setting__controller {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 50px;
+        }
+    }
+
+    .router-link-exact-active {
+        border-left: none;
+        border-bottom: 4px solid var(--primary-color);
+        color: #718096;
+        font-weight: 700;
+        transition: cubic-bezier(0.075, 0.82, 0.165, 1);
+    }
 }
 </style>

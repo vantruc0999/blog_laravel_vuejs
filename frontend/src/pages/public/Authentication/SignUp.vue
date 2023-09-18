@@ -33,16 +33,6 @@
                     <ion-icon :name="showPassword ? 'eye-outline' : 'eye-off-outline'"></ion-icon>
                 </span>
             </div>
-            <div class="login__term">
-                <label class="login__label">
-                    <input type="checkbox" />
-                    <span class="login__checkmark"></span>
-                </label>
-                <p class="login__ligacy">
-                    I agree to the <span class="login__notifi">Terms of Use</span> and have read and understand the
-                    <span class="login__notifi">Privacy policy.</span>
-                </p>
-            </div>
             <button class="login__button" @click="handleSignUp">Create my account</button>
         </form>
     </div>
@@ -225,24 +215,7 @@ const togglePasswordVisibility = () => {
         cursor: pointer;
     }
 
-    .login__term {
-        display: flex;
-        column-gap: 20px;
-        align-items: center;
 
-        .login__check {
-            background-color: var(--green-color);
-        }
-
-        .login__ligacy {
-            flex: 1 1 0%;
-            color: #4B5264;
-            font-size: 14px;
-            margin-bottom: 10px;
-            line-height: 0;
-        }
-
-    }
 
     .login__notifi {
         display: inline-block;

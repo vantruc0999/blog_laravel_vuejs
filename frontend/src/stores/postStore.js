@@ -15,7 +15,8 @@ export const usePostStore = defineStore("postStore", {
     replyComments: [],
     tags: [],
     isLoading: false,
-    dataSearch: []
+    dataSearch: [],
+    dataFilters: [],
   }),
   actions: {
     async fetchAllPosts() {
@@ -128,10 +129,11 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = false;
       }
     },
-    async replyComment(id, commentDescription) {
+    async replyComment(idPost, idCommenter, commentDescription) {
+      // console.log("🚀 ~ file: postStore.js:132 ~ replyComment ~ idPost:", idPost)
       try {
-        const response = await PostService.replycomment(id, commentDescription);
-        this.getPostById(id)
+        const response = await PostService.replycomment(idCommenter, commentDescription);
+        this.getPostById(idPost)
         const { comment } = response.data;
         const postIndex = this.posts.findIndex(post => post.id === id);
         if (postIndex !== -1) {
@@ -225,6 +227,24 @@ export const usePostStore = defineStore("postStore", {
         if(data) {
           this.dataSearch = data.data
           console.log("=======",this.dataSearch);
+          this.isLoading = false
+        } 
+      } catch (error) {
+        console.log(error);
+        this.isLoading = false;
+      }
+      finally {
+        this.isLoading = false;
+      }
+    },
+    async filterByCategori(categoryId) {
+      try {
+        this.isLoading = true;
+        const data = await PostService.filterByCategori(categoryId);
+        console.log("🚀 ~ file: postStore.js:206 ~ searchPost ~ data:", data)
+        if(data) {
+          this.dataFilters = data.data.posts
+          console.log("=======",this.dataFilters);
           this.isLoading = false
         } 
       } catch (error) {

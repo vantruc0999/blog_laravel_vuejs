@@ -32,3 +32,4 @@ export const API_GETALLTAGS = '/categories-tags'
 export const API_LIKEPOST = '/like'
 // Search
 export const API_SEARCHPOST = '/posts/filter/filter-post?search'
+export const API_FILTERBYCATEGORI = '/posts/category'

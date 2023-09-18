@@ -60,12 +60,14 @@
         </div>
         <!-- </div> -->
         <div class="header__options">
-            <router-link to="/" class="header__option" v-for="(tag, index) in postStore.tags.slice(0, 6)" :key="index">
+            <router-link :to="`/posts/category/${tag?.id}`" class="header__option"
+                v-for="(tag, index) in postStore.tags.slice(0, 6)" :key="index" @click="handleFilterByCategori(tag?.id)">
                 {{ tag.name }}
             </router-link>
             <ion-icon name="menu-outline" class="header__icon" @click="handleChangeOptionMenu"></ion-icon>
             <div class="option__tag" :class="{ activeOption: isOptionMenu }">
-                <ul class="option__menu" v-for="(tag, index) in postStore.tags" :key="index">
+                <ul class="option__menu" v-for="(tag, index) in postStore.tags.slice(5)" :key="index"
+                    @click="handleFilterByCategori(tag?.id)">
                     <li class=" option__item">
                         {{ tag.name }}
                     </li>
@@ -117,6 +119,14 @@ const handleSearch = async () => {
     }
 };
 
+const handleFilterByCategori = async (id) => {
+    if (id) {
+        await postStore.filterByCategori(id);
+        this.$router.push(`/posts/category/${id}`);
+    } else {
+        this.$router.push('/posts/category/');
+    }
+}
 
 </script>
 
@@ -338,5 +348,16 @@ const handleSearch = async () => {
 
 .router-link-exact-active {
     color: var(----primary-color);
+}
+
+@media only screen and (max-width: 1020px) {
+    .header__container {
+        height: 80px;
+
+        .header__options {
+            display: none;
+        }
+    }
+
 }
 </style>

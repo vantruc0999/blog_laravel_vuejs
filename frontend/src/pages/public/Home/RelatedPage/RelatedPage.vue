@@ -10,10 +10,8 @@
                     Xem thêm
                 </router-link>
             </div>
-            <SignatureAuthor :author="author" :isFollow="isFollow" v-for="(author, index) in authStore.users.slice(0, 3)"
-                :key="index" />
+            <SignatureAuthor :author="author" v-for="(author, index) in authStore.users.slice(0, 3)" :key="index" />
         </div>
-
     </div>
 </template>
 
