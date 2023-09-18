@@ -17,6 +17,7 @@ use Filament\Resources\Form;
 use Filament\Resources\Resource;
 use Filament\Resources\Table;
 use Filament\Tables;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -68,6 +69,12 @@ class BloggerResource extends Resource
             ->columns([
                 //
                 TextColumn::make('name')->searchable()->sortable(),
+                ImageColumn::make('profile_image')
+                    ->label('Avatar')
+                    ->disk('public')
+                    ->circular()
+                    ->width(80)
+                    ->height(80),
                 TextColumn::make('email')->searchable()->sortable(),
                 TextColumn::make('bio'),
                 TextColumn::make('created_at')
