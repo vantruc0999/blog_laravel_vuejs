@@ -23,7 +23,7 @@ class BloggerProfileController extends Controller
     public function getAllBloggers()
     {
         $bloggers = Blogger::all()->makeHidden(['password']);
-        foreach($bloggers as $item){
+        foreach ($bloggers as $item) {
             $item->follows = $item->follows->makeHidden(['updated_at', 'created_at']);
         }
         return $bloggers;
@@ -127,11 +127,6 @@ class BloggerProfileController extends Controller
 
     public function updateBloggerProfile(EditBloggerProfileRequest $request)
     {
-        // if (!preg_match('/^(03|05|07|08|09)[0-9]{8}$/', $request->phone))
-        //     return response([
-        //         'message' => 'Invalid number',
-        //     ]);
-
         try {
             $blogger = Blogger::where('id', Auth::user()['id'])->first();
 
@@ -257,46 +252,33 @@ class BloggerProfileController extends Controller
         }
     }
 
-    // public function unfollow($blogger_id)
-    // {
-    //     $follow = Follow::where([
-    //         'blogger_id' => Auth::user()['id'],
-    //         'following_id' => $blogger_id,
-    //     ])->first();
+    public function checkFollow($blogger_id)
+    {
+        $follow = Follow::where(function ($query) use ($blogger_id) {
+            $query->where('blogger_id', Auth::user()['id'])
+                ->where('following_id', $blogger_id);
+        })->orWhere(function ($query) use ($blogger_id) {
+            $query->where('blogger_id', $blogger_id)
+                ->where('follower_id', Auth::user()['id']);
+        })->first();
 
-    //     $follow->delete();
+        if($follow){
+            return 1;
+        }
 
-    //     return response([
-    //         'message' => 'sucecss',
-    //     ]);
-    // }
+        return 0;
+    }
 
     public function viewMyFollowing()
     {
-        $res = array();
+        $myFollowing = array();
         $blogger_id = Auth::user()['id'];
         $follow = Blogger::find($blogger_id)->follows;
+
         foreach ($follow as $item) {
             if ($item->following_id) {
                 $myFollower = Blogger::find($item->following_id);
-                $res[] = $myFollower->makeHidden('password', 'phone', 'address', 'birthday', 'gender', 'created_at', 'updated_at');
-            }
-        }
-        return response([
-            'status' => 'success',
-            'my_following' => $res,
-        ]);
-    }
-
-    public function viewMyFollower()
-    {
-        $res = array();
-        $blogger_id = Auth::user()['id'];
-        $follow = Blogger::find($blogger_id)->follows;
-        foreach ($follow as $item) {
-            if ($item->follower_id) {
-                $myFollower = Blogger::find($item->follower_id);
-                $res[] = $myFollower->makeHidden(
+                $myFollowing[] = $myFollower->makeHidden(
                     'password',
                     'phone',
                     'address',
@@ -307,9 +289,41 @@ class BloggerProfileController extends Controller
                 );
             }
         }
+
         return response([
             'status' => 'success',
-            'my_followers' => $res,
+            'my_following' => $myFollowing,
+        ]);
+    }
+
+    public function viewMyFollower()
+    {
+        $followerList = array();
+        $blogger_id = Auth::user()['id'];
+        $follow = Blogger::find($blogger_id)->follows;
+
+        foreach ($follow as $item) {
+            if ($item->follower_id) {
+                $myFollower = Blogger::find($item->follower_id);
+                $followerList[] = $myFollower->makeHidden(
+                    'password',
+                    'phone',
+                    'address',
+                    'birthday',
+                    'gender',
+                    'created_at',
+                    'updated_at'
+                );
+            }
+        }
+
+        foreach($followerList as $item){
+            $item->is_followed = $this->checkFollow($item->id);
+        }
+
+        return response([
+            'status' => 'success',
+            'my_followers' => $followerList,
         ]);
     }
 
@@ -319,42 +333,6 @@ class BloggerProfileController extends Controller
         return response([
             'status' => 'success',
             'notifications' => $notfications,
-        ]);
-    }
-
-    public function viewCreatedPost()
-    {
-        $posts = Post::where('blogger_id', Auth::user()['id'])->get();
-
-        foreach ($posts as $item) {
-            $item->category_name = $item->category->name;
-            $item->likes_count = $item->likes->count();
-            $item->comments_count = $item->comments->count();
-            $item->blogger_infor = $item->blogger->makeHidden(
-                'password',
-                'phone',
-                'address',
-                'birthday',
-                'gender',
-                'created_at',
-                'updated_at'
-            );
-
-            unset(
-                $item->description,
-                $item->new_post,
-                $item->highlight,
-                $item->blogger_id,
-                $item->comments,
-                $item->category,
-                $item->category_id,
-                $item->pivot,
-                $item->blogger,
-            );
-        }
-        return response([
-            'status' => 'success',
-            'posts' => $posts,
         ]);
     }
 

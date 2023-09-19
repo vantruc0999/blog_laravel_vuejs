@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 
 class BloggerAuthController extends Controller
@@ -81,6 +82,11 @@ class BloggerAuthController extends Controller
                 'message' => 'Invalid username or password'
             ], 401);
         }
+    }
+
+    public function forgetPassword(){
+        $mail = Mail::send();
+        
     }
 
     public function logout()
