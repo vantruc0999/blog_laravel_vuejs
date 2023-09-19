@@ -17,8 +17,8 @@
             </router-link>
 
             <div class="signature__user__right">
-                <button class="signature__user__btn signature__user__btn--follow " v-if="!handleCheckFollow()"
-                    @click="handleToggleFollow(author?.id)">Theo dõi
+                <button class="signature__user__btn signature__user__btn--follow "
+                    v-if="!handleCheckFollow() && author.is_followed == 1" @click="handleToggleFollow(author?.id)">Theo dõi
                     <ion-icon name="person-add-outline"></ion-icon>
                 </button>
                 <button class="signature__user__btn signature__user__btn--followed" v-else
@@ -30,7 +30,7 @@
     </div>
 </template>
 <script setup>
-import { ref } from "vue"
+import { ref, onMounted } from "vue"
 import { useAuthorStore } from "../../../../stores/authorStore";
 // import LoadingSmall from "../../../../components/LoadingSmall.vue"
 const authorStore = useAuthorStore()
@@ -39,9 +39,8 @@ const props = defineProps({
     handleFollow: Function
 })
 
-const checkRef = ref(false)
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-
+console.log(".......", props.author.is_followed);
 const handleCheckFollow = () => {
     if (props.author?.follows?.length > 0) {
         const result = props.author.follows.map((user) => user.follower_id).includes(userData.value?.id);
@@ -58,6 +57,7 @@ const handleCheckFollow = () => {
 const handleToggleFollow = (id) => {
     authorStore.getFollowAuthor(userData.value.id, id)
 }
+
 </script>
 <style lang="scss" scoped>
 .loading {

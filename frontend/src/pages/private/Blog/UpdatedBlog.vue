@@ -71,12 +71,13 @@ const route = useRoute();
 const refPost = ref(route.params.id)
 const postStore = usePostStore();
 postStore.getAllTags();
+// postStore.getAllDraftPost()
+// postStore.getAllPendingPosts()
 const postUpdatedId = ref(postStore?.post?.data?.id)
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 
 const selectedCategory = ref('');
 const selectedTag = ref('');
-
 const filteredTags = ref([]);
 
 watch(() => selectedCategory.value, () => {
@@ -99,7 +100,7 @@ const editor = ref(ClassicEditor);
 const editorData = ref();
 const title = ref();
 const intro = ref();
-const height = ref(35);
+const height = ref(90);
 watchEffect(() => {
     const post = postStore.post;
     if (post) {
@@ -108,6 +109,7 @@ watchEffect(() => {
         editorData.value = post.data?.description;
     }
 });
+
 const tagNames = computed(() => {
     const tags = postStore?.post?.data?.tags;
     if (tags) {
@@ -232,10 +234,6 @@ const getDetailPost = computed(() => {
 onMounted(async () => {
     await getDetailPost.value;
 });
-watchEffect(() => {
-
-
-})
 </script>
 <style lang="scss" scoped>
 .blog__container {

@@ -1,9 +1,12 @@
 import { defineStore } from "pinia";
 import { toast } from "vue3-toastify";
 import { PostService } from "../services/postServices";
-import router from "../route/router";
 import axios from "axios";
+// import router from "../route/router";
+// import { ref } from "vue";
 
+
+// const userData = ref(JSON.parse(localStorage.getItem("user")));
 export const usePostStore = defineStore("postStore", {
   state: () => ({
     posts: [],
@@ -17,6 +20,7 @@ export const usePostStore = defineStore("postStore", {
     isLoading: false,
     dataSearch: [],
     dataFilters: [],
+    draftsPost: []
   }),
   actions: {
     async fetchAllPosts() {
@@ -64,7 +68,9 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.postblog(postData);
         this.posts.push(response.data.posts);
         toast.warning("Bài viết của bạn đang được duyệt, vui lòng đợi trong giây lát");
-        // // router.push(`/posts/${response.data.post.id}`);
+        // setTimeout(() => {
+        //   router.push(`/profile/${userData.value.id}`);
+        // }, 3000); 
         this.isLoading = false
       } catch (error) {
         console.log(error);
@@ -105,6 +111,8 @@ export const usePostStore = defineStore("postStore", {
         this.isLoading = true;
         const response = await PostService.deletepost(id);
         await this.fetchAllPosts(); 
+        await this.getAllDraftPost()
+        await this.getAllPendingPosts()
         this.posts = this.posts.filter(post => post.id !== id);
         toast.success("Xóa bài viết thành công.");
         this.isLoading = false;
@@ -253,6 +261,49 @@ export const usePostStore = defineStore("postStore", {
       }
       finally {
         this.isLoading = false;
+      }
+    },
+    async handleDraftData(draftData) {
+      try {
+        this.isLoading = true
+        const response = await PostService.draftpost(draftData);
+        this.posts.push(response.data.posts);
+        toast.warning("Bài viết của bạn đã được lưu thành công");
+        // setTimeout(() => {
+        //   router.push(`/profile/${userData.value.id}`);
+        // }, 3000); 
+        this.isLoading = false
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getAllDraftPost() {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getAllDraftPost();
+        if(response?.data?.posts) {
+          this.post = response?.data?.posts;
+          console.log("🚀 ~ file: postStore.js:284 ~ getAllDraftPost ~ this.post:", this.post)
+          this.isLoading = false;
+        }
+      } catch (error) {
+        this.isLoading = false;
+        console.log(error);
+      }
+    },
+    async getAllPendingPosts() {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getAllPendingPosts();
+        console.log("🚀 ~ file: postStore.js:296 ~ getAllPendingPosts ~ response:", response)
+        if(response?.data?.posts) {
+          this.posts = response?.data?.posts;
+          console.log("🚀 ~ file: postStore.js:284 ~ getAllDraftPost ~ this.post:", this.posts)
+          this.isLoading = false;
+        }
+      } catch (error) {
+        this.isLoading = false;
+        console.log(error);
       }
     },
   },

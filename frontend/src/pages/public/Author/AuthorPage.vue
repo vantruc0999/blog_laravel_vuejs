@@ -34,7 +34,8 @@ const handleFetchUserFollower = () => {
     authorStore.fetchAllBlogger()
 }
 handleFetchUserFollower()
-// console.log("check", authorStore.users);
+
+console.log("check", authorStore.users);
 
 </script>
 <style lang="scss" scoped>

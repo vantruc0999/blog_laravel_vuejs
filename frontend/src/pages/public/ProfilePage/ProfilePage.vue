@@ -88,7 +88,7 @@
                         </div>
                         <ModalController title="Bạn có chắc muốn chặn người dùng này?"
                             content="Nếu người dùng này gây ảnh hưởng tới bạn hãy chặn họ để tránh việc giảm trải nghiệm của bạn khi sử dụng MONKEY BLOG"
-                            :closeModel="handleCloseModalBan" :isOpenModal="isOpenModal" :handleDelete="handleDeletePost" />
+                            :closeModel="handleCloseModalBan" :isOpenModal="isOpenModal" />
                     </span>
                 </div>
 
@@ -116,10 +116,14 @@
             <div class="profile__action">
                 <div class="profile__action__controller">
                     <ul class="profile__action__list">
-                        <div class="profile__action__item" v-for="(tab, index) in tabs" :key="index"
+                        <div class="profile__action__item" v-if="!checkMyProfile"
+                            :class="{ activeTab: selectedTab === tabs[0] }">
+                            <span class="profile__action__icon" v-html="tabs[0].icon"></span>
+                            <span class="profile__action__text">{{ tabs[0].name }}</span>
+                        </div>
+                        <div class="profile__action__item" v-else v-for="(tab, index) in tabs" :key="index"
                             @click="selectedTab = tab" :class="{ activeTab: selectedTab === tab }">
-                            <span class="profile__action__icon" v-html="tab.icon">
-                            </span>
+                            <span class="profile__action__icon" v-html="tab.icon"></span>
                             <span class="profile__action__text">{{ tab.name }}</span>
                         </div>
                     </ul>
@@ -129,28 +133,34 @@
                         v-for="( post, index ) in  authorStore?.author?.blogger_infor?.posts " :key="index"
                         :isProfile="true" :isMyProfile="checkMyProfile" :isSaved="isSaved" />
                 </div>
-                <div class="profile__draft" v-else>
-                    <div class="profile__wrap">
+                <div class="profile__draft" v-else-if="selectedTab === tabs[1]">
+                    <div class="profile__wrap" v-for="(post, index) in postStore.post" :key="index">
                         <div class="profile__draft__content">
-                            <p class="profile__draft__title">Tôi là ai ai là tôi</p>
-                            <span class="profile__draft__time">Khoảng một phút trước</span>
+                            <p class="profile__draft__title">{{ post?.title }}</p>
+                            <span class="profile__draft__time">Khoảng {{ calculateTimeAgo(post.created_at) }}</span>
                         </div>
                         <div class="profile__draft__editor">
-                            <div class="profile__draft__action">
+                            <router-link :to="`/updated-post/${post?.id}`" class="profile__draft__action">
                                 <ion-icon name="pencil-outline"></ion-icon>
+                                <!--  -->
                                 <span class="profile__draft__controller">Tiếp tục</span>
-                            </div>
+                            </router-link>
                             <div class="profile__draft__action profile__draft__action--delete"
-                                @click="handleOpenModalDraft">
+                                @click="handleOpenModalDraft(post?.id)">
                                 <ion-icon name="trash-outline"></ion-icon>
                                 <span class="profile__draft__controller">Xóa</span>
                             </div>
                         </div>
                     </div>
-
                     <ModalController title="Bạn có chắc muốn xóa bản nháp này?"
                         content="Bạn có chắc rằng muốn xóa bản nháp này? Hành động này sẽ không thể hoàn thành khi bạn chưa đồng ý"
-                        :closeModel="handleCloseModalDraft" :isOpenModal="isOpenModalDraft" />
+                        :closeModel="handleCloseModalDraft" :isOpenModal="isOpenModalDraft"
+                        :handleDelete="handleDeletePost" />
+
+                </div>
+                <div class="profile__pending" v-else>
+                    <CardNew :isCard="false" :post="post" v-for="( post, index ) in postStore.posts " :key="index"
+                        :isProfile="true" :isMyProfile="checkMyProfile" :isSaved="isSaved" :isActive="true" />
                 </div>
             </div>
         </div>
@@ -179,11 +189,14 @@ import { usePostStore } from "../../../stores/postStore"
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
 const postStore = usePostStore()
+postStore.getAllDraftPost()
+postStore.getAllPendingPosts()
+console.log("firstss", postStore.posts)
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const checkMyProfile = ref(false)
-const route = useRoute();
 const router = useRouter()
+const route = useRoute();
 const refAuthor = ref(route.params.id)
 const isOpen = ref(false);
 const isOpenModalFollowed = ref(false)
@@ -191,9 +204,11 @@ const isOpenModalFollowing = ref(false)
 const isBanned = ref(false)
 const isOpenModal = ref(false)
 const isOpenModalDraft = ref(false)
+const idTempDraft = ref()
 const tabs = ref([
     { name: 'Bài viết', icon: '<ion-icon name="create-outline"></ion-icon>' },
-    { name: 'Lưu nháp', icon: '<ion-icon name="layers-outline"></ion-icon>' }
+    { name: 'Lưu nháp', icon: '<ion-icon name="layers-outline"></ion-icon>' },
+    { name: 'Đang chờ xử lý', icon: '<ion-icon name="open-outline"></ion-icon>' }
 ]);
 const selectedTab = ref(tabs.value[0]);
 let searchText = ref("")
@@ -215,16 +230,13 @@ const getUserFollow = computed(() => {
 })
 
 const isFollowed = (id) => {
-    console.log("🚀 ~ file: ProfilePage.vue:205 ~ isFollowed ~ id:", id)
+    // console.log("🚀 ~ file: ProfilePage.vue:205 ~ isFollowed ~ id:", id)
     if (getUserFollow.value?.length > 0) {
         return getUserFollow.value.includes(id)
     } else {
         return false
     }
 };
-// const fakeVariable = () => {
-//     return false
-// }
 // saved
 const getIdOfFavorites = computed(() => {
     return postStore?.favorites.map((favorites) => favorites?.id)
@@ -237,6 +249,8 @@ const isSaved = (id) => {
         return false
     }
 };
+
+
 // open options
 const handleOpenOptions = () => {
     isOpen.value = !isOpen.value;
@@ -251,12 +265,16 @@ const handleOpenModalBan = () => {
 const handleCloseModalBan = () => {
     isOpenModal.value = false
 }
-
-const handleOpenModalDraft = () => {
+const handleOpenModalDraft = (id) => {
+    idTempDraft.value = id
     isOpenModalDraft.value = !isOpenModalDraft.value;
 }
 const handleCloseModalDraft = () => {
     isOpenModalDraft.value = false
+}
+// Handle Deleted draft post
+const handleDeletePost = () => {
+    postStore.deletePost(idTempDraft.value)
 }
 const handleGetFollow = (id) => {
     authorStore.getFollowAuthor(refAuthor.value, id);
@@ -297,10 +315,25 @@ onMounted(async () => {
     await handleCheckMyProfile(userData.value.id)
 });
 
-watchEffect(() => {
-    window.scrollTo(0, 0);
+const calculateTimeAgo = (created_at) => {
+    const currentTime = new Date();
+    const commentTime = new Date(created_at);
+    const timeDiff = currentTime - commentTime;
 
-})
+    // Chuyển đổi khoảng thời gian sang giây, phút, giờ, ngày
+    const seconds = Math.floor(timeDiff / 1000);
+    const minutes = Math.floor(seconds / 60);
+    const hours = Math.floor(minutes / 60);
+    const days = Math.floor(hours / 24);
+
+    if (days > 0) {
+        return `${days} ngày trước`;
+    } else if (hours > 0) {
+        return `${hours} giờ trước`;
+    } else {
+        return `${minutes} phút trước`;
+    }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -677,6 +710,12 @@ watchEffect(() => {
                 }
             }
         }
+
+        .profile__pending {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
     }
 
     .profile__action__time {
@@ -694,6 +733,7 @@ watchEffect(() => {
 
     .profile__action__controller {
         padding: 20px 0;
+        cursor: pointer;
 
         .profile__action__list {
             display: flex;
@@ -717,12 +757,13 @@ watchEffect(() => {
         .profile__action__icon {
             display: inline-block;
             font-weight: 400;
+            margin-top: 4px;
         }
 
         .profile__action__text {
             font-size: 18px;
             color: var(--black-color);
-            font-weight: 700;
+            font-weight: 500;
         }
     }
 }

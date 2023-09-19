@@ -90,6 +90,7 @@ export const useAuthorStore = defineStore("authorStore", {
         this.isLoading = true;
         const response = await PostService.deletepost(id);
         await this.getAuthorById(authorId)
+        await this.getAllPendingPosts()
         toast.success("Xóa bài viết thành công.");
         this.isLoading = false;
       } catch (error) {

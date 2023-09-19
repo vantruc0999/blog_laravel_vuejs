@@ -89,11 +89,10 @@
                 </div>
             </div>
         </div>
-        <router-link :to="`/detail/${post?.id}`">
+        <router-link :to="`/detail/${post?.id}`" :class="{ '': false, 'inactive': isActive }">
             <img :src="'http://127.0.0.1:8000/storage/' + post?.banner" alt="blog img" class="blog__image">
         </router-link>
-
-        <div class="blog__content">
+        <div class="blog__content" :class="{ 'blog__content': false, 'inactive': isActive }">
             <div class="blog__top">
                 <router-link :to="`/detail/${post?.id}`">
                     <h3 class="blog__title">
@@ -158,7 +157,8 @@ const props = defineProps({
     isProfile: Boolean,
     isMyProfile: Boolean,
     favorites: Object,
-    isSaved: Function
+    isSaved: Function,
+    isActive: Boolean
 })
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
@@ -166,6 +166,8 @@ const checkAuthen = ref(JSON.parse(localStorage.getItem("isAuthen")));
 // console.log("🚀 ~ file: CardNew.vue:166 ~ checkAuthenn:", checkAuthen.value)
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
+
+
 
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
@@ -434,7 +436,7 @@ const handleSavePost = (id) => {
     .blog__title {
         margin-bottom: 20px;
         display: -webkit-box;
-        -webkit-line-clamp: 4;
+        -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
         overflow: hidden;
     }
@@ -646,6 +648,10 @@ const handleSavePost = (id) => {
 
 
     }
+}
+
+.inactive {
+    pointer-events: none;
 }
 
 .activeBookMark {

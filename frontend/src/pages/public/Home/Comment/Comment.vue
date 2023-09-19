@@ -48,8 +48,6 @@ const postStore = usePostStore()
 const authStore = useAuthStore()
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-// console.log("🚀 ~ file: Comment.vue:48 ~ userData:", userData.value.id)
-
 
 const commentDescription = ref('');
 const showEmojiPicker = ref(false);
@@ -80,7 +78,6 @@ const handlePostComment = async () => {
     // await getDetailPost.value;
     commentDescription.value = ''
 }
-
 // const getDetailPost = computed(() => {
 //     return postStore.getPostById(props.idPost)
 // })

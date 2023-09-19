@@ -34,7 +34,7 @@
                 </div>
             </div>
         </div>
-        <div class="comment__options" v-if="isComment(authStore.user.blogger_info.id)">
+        <div class="comment__options" v-if="handleCheckMyComment(comment?.blogger_id)">
             <ion-icon name="ellipsis-horizontal-outline" @click="handleOpenOption"></ion-icon>
             <div class="comment__option" v-if="isOpen">
                 <div class="comment__option--edit" @click="handleOpenEditComment">
@@ -57,8 +57,7 @@
                 v-if="isOpenCommentDetail" />
         </div>
     </div>
-    <ModalController title="You want to delete this comment?"
-        content="Do you really want to deleted this comment This process cannot be undone" :closeModel="closeModel"
+    <ModalController title="Bạn có muốn xóa comment  của mình?" content="" :closeModel="closeModel"
         :isOpenModal="isOpenModal" :handleDelete="handleDeleteComment" />
 </template>
 <script setup>
@@ -77,12 +76,10 @@ const props = defineProps({
     handleOpenOption: Function,
     idPost: String,
 });
-console.log("check author", props.comment?.id);
+const userData = ref(JSON.parse(localStorage.getItem("user")));
 const tempCommentId = ref(props.comment?.id)
 const postStore = usePostStore()
 const authStore = useAuthStore()
-// console.log("id bloog", authStore.user.blogger_info.id);
-const userData = ref(JSON.parse(localStorage.getItem("user")));
 const isAnswer = ref(false)
 const isOpenModal = ref(false)
 const isOpen = ref(false)
@@ -90,6 +87,14 @@ const isOpenEdit = ref(true)
 const editCommentValue = ref(props.comment?.description)
 const showEmojiPicker = ref(true);
 const commentDescription = ref('');
+// check options
+const handleCheckMyComment = (idUserCmt) => {
+    if (userData.value.id == idUserCmt) {
+        return true
+    } else {
+        return false
+    }
+}
 
 // open emoji
 const toggleEmojiPicker = () => {
@@ -111,6 +116,8 @@ const handlePostComment = async () => {
     postStore.replyComment(props.idPost, tempCommentId.value, payload)
     // await getDetailPost.value;
     commentDescription.value = ''
+    isAnswer.value = false
+    isOpen.value = true
 }
 // const getDetailPost = computed(() => {
 //     return postStore.getPostById(props.idPost)
@@ -125,22 +132,12 @@ const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
 }
 
+
 const getBloggerID = computed(() => {
     const comments = postStore.post?.data?.comments;
     return comments.map((comment) => comment?.blogger_id);
 })
-// console.log("🚀 ~ file: CommentUser.vue:95 ~ getBloggerID ~ getBloggerID:", getBloggerID.value)
 
-const isComment = (id) => {
-    // console.log("🚀 ~ file: CommentUser.vue:98 ~ isComment ~ id:", id)
-    if (getBloggerID.value.length > 0) {
-        // console.log("🚀 ~ file: CommentUser.vue:101 ~ isComment ~ getBloggerID.value.includes(id):", getBloggerID.value.includes(id))
-        return getBloggerID.value.includes(id)
-    } else {
-        return false
-    }
-};
-console.log("hello", isComment());
 const closeModel = () => {
     isOpenModal.value = false
 }
@@ -353,7 +350,7 @@ const calculateTimeAgo = (created_at) => {
 }
 
 .comment__more {
-    margin-left: 40px;
+    margin-left: 60px;
 
     .comment__answer {
         display: flex;

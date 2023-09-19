@@ -73,9 +73,9 @@
         </div>
         <h1 class="detail__related__title">Bài viết liên quan</h1>
         <div class="detail__related">
-            <!-- <span class="detail__controller">
+            <span class="detail__controller--left">
                 <ion-icon name="arrow-back-outline"></ion-icon>
-            </span> -->
+            </span>
             <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
                 :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
                 <swiper-slide v-for="(post, index) in postsWithSameCategoryId">
@@ -87,27 +87,28 @@
                     <CardNew :isSaved="fakeVariable" :post="post" :key="index" />
                 </swiper-slide>
             </swiper> -->
-            <!-- <span class="detail__controller">
+            <span class="detail__controller--right">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
-            </span> -->
+            </span>
         </div>
 
         <!-- Special -->
         <h1 class="detail__related__title">Bài viết nổi bật</h1>
-
         <div class="detail__related">
-            <!-- <span class="detail__controller">
+            <span class="detail__controller--left" navigation :pagination="{ clickable: true }" @swiper="onSwiper"
+                @slideChange="onSlideChange">
                 <ion-icon name="arrow-back-outline"></ion-icon>
-            </span> -->
+            </span>
             <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
                 :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
                 <swiper-slide v-for="(post, index) in sortedPostByView" :key="index">
                     <CardNew :isSaved="isSaved" :post="post" />
                 </swiper-slide>
             </swiper>
-            <!-- <span class="detail__controller">
+            <span class="detail__controller--right" navigation :pagination="{ clickable: true }" @swiper="onSwiper"
+                @slideChange="onSlideChange">
                 <ion-icon name="arrow-forward-outline"></ion-icon>
-            </span> -->
+            </span>
         </div>
     </div>
     <Comment :isOpenComment="isOpenComment" :handleOpenComment="handleOpenComment" :idPost="postId" />
@@ -203,8 +204,8 @@ watch(refDetail.value, (newValue) => {
     getDetailPost.value = postStore.getPostById(newValue);
 });
 const postsWithSameCategoryId = computed(() => {
-    const currentCategoryId = postStore.post?.data?.category_id;
-    return postStore.posts.filter((post) => post.category_id === currentCategoryId);
+    const currentCategoryId = postStore?.post?.data?.category_id;
+    return postStore?.posts.filter((post) => post?.category_id === currentCategoryId);
 });
 
 const calculateTimeAgo = (created_at) => {
@@ -236,9 +237,6 @@ const onSlideChange = () => {
     console.log('slide change');
 };
 
-const fakeVariable = () => {
-    return true
-}
 </script>
 
 <style lang="scss" scoped>
@@ -398,6 +396,49 @@ const fakeVariable = () => {
         width: 35px;
         height: 3px;
     }
+}
+
+.detail__related {
+    position: relative;
+
+    .detail__controller {
+        &--left {
+            position: absolute;
+            top: 50%;
+            left: -38px;
+            font-size: 22px;
+            z-index: 888;
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--white-color);
+        }
+
+        &--right {
+            position: absolute;
+            top: 50%;
+            right: -38px;
+            font-size: 22px;
+            z-index: 888;
+            border: 1px solid var(--border-color);
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            cursor: pointer;
+            color: var(--white-color);
+        }
+    }
+
 }
 
 .activeBookMark {
