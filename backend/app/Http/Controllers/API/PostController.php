@@ -225,7 +225,7 @@ class PostController extends Controller
         );
     }
 
-    public function store(AddPostRequest $request)
+    public function handleStore($request, $status)
     {
         try {
             $slug = Str::slug($request->title);
@@ -248,29 +248,16 @@ class PostController extends Controller
                 'new_post' => 0,
                 'highlight' => 0,
                 'view_count' => 0,
-                'status' => 0,
+                'status' => $status,
             ];
 
-            // $post = Post::create($data);
-
-            // if($request->input('tags')){
-
-            //     $post->tags()->sync($request->input('tags'));
-            // }
-
             $tags = json_decode(str_replace("'", '"', $request->input('tags')));
+
+            $data['slug'] = Str::slug($slug) . "-" . time();
 
             $post = Post::create($data);
 
             $post->tags()->sync($tags);
-
-            $post->update(
-                [
-                    'slug' => Str::slug($slug) . "-" . time() . $post->id
-                ]
-            );
-
-            $post->slug = $post->slug;
 
             return response()->json([
                 'message' => 'Post created successfully',
@@ -284,10 +271,49 @@ class PostController extends Controller
         }
     }
 
+    public function store(AddPostRequest $request)
+    {
+        return $this->handleStore($request, 0);
+    }
+
+    public function storeDraft(AddPostRequest $request)
+    {
+        return $this->handleStore($request, 3);
+    }
+
+    public function publishDraft($id)
+    {
+        try {
+            $post = Post::findOrFail($id);
+
+            if ($post->blogger_id != Auth::user()['id']) {
+                return response([
+                    'message' => 'You do not have permission to publish this post',
+                ]);
+            }
+
+            if ($post->status == 3) {
+                $post->update(['status' => 0]);
+                return response([
+                    'message' => 'Publish successfully',
+                ]);
+            } else {
+                return response([
+                    'message' => 'This post is already published',
+                ]);
+            }
+        } catch (\Exception $err) {
+            return response()->json([
+                'message' => 'An error occurred while publishing post',
+                'error' => $err->getMessage()
+            ], 500);
+        }
+    }
+
     public function update(UpdatePostRequest $request, $id)
     {
         try {
-            $post = $this->checkActivePost($id);
+            $post = Post::findOrFail($id);
 
             if (!$post) {
                 return response()->json([
@@ -298,7 +324,7 @@ class PostController extends Controller
             if (Auth::user()['id'] !== $post->blogger_id) {
                 return response()->json([
                     'message' => 'You do not have permission to edit this post',
-                ], 500);
+                ], 400);
             }
 
             $data = [
@@ -327,11 +353,6 @@ class PostController extends Controller
                 $data['slug'] = Str::slug($slug) . "-" . time() . $post->id;
             }
 
-            // $tags = json_decode(str_replace("'", '"', $request->input('tags')));
-            // if($request->input('tags')){
-            //     $post->tags()->sync($request->input('tags'));
-            // }
-
             if ($request->input('tags')) {
                 $tags = json_decode(str_replace("'", '"', $request->input('tags')));
                 $post->tags()->sync($tags);
@@ -354,7 +375,7 @@ class PostController extends Controller
     public function delete($id)
     {
         try {
-            $post = $this->checkActivePost($id);
+            $post = Post::findOrFail($id);
 
             if (!$post) {
                 return response()->json([
@@ -365,7 +386,7 @@ class PostController extends Controller
             if (Auth::user()['id'] !== $post->blogger_id) {
                 return response()->json([
                     'message' => 'You do not have permission to delete this post',
-                ], 500);
+                ], 400);
             }
 
             $post->delete();
@@ -596,9 +617,15 @@ class PostController extends Controller
         }
     }
 
-    public function getDraftPosts()
+    public function getMyDraftPosts()
     {
-        $posts = Post::where('status', 3)->get();
+        $posts = Post::where(
+            [
+                'status' => 3,
+                'blogger_id' => Auth::user()['id']
+            ]
+        )->get();
+
         $posts = $this->getAllOverviewPosts($posts);
 
         return response([
@@ -609,7 +636,13 @@ class PostController extends Controller
 
     public function getPendingPost()
     {
-        $posts = Post::where('status', 0)->get();
+        $posts = Post::where(
+            [
+                'status' => 0,
+                'blogger_id' => Auth::user()['id']
+            ]
+        )->get();
+
         $posts = $this->getAllOverviewPosts($posts);
 
         return response([
@@ -620,7 +653,13 @@ class PostController extends Controller
 
     public function getPublishedPost()
     {
-        $posts = Post::where('status', 1)->get();
+        $posts = Post::where(
+            [
+                'status' => 1,
+                'blogger_id' => Auth::user()['id']
+            ]
+        )->get();
+
         $posts = $this->getAllOverviewPosts($posts);
 
         return response([
@@ -639,10 +678,6 @@ class PostController extends Controller
             "message" => "success",
             "posts" =>  $posts,
         ]);
-    }
-
-    public function createDraftPost()
-    {
     }
 
     public function recommendPost($query)
