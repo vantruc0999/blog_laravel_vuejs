@@ -14,7 +14,10 @@ import {
   API_GETALLSAVEPOST,
   API_SEARCHPOST,
   API_GETPOSTAUTHORFOLLOWING,
-  API_FILTERBYCATEGORI
+  API_FILTERBYCATEGORI,
+  API_DRAFTPOST,
+  API_GETALLDRAFTPOST,
+  API_GETALLPENDINGPOST
 } from "../config/apis";
 
 export const PostService = {
@@ -65,5 +68,14 @@ export const PostService = {
   },
   getpostfollowauthor() {
     return httpClient.get(API_GETPOSTAUTHORFOLLOWING)
+  },
+  draftpost(draftData) {
+    return httpClient.post(API_DRAFTPOST, draftData)
+  },
+  getAllDraftPost() {
+    return httpClient.get(API_GETALLDRAFTPOST)
+  },
+  getAllPendingPosts() {
+    return httpClient.get(API_GETALLPENDINGPOST)
   }
 };

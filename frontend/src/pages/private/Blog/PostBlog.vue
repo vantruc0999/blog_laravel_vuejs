@@ -37,7 +37,7 @@
                         <input type="file" @change="handleImageChange" accept="image/*" class="image-input">
                     </div>
                     <div class="editor__controller">
-                        <div class="editor__btn">Hủy</div>
+                        <div class="editor__btn" @click="handleDraftPost">Lưu nháp</div>
                         <div class="editor__btn editor__btn--submit" @click="handlePostBlog" :disabled="!isFormValid">
                             Đăng
                             bài
@@ -57,10 +57,9 @@ import { usePostStore } from '../../../stores/postStore';
 import uploadImage from "../../../utils/uploadImage"
 const postStore = usePostStore();
 postStore.getAllTags();
-
+const userData = ref(JSON.parse(localStorage.getItem("user")));
 const selectedCategory = ref('');
 const selectedTag = ref('');
-
 const filteredTags = ref([]);
 
 watch(() => selectedCategory.value, () => {
@@ -72,32 +71,22 @@ watch(() => selectedCategory.value, () => {
     }
 });
 
-
 const temporaryImage = ref(null);
 const imagePath = ref(null);
 
 const editor = ref(ClassicEditor);
 const editorData = ref('');
-
 function uploader(editor) {
     editor.plugins.get("FileRepository").createUploadAdapter = (loader) => {
         return new uploadImage(loader)
     }
 }
-
-
 const editorConfig = ref({
     placeholder: 'Nhập nội dung...',
     extraPlugins: [uploader]
 });
 
-
-
-
-
-
-
-const height = ref(35);
+const height = ref(90);
 const title = ref('');
 const intro = ref('');
 const textarea = ref('');
@@ -160,7 +149,7 @@ const handlePostBlog = () => {
         errors.title = true;
     }
     if (intro.value.trim() === '') {
-        errors.title = true;
+        errors.intro = true;
     }
 
     if (editorData.value.trim() === '') {
@@ -182,13 +171,12 @@ const handlePostBlog = () => {
     }
 
     if (selectedTagData) {
-        const selectedTagIdList = selectedTag.value.map((tagName) => {
+        selectedTagById = selectedTag.value.map((tagName) => {
             const tag = selectedTagData.tags.find((tag) => {
-                return selectedTagById.value = tag.id
-            })
+                return selectedTagById.value = tag.id;
+            });
             return tag ? tag.id : null;
         });
-
     }
     const submittedTitle = title.value;
     const submittedEditorData = editorData.value;
@@ -197,12 +185,10 @@ const handlePostBlog = () => {
     formData.append('title', submittedTitle)
     formData.append('intro', submittedIntro)
     formData.append('description', submittedEditorData)
-    console.log("🚀 ~ file: PostBlog.vue:199 ~ handlePostBlog ~ submittedEditorData:", submittedEditorData)
     formData.append('category_id', selectedTagData.id)
     formData.append('banner', imagePath.value)
     formData.append('tags', selectedTagById.value)
-
-    // console.log("🚀 ~ file: BlogEditor.vue:134 ~ handlePostBlog ~ blogData:", formData)
+    // submit form
     postStore.actCreatePost(formData)
     title.value = '';
     intro.value = '';
@@ -210,8 +196,39 @@ const handlePostBlog = () => {
     selectedCategory.value = '';
     temporaryImage.value = '';
 };
+const handleDraftPost = () => {
+    let selectedTagData = null;
+    let selectedTagById = ref(null);
 
+    if (selectedCategory.value !== '') {
+        selectedTagData = postStore.tags.find((tag) => tag.name === selectedCategory.value);
+    }
 
+    if (selectedTagData) {
+        selectedTagById = selectedTag.value.map((tagName) => {
+            const tag = selectedTagData.tags.find((tag) => {
+                return selectedTagById.value = tag.id;
+            });
+            return tag ? tag.id : null;
+        });
+    } else {
+        selectedTagData = '';
+    }
+
+    const submittedTitle = title.value;
+    const submittedEditorData = editorData.value;
+    const submittedIntro = intro.value;
+    const formData = new FormData();
+
+    formData.append('title', submittedTitle);
+    formData.append('intro', submittedIntro);
+    formData.append('description', submittedEditorData);
+    formData.append('category_id', selectedTagData.id);
+    formData.append('tags', selectedTagById.value);
+    formData.append('banner', imagePath.value)
+
+    postStore.handleDraftData(formData);
+};
 </script>
 <style lang="scss" scoped>
 .blog__container {

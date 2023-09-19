@@ -53,12 +53,31 @@ const props = defineProps({
 const authorStore = useAuthorStore()
 const tabs = ref(['Người theo dõi', 'Đang theo dõi']);
 const selectedTab = ref('Người theo dõi');
-
+const handleFetchUserFollower = () => {
+    authorStore.fetchAllBlogger()
+}
+handleFetchUserFollower()
 authorStore.getFollowered()
-const handleFollow = computed(() => {
-    return authorStore?.authorsFollowing.map((user) => user.id) || []
-})
-
+// console.log("first", authorStore.authorsFollowed)
+// console.log("second", authorStore.users);
+console.log("=======", authorStore.authorsFollowed);
+// const handleFollow = computed(() => {
+//     return authorStore?.authorsFollowing.map((user) => user.id) || []
+// })
+// console.log("🚀 ~ file: ModalFollowed.vue:61 ~ handleFollow ~ handleFollow:", handleFollow.value)
+const userData = ref(JSON.parse(localStorage.getItem("user")));
+// const handleCheckFollowed = () => {
+//     if (author?.follows?.length > 0) {
+//         const result = author.follows.map((user) => user.follower_id).includes(userData.value?.id);
+//         if (result === true) {
+//             return true
+//         } else {
+//             return false
+//         }
+//     } else {
+//         return false
+//     }
+// }
 </script>
 <style lang="scss" scoped>
 .container {

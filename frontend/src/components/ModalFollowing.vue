@@ -31,10 +31,15 @@
     </div>
 </template>
 <script setup>
-import { onMounted, ref } from "vue"
+import { onMounted, ref, computed } from "vue"
 import SignatureAuthor from '../pages/public/Home/RelatedPage/SignatureAuthor.vue';
 import { useAuthorStore } from '../stores/authorStore';
-
+import { useAuthStore } from "../stores/authStore";
+import {
+    useRoute,
+    useRouter
+} from 'vue-router';
+const route = useRoute();
 const props = defineProps({
     isOpenModalFollowing: {
         type: Boolean
@@ -51,10 +56,34 @@ const props = defineProps({
 })
 
 const authorStore = useAuthorStore()
-console.log("check", authorStore?.authorsFollowing);
+const authStore = useAuthStore()
+const refAuthor = ref(route.params.id)
+const getIdFollowing = computed(() => {
+    return authorStore?.authorsFollowing.map(author => author.id) || [];
+});
 
+// const getIdBlogger = computed(() => {
+//     if (authorStore.author?.blogger_infor?.follows) {
+//         return authorStore.author?.blogger_infor?.follows.map(author => author.follower_id);
+//     } else {
+//         return [];
+//     }
+// });
+
+// const isFollowing = (id) => {
+//     if (getIdFollowing.value.length > 0) {
+//         return getIdFollowing.value.includes(id)
+//     } else {
+//         return false
+//     }
+// };
+
+const getProfileAuthor = computed(() => {
+    return authorStore.getAuthorById(refAuthor.value)
+})
 onMounted(async () => {
     await authorStore.getFollowing();
+    await getProfileAuthor.value;
 });
 const tabs = ref(['Đang theo dõi', 'Người theo dõi']);
 const selectedTab = ref('Đang theo dõi');
