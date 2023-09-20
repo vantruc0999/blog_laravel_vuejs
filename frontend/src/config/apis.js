@@ -13,6 +13,10 @@ export const API_SAVEPOST = "/save"
 export const API_GETALLSAVEPOST = '/save/get-saved-post'
 export const API_GETPOSTAUTHORFOLLOWING = '/posts/author/get-post-by-author'
 export const API_GETALLPENDINGPOST = 'posts/pending/get-pending-post'
+export const API_GETPOSTDRAFTBYID = '/posts/draft'
+export const API_DRAFTPOST  = '/posts/create-post-draft'
+export const API_GETALLDRAFTPOST = 'posts/draft/get-my-draft'
+export const API_GETPENDINGPOSTBYID = 'posts/pending'
 // BLOGGER
 export const API_GETALLBLOGGER = '/bloggers'
 export const API_GETAUTHOR = '/blogger'
@@ -31,8 +35,8 @@ export const API_REPLYCOMMENT = "/comment/reply-comment"
 export const API_GETALLTAGS = '/categories-tags'
 // LIKE POST
 export const API_LIKEPOST = '/like'
-export const API_DRAFTPOST  = '/posts/create-post-draft'
-export const API_GETALLDRAFTPOST = 'posts/draft/get-my-draft'
+export const API_CHECKLIKEDPOST = '/like/check-like'
+export const API_LIKECOMMENT = '/like/like-comment'
 
 // Search
 export const API_SEARCHPOST = '/posts/filter/filter-post?search'

@@ -26,9 +26,10 @@
                         <span class="detail__viewer--count">{{ postStore.post?.data?.comments.length }}</span>
                     </span>
                     <span class="detail__viewer detail__viewer--active" @click="handleLikePost(postStore.post?.data?.id)">
-                        <ion-icon name="triangle-outline" :style="{ color: isLike ? 'red' : '' }"></ion-icon> <span
-                            class="detail__viewer--count">{{
-                                postStore.post?.data?.likes_count }} </span>
+                        <ion-icon name="triangle-outline"
+                            :style="{ color: postStore.isLiked?.is_like == 1 ? 'red' : 'black' }"></ion-icon>
+                        <span class="detail__viewer--count">{{
+                            postStore.post?.data?.likes_count }} </span>
                     </span>
                 </div>
             </div>
@@ -78,7 +79,7 @@
             </span>
             <swiper :modules="modules" :loop="true" :slides-per-view="4" :space-between="20" navigation
                 :pagination="{ clickable: true }" @swiper="onSwiper" @slideChange="onSlideChange" class="detail__swiper">
-                <swiper-slide v-for="(post, index) in postsWithSameCategoryId">
+                <swiper-slide v-for="(post, index) in postStore.post?.data?.relavant_posts">
                     <CardNew :isSaved="isSaved" :post="post" :key="index" />
                 </swiper-slide>
             </swiper>
@@ -140,11 +141,9 @@ const postStore = usePostStore()
 const route = useRoute();
 const refDetail = ref(route.params.id)
 const postId = ref(refDetail)
-const isLike = ref(false)
 let isOpenComment = ref(false);
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const isAuth = ref(JSON.parse(localStorage.getItem("isLogin")));
-console.log("🚀 ~ file: DetailPage.vue:146 ~ isAuth:", isAuth.value)
 const handleCheckAuthen = computed(() => {
     if (isAuth.value == false) {
         route.push('auth/signin')
@@ -154,15 +153,16 @@ const handleCheckAuthen = computed(() => {
         return true
     }
 })
-console.log("check auth", handleCheckAuthen.value);
 const getDetailPost = computed(() => {
     return postStore.getPostById(refDetail.value)
 })
 // handle Like
-const handleLikePost = (id) => {
-    postStore.likePost(id)
-    isLike.value = !isLike.value
+const handleLikePost = async (id) => {
+    await postStore.likePost(id)
+    await postStore.checkLikedPost(id)
 }
+
+console.log("postStore.isLiked", postStore?.isLiked?.is_like);
 // open comment
 const handleOpenComment = () => {
     isOpenComment.value = !isOpenComment.value
@@ -198,9 +198,9 @@ watch(() => route.params, (newId) => {
 
 onMounted(async () => {
     await getDetailPost.value;
+    await sortedPostByView.value
 });
 watch(refDetail.value, (newValue) => {
-    console.log("🚀 ~ file: DetailPage.vue:158 ~ watch ~ newValue:", newValue)
     getDetailPost.value = postStore.getPostById(newValue);
 });
 const postsWithSameCategoryId = computed(() => {

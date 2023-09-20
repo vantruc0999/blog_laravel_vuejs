@@ -10,6 +10,8 @@
   import ProfilePage from "../pages/public/ProfilePage/ProfilePage.vue";
   import PostBlog from "../pages/private/Blog/PostBlog.vue";
   import updatedBlog from "../pages/private/Blog/updatedBlog.vue";
+  import UpdatedDraft from "../pages/private/Blog/UpdatedDraft.vue";
+  import UpdatedPending from "../pages/private/Blog/UpdatedPending.vue";
   import SettingPage from "../pages/private/SettingPage/SettingPage.vue";
   import Account from "../pages/private/SettingPage/Account.vue";
   import BanUser from "../pages/private/SettingPage/BanUser.vue";
@@ -49,6 +51,16 @@
           path: "/updated-post/:id",
           name: "updatedBlog",
           component: updatedBlog,
+        },
+        {
+          path: "/updated-post/update-draft/:id",
+          name: "UpdatedDraft",
+          component: UpdatedDraft,
+        },
+        {
+          path: "/updated-post/update-pending/:id",
+          name: "UpdatedPending",
+          component: UpdatedPending,
         },
         {
           path: "/filter/filter-post",

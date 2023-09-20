@@ -80,7 +80,7 @@
 
 <script setup>
 import {
-    ref
+    ref, onMounted
 } from 'vue';
 import OptionUser from "../components/OptionUser.vue"
 import { useAuthStore } from '../stores/authStore';
@@ -89,15 +89,17 @@ import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore()
 const postStore = usePostStore()
-authStore.getMyProfile()
-postStore.getAllTags();
+onMounted(async () => {
+    await authStore.getMyProfile()
+    await postStore.getAllTags();
+})
 const isOptionMenu = ref(false)
 const handleChangeOptionMenu = () => {
     isOptionMenu.value = !isOptionMenu.value
 }
-const handleCloseOptionMenu = () => {
-    isOptionMenu.value = false
-}
+// const handleCloseOptionMenu = () => {
+//     isOptionMenu.value = false
+// }
 const route = useRouter()
 let searchText = ref("")
 const isAuth = ref(localStorage.getItem("isLogin"));

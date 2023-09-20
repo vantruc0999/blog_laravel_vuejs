@@ -22,8 +22,11 @@ import RelatedPost from './RelatedPost.vue';
 import SignatureAuthor from './SignatureAuthor.vue';
 
 const authStore = useAuthStore()
-authStore.fetchAllBlogger()
 
+const getAllBlogger = async () => {
+    await authStore.fetchAllBlogger()
+}
+getAllBlogger()
 
 </script>
 

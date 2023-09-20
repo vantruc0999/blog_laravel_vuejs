@@ -30,12 +30,10 @@ import { useAuthorStore } from "../../../stores/authorStore";
 import Loading from "../../../components/Loading.vue";
 
 const authorStore = useAuthorStore()
-const handleFetchUserFollower = () => {
-    authorStore.fetchAllBlogger()
+const handleFetchUserFollower = async () => {
+    await authorStore.fetchAllBlogger()
 }
 handleFetchUserFollower()
-
-console.log("check", authorStore.users);
 
 </script>
 <style lang="scss" scoped>

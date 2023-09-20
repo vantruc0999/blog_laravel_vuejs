@@ -20,12 +20,15 @@ export const usePostStore = defineStore("postStore", {
     isLoading: false,
     dataSearch: [],
     dataFilters: [],
-    draftsPost: []
+    draftsPost: [],
+    draft: {},
+    pendingPost: {},
+    isLiked: {}
   }),
   actions: {
     async fetchAllPosts() {
       try {
-        this.isLoading = true;
+        // this.isLoading = true;
         const response = await PostService.getallpost();
         if(response?.data?.data) {
           this.posts = response?.data?.data;
@@ -43,7 +46,6 @@ export const usePostStore = defineStore("postStore", {
         const response = await PostService.getpostfollowauthor();
         if(response?.data?.data) {
           this.postsAuthor = response?.data?.data;
-          // console.log("🚀 ~ file: postStore.js:40 ~ fetchPostsByFollowAuhor ~ this.postsAuthor:", this.postsAuthor)
           this.isLoading = false;
         }
       } catch (error) {
@@ -53,12 +55,12 @@ export const usePostStore = defineStore("postStore", {
     },
     async getAllTags() {
       try {
-        this.isLoading = true;
+        // this.isLoading = true;
         const response = await PostService.getalltags();
-        // console.log("🚀 ~ file: postStore.js:32 ~ getAllTags ~ response:", response)
         this.tags = response?.data;
         this.isLoading = false;
       } catch (error) {
+        this.isLoading = false;
         console.log(error);
       }
     },
@@ -80,7 +82,6 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getpostbyid(postId);
-        // console.log("🚀 ~ file: postStore.js:57 ~ getPostById ~ response?.data:", response?.data)
         this.post = response?.data;
         console.log("🚀 ~ file: postStore.js:44 ~ getPostById ~ this.post:", this.post)
         this.isLoading = false;
@@ -138,7 +139,6 @@ export const usePostStore = defineStore("postStore", {
       }
     },
     async replyComment(idPost, idCommenter, commentDescription) {
-      // console.log("🚀 ~ file: postStore.js:132 ~ replyComment ~ idPost:", idPost)
       try {
         const response = await PostService.replycomment(idCommenter, commentDescription);
         this.getPostById(idPost)
@@ -147,7 +147,6 @@ export const usePostStore = defineStore("postStore", {
         if (postIndex !== -1) {
           this.posts[postIndex].replyComments.push(comment);
         }
-        toast.success("Bình luận của bạn đã được đăng.");
         this.isLoading = false;
       } catch (error) {
         console.log(error);
@@ -197,9 +196,31 @@ export const usePostStore = defineStore("postStore", {
         console.log(error);
       }
     },
+    async checkLikedPost(postid) {
+      try {
+        // this.isLoading = true;
+        const response = await PostService.checklikedpost(postid);
+        // this.isLiked = response?.data?.is_like === 1 ? true : false;
+        this.isLiked = response?.data;
+        console.log("🚀 ~ file: postStore.js:204 ~ checkLikedPost ~ this.isLiked:", this.isLiked)
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async likeComment(postid, cmtId) {
+      try {
+        const response = await PostService.likecomment(cmtId);
+        this.getPostById(postid)
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    
     async getAllSavePosts() {
       try {
-        this.isLoading = true;
+        // this.isLoading = true;
         const response = await PostService.getallsavepost();
         if(response.data) {
           this.favorites = response.data?.posts;
@@ -295,14 +316,35 @@ export const usePostStore = defineStore("postStore", {
       try {
         this.isLoading = true;
         const response = await PostService.getAllPendingPosts();
-        console.log("🚀 ~ file: postStore.js:296 ~ getAllPendingPosts ~ response:", response)
         if(response?.data?.posts) {
           this.posts = response?.data?.posts;
-          console.log("🚀 ~ file: postStore.js:284 ~ getAllDraftPost ~ this.post:", this.posts)
           this.isLoading = false;
         }
       } catch (error) {
         this.isLoading = false;
+        console.log(error);
+      }
+    },
+    async getDraftPostById(draftId) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getDraftPostById(draftId);
+        this.draft = response?.data?.data;
+        console.log("🚀 ~ file: postStore.js:312 ~ getDraftPostById ~ this.draft:", this.draft)
+        this.isLoading = false;
+      } catch (error) {
+        console.log(error);
+      }
+    },
+    async getPendingPostById(pendingId) {
+      try {
+        this.isLoading = true;
+        const response = await PostService.getPendingPostById(pendingId);
+        console.log("🚀 ~ file: postStore.js:320 ~ getDraftPostById ~ response:", response.data.data)
+        this.pendingPost = response?.data?.data;
+        console.log("🚀 ~ file: postStore.js:322 ~ getPendingPostById ~ this.pendingPost:", this.pendingPost)
+        this.isLoading = false;
+      } catch (error) {
         console.log(error);
       }
     },

@@ -140,7 +140,7 @@
                             <span class="profile__draft__time">Khoảng {{ calculateTimeAgo(post.created_at) }}</span>
                         </div>
                         <div class="profile__draft__editor">
-                            <router-link :to="`/updated-post/${post?.id}`" class="profile__draft__action">
+                            <router-link :to="`/updated-post/update-draft/${post?.id}`" class="profile__draft__action">
                                 <ion-icon name="pencil-outline"></ion-icon>
                                 <!--  -->
                                 <span class="profile__draft__controller">Tiếp tục</span>
@@ -189,9 +189,6 @@ import { usePostStore } from "../../../stores/postStore"
 const authorStore = useAuthorStore()
 const authStore = useAuthStore()
 const postStore = usePostStore()
-postStore.getAllDraftPost()
-postStore.getAllPendingPosts()
-console.log("firstss", postStore.posts)
 const isAuth = ref(localStorage.getItem("isLogin"));
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const checkMyProfile = ref(false)
@@ -313,6 +310,8 @@ onMounted(async () => {
     await getProfileAuthor.value;
     await authorStore.getAuthorFollowed(refAuthor.value)
     await handleCheckMyProfile(userData.value.id)
+    await postStore.getAllDraftPost()
+    await postStore.getAllPendingPosts()
 });
 
 const calculateTimeAgo = (created_at) => {

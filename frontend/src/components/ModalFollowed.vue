@@ -10,19 +10,16 @@
             </div>
             <div class="form__account">
                 <div class="form__follow__user" v-if="selectedTab === 'Người theo dõi'">
-                    <span class="form__followed" v-if="authorStore.authorsFollowed?.length > 1">Bạn viết dở quá, chả có ai
-                        theo dõi
-                        cả</span>
-                    <span class="form__followed" v-else>Có {{
+                    <span class="form__followed" v-if="authorStore.authorsFollowed?.length > 1">Có {{
                         authorStore.authorsFollowed?.length }} người theo dõi bạn</span>
+                    <span class="form__followed" v-else>Bạn viết dở quá, chả có ai
+                        theo dõi cả</span>
                     <SignatureAuthor :author="author" v-for="(author, index) in authorStore.authorsFollowed" :key="index" />
                 </div>
                 <div class="form__follow__user" v-else>
-                    <span class="form__followed" v-if="authorStore.authorsFollowing?.length > 1">Bạn viết dở quá, chả có ai
-                        theo dõi
-                        cả</span>
-                    <span class="form__followed" v-else>Bạn đang theo dõi {{
+                    <span class="form__followed" v-if="authorStore.authorsFollowing?.length > 1">Bạn đang theo dõi {{
                         authorStore.authorsFollowing?.length }} tác giả</span>
+                    <span class="form__followed" v-else>Bạn chưa theo dõi ai cả</span>
                     <SignatureAuthor :author="author" v-for="(author, index) in authorStore?.authorsFollowing"
                         :key="index" />
                 </div>
@@ -53,14 +50,14 @@ const props = defineProps({
 const authorStore = useAuthorStore()
 const tabs = ref(['Người theo dõi', 'Đang theo dõi']);
 const selectedTab = ref('Người theo dõi');
-const handleFetchUserFollower = () => {
-    authorStore.fetchAllBlogger()
+const handleFetchUserFollower = async () => {
+    await authorStore.fetchAllBlogger()
 }
 handleFetchUserFollower()
 authorStore.getFollowered()
-// console.log("first", authorStore.authorsFollowed)
+console.log("first", authorStore.authorsFollowed)
 // console.log("second", authorStore.users);
-console.log("=======", authorStore.authorsFollowed);
+console.log("=======", authorStore.authorsFollowing);
 // const handleFollow = computed(() => {
 //     return authorStore?.authorsFollowing.map((user) => user.id) || []
 // })

@@ -111,7 +111,6 @@ export const useAuthStore = defineStore("authStore", {
         const response = await AuthService.getallblogger();
         if(response?.data) {
           this.users = response?.data;
-          console.log("🚀 ~ file: authStore.js:112 ~ fetchAllBlogger ~ response?.data:", response?.data)
           this.isLoading = false;
         }
         this.isLoading = false;
@@ -124,7 +123,6 @@ export const useAuthStore = defineStore("authStore", {
       try {
         this.isLoading = true;
         const response = await AuthService.getmyprofile();
-        // console.log("🚀 ~ file: authStore.js:98 ~ getMyProfile ~ response:", response.data)
         this.user = response?.data;
         this.isLoading = false;
       }catch (error) {

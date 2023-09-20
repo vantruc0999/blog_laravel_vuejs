@@ -10,21 +10,18 @@
             </div>
             <div class="form__account">
                 <div class="form__follow__user" v-if="selectedTab === 'Người theo dõi'">
-                    <span class="form__followed" v-if="authorStore.authorsFollowed?.length > 1">Bạn viết dở quá, chả có ai
-                        theo dõi
-                        cả</span>
-                    <span class="form__followed" v-else>Có {{
+                    <span class="form__followed" v-if="authorStore.authorsFollowed?.length > 1">Có {{
                         authorStore.authorsFollowed?.length }} người theo dõi bạn</span>
+                    <span class="form__followed" v-else>Bạn viết dở quá, chả có ai
+                        theo dõi cả</span>
                     <SignatureAuthor :author="author" v-for="(author, index) in authorStore.authorsFollowed" :key="index" />
                 </div>
                 <div class="form__follow__user" v-else>
-                    <span class="form__followed" v-if="authorStore.authorsFollowing?.length > 1">Bạn viết dở quá, chả có ai
-                        theo dõi
-                        cả</span>
-                    <span class="form__followed" v-else>Bạn đang theo dõi {{
+                    <span class="form__followed" v-if="authorStore.authorsFollowing?.length > 1">Bạn đang theo dõi {{
                         authorStore.authorsFollowing?.length }} tác giả</span>
-                    <SignatureAuthor :author="author" v-for="(author, index) in authorStore?.authorsFollowing"
-                        :key="index" />
+                    <span class="form__followed" v-else>Bạn chưa theo dõi ai cả</span>
+                    <SignatureAuthor :author="author" v-for="(author, index) in authorStore?.authorsFollowing" :key="index"
+                        :isFollowing="true" />
                 </div>
             </div>
         </div>
@@ -61,7 +58,9 @@ const refAuthor = ref(route.params.id)
 const getIdFollowing = computed(() => {
     return authorStore?.authorsFollowing.map(author => author.id) || [];
 });
-
+console.log("first", authorStore.authorsFollowing)
+console.log("firsttttt", authorStore.authorsFollowed)
+// console.log("firsttttt", authorStore.authorsFollowed?.length)
 // const getIdBlogger = computed(() => {
 //     if (authorStore.author?.blogger_infor?.follows) {
 //         return authorStore.author?.blogger_infor?.follows.map(author => author.follower_id);

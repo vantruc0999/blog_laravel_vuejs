@@ -70,14 +70,14 @@
     </div>
 </template>
 <script setup>
-import { computed, ref } from 'vue';
+import { computed, ref, onMounted } from 'vue';
 import CardNew from '../../../components/CardNew.vue';
 import { usePostStore } from '../../../stores/postStore';
 
-
-
 const postStore = usePostStore()
-postStore.fetchAllPosts()
+onMounted(async () => {
+    await postStore.fetchAllPosts()
+})
 const activeKey = ref('1');
 const currentPage = ref(1);
 const itemsPerPage = 20;

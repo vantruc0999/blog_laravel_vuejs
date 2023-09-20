@@ -90,7 +90,9 @@
             </div>
         </div>
         <router-link :to="`/detail/${post?.id}`" :class="{ '': false, 'inactive': isActive }">
-            <img :src="'http://127.0.0.1:8000/storage/' + post?.banner" alt="blog img" class="blog__image">
+            <img :src="'http://127.0.0.1:8000/storage/' + post?.banner" alt="blog img" class="blog__image"
+                v-if="post?.banner">
+            <img src="../assets/images/books.jpg" alt="blog img" class="blog__image" v-else>
         </router-link>
         <div class="blog__content" :class="{ 'blog__content': false, 'inactive': isActive }">
             <div class="blog__top">
@@ -163,11 +165,8 @@ const props = defineProps({
 
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const checkAuthen = ref(JSON.parse(localStorage.getItem("isAuthen")));
-// console.log("🚀 ~ file: CardNew.vue:166 ~ checkAuthenn:", checkAuthen.value)
 const idTemp = ref(props.post?.id)
 const isOpenModal = ref(false)
-
-
 
 const handleOpenModal = () => {
     isOpenModal.value = !isOpenModal.value
@@ -204,10 +203,9 @@ const calculateTimeAgo = (created_at) => {
     }
 }
 
-const handleSavePost = (id) => {
-    postStore.savePost(id)
+const handleSavePost = async (id) => {
+    await postStore.savePost(id)
 }
-
 
 </script>
 

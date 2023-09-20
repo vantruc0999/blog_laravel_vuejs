@@ -6,7 +6,8 @@
         <div class="comment__people">
             <div class="comment__list--user">
                 <span class="comment__list--name">{{ comment.blogger_name }}</span>
-                <span class="comment__list--desc" v-if="isOpenEdit">{{ comment.description }}</span>
+                <span class="comment__list--desc" v-if="isOpenEdit">{{ comment.description }}
+                </span>
                 <div class="comment__list--input" v-else>
                     <input class="comment__list__text" type="text" v-model="editCommentValue">
                     <div class="comment__list--controller">
@@ -14,12 +15,20 @@
                         <div class="comment__list__btn comment__list--submit" @click="handleEditComment">Lưu</div>
                     </div>
                 </div>
+                <div class="comment__list--like">
+                    <ion-icon name="hand-left-outline"></ion-icon>
+                    <span class="comment__list--count">
+                        2
+                    </span>
+                </div>
             </div>
             <div class="comment__reaction">
                 <div class="comment__reply">
-                    <span class="comment__reply--reaction">Thích</span>
+                    <span class="comment__reply--reaction" @click="handleLikeComment(comment?.id)">Thích</span>
+                    <!-- <span class="comment__reply--reaction comment__reply--liked" @click="handleLikeComment(comment?.id)">Đã
+                        thích</span> -->
                     <span class="comment__reply--reaction" @click="handleOpenAnswer">Trả lời</span>
-                    <span class="comment__reply--day">{{ calculateTimeAgo(comment.created_at) }}</span>
+                    <span class="comment__reply--day">{{ calculateTimeAgo(comment?.created_at) }}</span>
                 </div>
                 <div class="comment__reply__user" v-if="isAnswer">
                     <div class="comment__user">
@@ -118,6 +127,9 @@ const handlePostComment = async () => {
     commentDescription.value = ''
     isAnswer.value = false
     isOpen.value = true
+}
+const handleLikeComment = async (id) => {
+    await postStore.likeComment(props.idPost, id)
 }
 // const getDetailPost = computed(() => {
 //     return postStore.getPostById(props.idPost)
@@ -252,13 +264,17 @@ const calculateTimeAgo = (created_at) => {
             gap: 10px;
             font-size: 14px;
             margin-top: 5px;
-            color: rgb(211, 65, 65);
+            color: var(--black-color);
+            font-weight: 500;
 
-
+            &--liked {
+                color: rgb(211, 65, 65);
+            }
 
             &--day {
                 font-size: 13px;
-                color: var(--text-color-4);
+                color: rgb(211, 65, 65);
+
             }
         }
 
@@ -332,6 +348,29 @@ const calculateTimeAgo = (created_at) => {
         background-color: #f2f3f5;
         padding: 15px;
         border-radius: 15px;
+        position: relative;
+
+        .comment__list--like {
+            position: absolute;
+            bottom: 0px;
+            right: -10px;
+            background-color: var(--white-color);
+            border-radius: 15px;
+            display: flex;
+            padding: 3px;
+            align-items: center;
+            gap: 2px;
+            justify-content: center;
+            box-shadow: rgba(50, 50, 93, 0.25) 0px 2px 5px -1px, rgba(0, 0, 0, 0.3) 0px 1px 3px -1px;
+
+            ion-icon {
+                color: var(--primary-color);
+            }
+
+            .comment__list--count {
+                font-size: 14px;
+            }
+        }
     }
 
     &--name {
@@ -356,7 +395,7 @@ const calculateTimeAgo = (created_at) => {
         display: flex;
         align-items: center;
         gap: 5px;
-        color: var(--black-color);
+        color: var(--text-color-4);
         font-size: 15px;
         font-weight: 600;
         cursor: pointer;
