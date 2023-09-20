@@ -290,6 +290,10 @@ class BloggerProfileController extends Controller
             }
         }
 
+        foreach($myFollowing as $item){
+            $item->is_following = $this->checkFollow($item->id);
+        }
+
         return response([
             'status' => 'success',
             'my_following' => $myFollowing,
@@ -318,7 +322,7 @@ class BloggerProfileController extends Controller
         }
 
         foreach($followerList as $item){
-            $item->is_followed = $this->checkFollow($item->id);
+            $item->is_follower = $this->checkFollow($item->id);
         }
 
         return response([

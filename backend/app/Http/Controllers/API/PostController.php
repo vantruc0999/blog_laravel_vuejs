@@ -12,6 +12,7 @@ use App\Models\Category;
 use App\Models\Comment;
 use App\Models\Follow;
 use App\Models\Like;
+use App\Models\LikeComment;
 use App\Models\Post;
 use App\Models\Tag;
 use Carbon\Carbon;
@@ -153,16 +154,38 @@ class PostController extends Controller
                     $item->blogger_name = $item->blogger->name;
                     $item->blogger_email = $item->blogger->email;
                     $item->blogger_image = $item->blogger->profile_image;
+                    $item->bloggers_liked_id = $this->getBloggerIdListLikeComment($item->id);
                 });
             });
 
         return $this->getCommentInfors($comments);
     }
 
-    public function getDetailPostById($id)
+    private function getBloggerIdListLikeComment($id)
     {
-        $post = $this->checkActivePost($id);
-        // return $post->blogger;
+        $bloggerIdLists = array();
+
+        $bloggers = LikeComment::select('blogger_id')
+            ->where(['comment_id' => $id])
+            ->get();
+
+        foreach ($bloggers as $item) {
+            $bloggerIdLists[] = $item->blogger_id;
+        }
+
+        return $bloggerIdLists;
+    }
+
+    public function getPostById($id, $status)
+    {
+        $post = Post::where(
+            [
+                'id' => $id,
+                'status' => $status,
+            ]
+        )
+            ->first();
+
         if (!$post) {
             return response()->json([
                 'message' => 'No post available',
@@ -192,6 +215,10 @@ class PostController extends Controller
             $post->created_at = $dt['created'];
             $post->updated_at = $dt['updated'];
 
+            foreach ($post->comments as $item) {
+                $item->bloggers_id_liked = $this->getBloggerIdListLikeComment($item->id);
+            }
+
             unset($post->blogger_name, $post->category, $post->blogger_id, $post->blogger);
 
             $category_id = $post->category_id;
@@ -209,6 +236,49 @@ class PostController extends Controller
             return response()->json([
                 'message' => 'An error occurred while getting post',
                 'error' => $err->getMessage()
+            ], 500);
+        }
+    }
+
+    public function getPublishedPostById($id)
+    {
+        return $this->getPostById($id, 1);
+    }
+
+    public function getDraftPostById($id)
+    {
+        $post = Post::where(
+            [
+                'id' => $id,
+                'blogger_id' => Auth::user()['id']
+            ]
+        )
+        ->first();
+        
+        if ($post) {
+            return $this->getPostById($id, 3);
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized or no post available',
+            ], 500);
+        }
+    }
+
+    public function getPendingPostById($id)
+    {
+        $post = Post::where(
+            [
+                'id' => $id,
+                'blogger_id' => Auth::user()['id']
+            ]
+        )
+        ->first();
+        
+        if ($post) {
+            return $this->getPostById($id, 0);
+        } else {
+            return response()->json([
+                'message' => 'Unauthorized or no post available',
             ], 500);
         }
     }

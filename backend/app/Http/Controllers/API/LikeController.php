@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use App\Models\Blogger;
 use App\Models\Like;
+use App\Models\LikeComment;
 use App\Models\Notification;
 use App\Models\Post;
 use GrahamCampbell\ResultType\Success;
@@ -136,5 +137,33 @@ class LikeController extends Controller
             'message' => 'success',
             'posts' => $posts
         ]);
+    }
+
+    public function likeComment($id){
+        $isLike = LikeComment::where(
+            [
+                'blogger_id' => Auth::user()['id'],
+                'comment_id' => $id,
+            ]
+        )->first();
+
+        if ($isLike) {
+            $isLike->delete();
+            return response([
+                'message' => 'Unlike comment successfully',
+            ]);
+        }
+
+        LikeComment::create(
+            [
+                'blogger_id' => Auth::user()['id'],
+                'comment_id' => $id,
+            ]
+        );
+
+        return response([
+            'message' => 'Like comment successfully',
+        ]);
+
     }
 }
