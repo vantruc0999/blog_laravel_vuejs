@@ -197,9 +197,12 @@ class PostController extends Controller
                 'view_count' => ++$post->view_count
             ]);
 
+            // return $post->comments->count();
+
             $post->category_name = $post->category->name;
             $post->blogger_name = $post->blogger->name;
             $post->likes_count = $post->likes->count();
+            $post->comments_count = Comment::where(['post_id'=>$post->id])->count();
             $post->comments = $this->handleCommentByPost($id);
             $post->tags = $this->getTagsInfor($post->tags);
             $post->blogger_infor = $this->getBloggerInfor($post->blogger);
@@ -740,12 +743,15 @@ class PostController extends Controller
 
     public function getPostByCategoryId($id)
     {
-        $posts = Category::find($id)->posts;
+        $category = Category::find($id);
+        $posts = $category->posts;
 
         $posts = $this->getAllOverviewPosts($posts);
 
         return response([
             "message" => "success",
+            "category_name" => $category->name,
+            "category_rules" => $category->rules,
             "posts" =>  $posts,
         ]);
     }
