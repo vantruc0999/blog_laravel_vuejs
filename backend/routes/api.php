@@ -29,13 +29,13 @@ Route::post('/login', [BloggerAuthController::class, 'login']);
 Route::get('/tags/get-all-tags', [PostController::class, 'getAllTags']);
 Route::get('/categories/get-all-categories', [PostController::class, 'getAllCategories']);
 Route::get('/bloggers', [BloggerProfileController::class, 'getAllBloggers']);
-Route::post('bloggers/forget-password',[BloggerAuthController::class, 'forgetPassword']);
+Route::post('bloggers/forget-password', [BloggerAuthController::class, 'forgetPassword']);
 Route::get('/categories-tags', [PostController::class, 'getTagsCategories']);
 
 Route::prefix('/posts')->group(function () {
     Route::get('/', [PostController::class, 'getAllActivePost']);
     Route::get('/tags/{id}', [PostController::class, 'getPostsByTagId']);
-    Route::get('/{id}', [PostController::class, 'getDetailPostById']);
+    Route::get('/{id}', [PostController::class, 'getPublishedPostById']);
     Route::get('/highlight/get-most-like', [PostController::class, 'getMostLikePosts']);
     Route::get('/highlight/get-most-view', [PostController::class, 'getMostViewPosts']);
     Route::get('/filter/filter-post', [PostController::class, 'filterPost']);
@@ -60,8 +60,7 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::get('/me/view-following', [BloggerProfileController::class, 'viewMyFollowing']);
         Route::get('/me/view-follower', [BloggerProfileController::class, 'viewMyFollower']);
 
-        Route::get('/me/view-notification', [BloggerProfileController::class, 'viewMyNotification'])
-        ;
+        Route::get('/me/view-notification', [BloggerProfileController::class, 'viewMyNotification']);
         Route::post('/me/change-password', [BloggerProfileController::class, 'changePassword']);
         Route::post('/me/change-email', [BloggerProfileController::class, 'changeEmail']);
     });
@@ -74,11 +73,14 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/create-post-draft', [PostController::class, 'storeDraft']);
         Route::post('/publish-draft/{id}', [PostController::class, 'publishDraft']);
         Route::get('/draft/get-my-draft', [PostController::class, 'getMyDraftPosts']);
-        
+
         Route::get('/author/get-post-by-author', [PostController::class, 'getPostsByMyFollowing']);
-        
+
         Route::get('/pending/get-pending-post', [PostController::class, 'getPendingPost']);
         Route::get('/published/get-published-post', [PostController::class, 'getPublishedPost']);
+        
+        Route::get('/draft/{id}', [PostController::class, 'getDraftPostById']);
+        Route::get('/pending/{id}', [PostController::class, 'getPendingPostById']);
     });
 
     Route::prefix('/comment')->group(function () {
@@ -92,6 +94,8 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/{id}', [LikeController::class, 'likePost']);
         Route::post('/check-like/{id}', [LikeController::class, 'checkLike']);
         Route::get('/get-liked-post', [LikeController::class, 'getAllLikedPosts']);
+
+        Route::post('like-comment/{id}', [LikeController::class, 'likeComment']);
     });
 
     Route::prefix('/save')->group(function () {
@@ -99,6 +103,4 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::post('/check-save/{id}', [SavePostController::class, 'checkSave']);
         Route::get('/get-saved-post', [SavePostController::class, 'getAllSavedPosts']);
     });
-
-    
 });

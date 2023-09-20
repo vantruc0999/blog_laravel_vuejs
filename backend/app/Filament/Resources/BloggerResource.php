@@ -70,8 +70,13 @@ class BloggerResource extends Resource
                 //
                 TextColumn::make('name')->searchable()->sortable(),
                 ImageColumn::make('profile_image')
-                    ->label('Avatar')
-                    ->disk('public')
+                    ->label('Image')
+                    ->alignCenter()
+                    ->getStateUsing(function (Blogger $record) {
+                        if ($record->profile_image === null)
+                            return null;
+                        return $record->profile_image;
+                    })
                     ->circular()
                     ->width(80)
                     ->height(80),

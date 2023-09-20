@@ -23,4 +23,8 @@ class Comment extends Model
     public function blogger(){
         return $this->belongsTo(Blogger::class);
     }
+
+    public function likes(){
+        return $this->hasMany(Comment::class);
+    }
 }
