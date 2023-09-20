@@ -44,11 +44,14 @@
 import CardNew from "../../../../components/CardNew.vue";
 import { usePostStore } from "../../../../stores/postStore";
 import ForYouPage from "./PageContent/foryoupage.vue"
-// import PageChange from "../../../../components/PageChange.vue"
 import { ref, computed, onMounted } from 'vue';
 
 
 const postStore = usePostStore()
+onMounted(async () => {
+    await postStore.fetchPostsByFollowAuhor()
+})
+
 // author post
 const activeKey = ref('1');
 const currentPage = ref(1);
@@ -77,13 +80,12 @@ const handleGoPrevPage = () => {
 // follow author post
 const currentPageFollow = ref(1);
 const itemsPerPageFollow = 20;
-
 const totalItemsFollow = computed(() => postStore.postsAuthor?.length);
 const totalPagesFollow = computed(() => Math.ceil(totalItemsFollow.value / itemsPerPageFollow));
 const paginatedItemsFollow = computed(() => {
     const startIndexFollow = (currentPageFollow.value - 1) * itemsPerPageFollow;
     const endIndexFolow = startIndexFollow + itemsPerPageFollow;
-    return postStore?.posts.slice(startIndexFollow, endIndexFolow);
+    return postStore.postsAuthor.slice(startIndexFollow, endIndexFolow);
 });
 const handleGoNewPageFollow = (page) => {
     currentPageFollow.value = page
@@ -114,7 +116,6 @@ const isSaved = (id) => {
 onMounted(async () => {
     await postStore.fetchAllPosts()
     await postStore.getAllSavePosts()
-    await postStore.fetchPostsByFollowAuhor()
 })
 </script>
 <style lang="scss" scoped>

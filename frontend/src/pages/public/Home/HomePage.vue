@@ -130,26 +130,14 @@ const fakeData = [
 // Store
 const postStore = usePostStore()
 // const authStore = useAuthStore()
-const showButton = ref(false);
-
-// Call api
-// const handleGetDataSave = async () => {
-//     await postStore.getAllSavePosts()
-// }
-// const handleGetAllData = async () => {
-//     await postStore.fetchAllPosts()
-// }
-// handleGetAllData()
-// handleGetDataSave()
 // onMounted(async () => {
-//     await authStore.fetchAllBlogger()
+//     await postStore.fetchAllPosts()
 // })
-
+const showButton = ref(false);
 // Get Id already saved
 const getIdOfFavorites = computed(() => {
     return postStore?.favorites.map((favorites) => favorites?.id)
 })
-
 const isSaved = (id) => {
     if (getIdOfFavorites.value.length > 0) {
         return getIdOfFavorites.value.includes(id)
@@ -203,7 +191,7 @@ const sortedPostByComments = computed(() => {
 
 <style lang="scss" scoped>
 .home__container {
-    margin: 0 auto;
+    margin: 20px auto;
 
     .scroll-top {
         position: fixed;

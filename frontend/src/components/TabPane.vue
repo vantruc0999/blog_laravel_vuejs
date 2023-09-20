@@ -44,12 +44,15 @@ import { useRoute } from "vue-router";
 import SignatureAuthor from "../pages/public/Home/RelatedPage/SignatureAuthor.vue";
 
 const postStore = usePostStore();
-postStore.getAllTags();
-const handleGetDataSave = async () => {
+onMounted(async () => {
+    await postStore.getAllTags();
     await postStore.getAllSavePosts()
-}
+})
+// const handleGetDataSave = async () => {
+//     await postStore.getAllSavePosts()
+// }
 
-handleGetDataSave()
+// handleGetDataSave()
 const route = useRoute()
 const searchParam = ref(route.query.search)
 const tabs = ref(['Theo bài viết', 'Theo tác giả']);

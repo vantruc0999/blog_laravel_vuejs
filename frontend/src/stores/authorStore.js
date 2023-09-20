@@ -52,7 +52,7 @@ export const useAuthorStore = defineStore("authorStore", {
     },
     async getFollowAuthor(authorId, id) {
       try {
-        // this.isLoading = true;
+        this.isLoading = true;
         const response = await AuthorService.getfollowauthor(id);
         this.fetchAllBlogger()
         this.getFollowing()

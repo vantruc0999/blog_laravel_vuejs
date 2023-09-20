@@ -37,7 +37,8 @@
                         <input type="file" @change="handleImageChange" accept="image/*" class="image-input">
                     </div>
                     <div class="editor__controller">
-                        <div class="editor__btn" @click="handleDraftPost">Lưu nháp</div>
+                        <div class="editor__btn" @click="handleCancel">Hủy</div>
+                        <div class="editor__btn editor__btn--saved" @click="handleDraftPost">Lưu nháp</div>
                         <div class="editor__btn editor__btn--submit" @click="handlePostBlog" :disabled="!isFormValid">
                             Đăng
                             bài
@@ -49,14 +50,16 @@
     </div>
 </template>
 <script setup>
-import { watch, ref, computed } from 'vue';
+import { watch, ref, computed, onMounted } from 'vue';
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic';
 import { usePostStore } from '../../../stores/postStore';
 // import CKEditor from '@ckeditor/ckeditor5-vue';
 // import { Select } from 'ant-design-vue';
 import uploadImage from "../../../utils/uploadImage"
 const postStore = usePostStore();
-postStore.getAllTags();
+onMounted(async () => {
+    await postStore.getAllTags();
+})
 const userData = ref(JSON.parse(localStorage.getItem("user")));
 const selectedCategory = ref('');
 const selectedTag = ref('');
@@ -229,6 +232,13 @@ const handleDraftPost = () => {
 
     postStore.handleDraftData(formData);
 };
+const handleCancel = () => {
+    title.value = '';
+    intro.value = '';
+    editorData.value = '';
+    selectedCategory.value = '';
+    temporaryImage.value = '';
+}
 </script>
 <style lang="scss" scoped>
 .blog__container {
@@ -371,6 +381,10 @@ const handleDraftPost = () => {
             justify-content: center;
             border: 1px solid var(--border-color);
             font-weight: 700;
+
+            &--saved {
+                background-color: var(--border-color);
+            }
 
             &--submit {
                 background-color: var(--secondary-color);

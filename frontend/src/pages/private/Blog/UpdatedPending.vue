@@ -38,8 +38,8 @@
                     </div>
 
                     <span class="editor__title">Chọn ảnh cho tiêu đề</span>
-                    <div class="image-select" v-if="postStore.post?.data?.banner">
-                        <img :src="'http://127.0.0.1:8000/storage/' + postStore.post?.data?.banner" alt=""
+                    <div class="image-select" v-if="postStore.pendingPost?.banner">
+                        <img :src="'http://127.0.0.1:8000/storage/' + postStore.pendingPost?.banner" alt=""
                             class="temporary-image">
                         <img :src="temporaryImage" alt="" class="temporary-image temporary-image--sub">
 
@@ -105,14 +105,13 @@ const intro = ref();
 const height = ref(90);
 
 watchEffect(() => {
-    const post = postStore.post;
-    if (post) {
-        title.value = post.data?.title;
-        intro.value = post.data?.intro;
-        editorData.value = post.data?.description;
+    const pendingPost = postStore.pendingPost
+    if (pendingPost) {
+        title.value = pendingPost?.title;
+        intro.value = pendingPost?.intro;
+        editorData.value = pendingPost?.description;
     }
 });
-
 
 const tagNames = computed(() => {
     const tags = postStore?.post?.data?.tags;
@@ -266,11 +265,12 @@ const handleDraftPost = () => {
     postStore.handleDraftData(formData);
 };
 // get detail api
-const getDetailPost = computed(() => {
-    return postStore.getPostById(refPost.value)
+const getPendingPostById = computed(() => {
+    return postStore.getPendingPostById(refPost.value)
 })
+
 onMounted(async () => {
-    await getDetailPost.value;
+    await getPendingPostById.value;
 });
 </script>
 <style lang="scss" scoped>

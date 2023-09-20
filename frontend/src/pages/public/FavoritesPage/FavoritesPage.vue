@@ -15,9 +15,9 @@ import { usePostStore } from '../../../stores/postStore';
 import CardNew from "../../../components/cardnew.vue"
 import Loading from '../../../components/Loading.vue';
 const postStore = usePostStore()
-onMounted(async () => {
-    await postStore.getAllSavePosts()
-})
+// onMounted(async () => {
+//     await postStore.getAllSavePosts()
+// })
 const handleGetDataSave = async () => {
     await postStore.getAllSavePosts()
 }

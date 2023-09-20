@@ -17,8 +17,9 @@
             </router-link>
 
             <div class="signature__user__right">
-                <button class="signature__user__btn signature__user__btn--follow "
-                    v-if="!handleCheckFollow() && author.is_followed == 1" @click="handleToggleFollow(author?.id)">Theo dõi
+                <button class="signature__user__btn signature__user__btn--follow " v-if="!handleCheckFollow()"
+                    @click="handleToggleFollow(author?.id)">Theo
+                    dõi
                     <ion-icon name="person-add-outline"></ion-icon>
                 </button>
                 <button class="signature__user__btn signature__user__btn--followed" v-else
@@ -36,22 +37,38 @@ import { useAuthorStore } from "../../../../stores/authorStore";
 const authorStore = useAuthorStore()
 const props = defineProps({
     author: Object,
-    handleFollow: Function
+    isFollowing: Boolean,
 })
-
+const handleFetchUserFollower = async () => {
+    await authorStore.fetchAllBlogger()
+}
 const userData = ref(JSON.parse(localStorage.getItem("user")));
-console.log(".......", props.author.is_followed);
+// console.log("f", props.author.is_following);
+// console.log("w", props.author.is_follower);
+console.log("===", props.author.is_follower);
 const handleCheckFollow = () => {
-    if (props.author?.follows?.length > 0) {
-        const result = props.author.follows.map((user) => user.follower_id).includes(userData.value?.id);
-        if (result === true) {
-            return true
+    if (props.isFollowing) {
+        return true
+    } else if (props.author.is_follower == 1) {
+        return true
+    } else if (props.author.is_follower == 0) {
+        return false
+    } else {
+        if (props.author?.follows?.length > 0) {
+            const result = props.author.follows.map((user) => user.follower_id).includes(userData.value?.id);
+            if (result === true) {
+                return true
+            } else {
+                return false
+            }
         } else {
             return false
         }
-    } else {
-        return false
     }
+}
+
+const handleCheckCheck = (check) => {
+    console.log(check);
 }
 
 const handleToggleFollow = (id) => {

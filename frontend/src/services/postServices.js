@@ -10,6 +10,7 @@ import {
   API_GETALLTAGS,
   API_EDITCOMMENT,
   API_LIKEPOST,
+  API_LIKECOMMENT,
   API_SAVEPOST,
   API_GETALLSAVEPOST,
   API_SEARCHPOST,
@@ -17,7 +18,10 @@ import {
   API_FILTERBYCATEGORI,
   API_DRAFTPOST,
   API_GETALLDRAFTPOST,
-  API_GETALLPENDINGPOST
+  API_GETALLPENDINGPOST,
+  API_GETPOSTDRAFTBYID,
+  API_GETPENDINGPOSTBYID,
+  API_CHECKLIKEDPOST
 } from "../config/apis";
 
 export const PostService = {
@@ -54,6 +58,12 @@ export const PostService = {
   likepost(postid) {
     return httpClient.post(`${API_LIKEPOST}/${postid}`)
   },
+  likecomment(cmtId) {
+    return httpClient.post(`${API_LIKECOMMENT}/${cmtId}`)
+  },
+  checklikedpost(postid) {
+    return httpClient.post(`${API_CHECKLIKEDPOST}/${postid}`)
+  },
   savepost(id) {
     return httpClient.post(`${API_SAVEPOST}/${id}`)
   },
@@ -77,5 +87,11 @@ export const PostService = {
   },
   getAllPendingPosts() {
     return httpClient.get(API_GETALLPENDINGPOST)
+  },
+  getDraftPostById(draftId) {
+    return httpClient.get(`${API_GETPOSTDRAFTBYID}/${draftId}`)
+  },
+  getPendingPostById(pendingId) {
+    return httpClient.get(`${API_GETPENDINGPOSTBYID}/${pendingId}`)
   }
 };

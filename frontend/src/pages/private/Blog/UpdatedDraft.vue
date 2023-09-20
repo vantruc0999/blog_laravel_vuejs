@@ -38,8 +38,8 @@
                     </div>
 
                     <span class="editor__title">Chọn ảnh cho tiêu đề</span>
-                    <div class="image-select" v-if="postStore.post?.data?.banner">
-                        <img :src="'http://127.0.0.1:8000/storage/' + postStore.post?.data?.banner" alt=""
+                    <div class="image-select" v-if="postStore.draft?.banner">
+                        <img :src="'http://127.0.0.1:8000/storage/' + postStore.draft?.banner" alt=""
                             class="temporary-image">
                         <img :src="temporaryImage" alt="" class="temporary-image temporary-image--sub">
 
@@ -104,12 +104,14 @@ const title = ref();
 const intro = ref();
 const height = ref(90);
 
+
+
 watchEffect(() => {
-    const post = postStore.post;
-    if (post) {
-        title.value = post.data?.title;
-        intro.value = post.data?.intro;
-        editorData.value = post.data?.description;
+    const draft = postStore.draft
+    if (draft) {
+        title.value = draft.title;
+        intro.value = draft.intro;
+        editorData.value = draft.description;
     }
 });
 
@@ -266,11 +268,11 @@ const handleDraftPost = () => {
     postStore.handleDraftData(formData);
 };
 // get detail api
-const getDetailPost = computed(() => {
-    return postStore.getPostById(refPost.value)
+const getDraftDetailPost = computed(() => {
+    return postStore.getDraftPostById(refPost.value)
 })
 onMounted(async () => {
-    await getDetailPost.value;
+    await getDraftDetailPost.value;
 });
 </script>
 <style lang="scss" scoped>
