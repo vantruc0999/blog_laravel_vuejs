@@ -49,6 +49,7 @@ class CategoryResource extends Resource
                         $set('is_slug_changed_manually', true);
                     })
                     ->required(),
+                TextInput::make('rules'),
                 Forms\Components\Section::make('')
                     ->schema([
                         Forms\Components\Placeholder::make('created_at')
