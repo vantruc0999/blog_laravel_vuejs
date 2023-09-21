@@ -292,6 +292,7 @@ class PostController extends Controller
             Category::find($category_id)
                 ->posts()
                 ->where('id', '!=', $post_id)
+                ->where('status', 1)
                 ->orderBy('view_count', 'desc')
                 ->take(5)
                 ->get()

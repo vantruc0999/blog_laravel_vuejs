@@ -96,6 +96,8 @@ Route::middleware(['auth:blogger'])->group(function () {
         Route::get('/get-liked-post', [LikeController::class, 'getAllLikedPosts']);
 
         Route::post('like-comment/{id}', [LikeController::class, 'likeComment']);
+        Route::get('check-like-comment/{id}', [LikeController::class, 'checkLikeComment']);
+        Route::get('count-like-comment/{id}', [LikeController::class, 'countLikeComment']);
     });
 
     Route::prefix('/save')->group(function () {

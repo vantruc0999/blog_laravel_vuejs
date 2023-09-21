@@ -166,4 +166,29 @@ class LikeController extends Controller
         ]);
 
     }
+
+    public function checkLikeComment($id){
+        $isLike = LikeComment::where(
+            [
+                'blogger_id' => Auth::user()['id'],
+                'comment_id' => $id,
+            ]
+        )->first();
+
+        if ($isLike) {
+            return response([
+                'message' => 'you have already liked this comment',
+                'is_like' => 1,
+            ]);
+        } else {
+            return response([
+                'message' => 'you have not liked this comment before',
+                'is_like' => 0,
+            ]);
+        }
+    }
+
+    public function countLikeComment($id){
+        return LikeComment::where(['comment_id' => $id])->count();
+    }
 }
